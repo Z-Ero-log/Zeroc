@@ -23,6 +23,7 @@
         <div style="text-align:left;">
           <div style="color:white;font-size:16px;font-weight:900;letter-spacing:0.5px;">Z-ERO CARBON</div>
           <div style="color:#60a5fa;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-top:3px;">Logistics · Hub Calella</div>
+          <div style="color:#34d399;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-top:2px;">♻ Logística Circular · RED II</div>
         </div>
       </div>
     </div>
@@ -1759,7 +1760,7 @@ async function signRecollida() {
 }
 
 // PDF
-function genPDF(who) {
+async function genPDF(who) {
   const sel     = who==='op' ? 'op-pdf-sel' : 'esp-pdf-sel';
   const tipus   = document.getElementById(sel).value;
   const emissor = who==='op' ? 'Z-Ero Carbon Logistics · Operador' : 'F. Espinosa Gestores S.L. · Gestor autoritzat';
@@ -1790,9 +1791,12 @@ function genPDF(who) {
   doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor(96,165,250);
   doc.text('LOGÍSTICA CIRCULAR · PARTNER TECNOLÒGIC · RED II',14,19);
   doc.setTextColor(100,116,139);doc.text('Hub Calella · 08370 · '+today,14,25);
-  doc.setFillColor(...BLUE);doc.roundedRect(148,6,50,16,3,3,'F');
-  doc.setFontSize(7);doc.setFont('helvetica','bold');doc.setTextColor(255,255,255);
-  doc.text('Gestor E-1492.14',150,12);doc.text('T-902 · ISCC Cert.',150,18);
+  // Logo F. Espinosa — petit, a la dreta, dins la capçalera fosca
+  try { doc.addImage(ESPINOSA_LOGO,'PNG',155,2,26,24); } catch(e) {}
+  // Requadre blau certificats — a la dreta del logo
+  doc.setFillColor(...BLUE);doc.roundedRect(183,6,24,16,2,2,'F');
+  doc.setFontSize(5.5);doc.setFont('helvetica','bold');doc.setTextColor(255,255,255);
+  doc.text('E-1492.14',184,11);doc.text('T-902·ISCC',184,17);
 
   // ── TÍTOL ──
   doc.setFontSize(16);doc.setFont('helvetica','bold');doc.setTextColor(...NAVY);
@@ -1837,9 +1841,6 @@ function genPDF(who) {
   doc.setTextColor(...GRAY);doc.text('ESTALVI TOTAL PROJECTAT',145,97);
   doc.setTextColor(37,99,235);doc.setFontSize(12);doc.text(fmt(estalviTotal),145,106);
   doc.setFontSize(7);doc.setTextColor(...GRAY);doc.text('Rendibilitat neta Z-Ero',145,111);
-
-  // ── LOGO F. ESPINOSA (Base64 incrustada) ──
-  try { doc.addImage(ESPINOSA_LOGO,'PNG',128,3,55,20); } catch(e) {}
 
   // ── ETIQUETA SECCIÓ RECOLLIDES ──
   doc.setFontSize(8);doc.setFont('helvetica','bold');doc.setTextColor(...NAVY);
