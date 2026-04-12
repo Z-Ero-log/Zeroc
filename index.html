@@ -12,7 +12,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
-
+ 
 <!-- ===== PANTALLA LOGIN ===== -->
 <div id="login-screen" style="display:flex;position:fixed;inset:0;z-index:9999;background:#0f172a;align-items:center;justify-content:center;flex-direction:column;">
   <div style="width:100%;max-width:400px;padding:24px;">
@@ -66,14 +66,14 @@
     </div>
   </div>
 </div>
-
+ 
 <!-- ===== APP (s'amaga fins login) ===== -->
 <div id="app-root" style="display:none;">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Outfit', sans-serif; background: #f0f4f8; }
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap');
-
+ 
 .nav { background: #0f172a; color: white; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; gap: 16px; }
 .nav-left { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
 .nav-right { display: flex; align-items: center; flex-shrink: 0; }
@@ -87,16 +87,16 @@ body { font-family: 'Outfit', sans-serif; background: #f0f4f8; }
 .tab.on { background: #2563eb; color: white; }
 .tab.transport-tab { color: #fbbf24; }
 .tab.transport-tab.on { background: #d97706; color: white; }
-
+ 
 .wrap { max-width: 1080px; margin: 0 auto; padding: 24px 20px; }
 .sec { display: none; }
 .sec.on { display: block; }
-
+ 
 .top-bar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
 .page-title { font-size: 22px; font-weight: 900; color: #0f172a; text-transform: uppercase; letter-spacing: -0.5px; }
 .page-sub { font-size: 10px; font-weight: 700; color: #2563eb; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
 .top-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-
+ 
 .btn { border: none; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 11px; padding: 10px 18px; transition: all 0.2s; letter-spacing: 0.3px; }
 .btn-blue { background: #2563eb; color: white; }
 .btn-blue:hover { background: #1d4ed8; }
@@ -112,7 +112,7 @@ body { font-family: 'Outfit', sans-serif; background: #f0f4f8; }
 .btn-ghost:hover { background: #e2e8f0; }
 .btn-xs { font-size: 10px; padding: 5px 12px; border-radius: 8px; }
 .btn-full { width: 100%; padding: 14px; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; border-radius: 14px; margin-top: 14px; }
-
+ 
 .card { background: white; border-radius: 20px; border: 1px solid #f1f5f9; padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); margin-bottom: 16px; }
 .card-bt-blue { border-top: 3px solid #2563eb; border-radius: 0 0 20px 20px; }
 .card-bt-green { border-top: 3px solid #16a34a; border-radius: 0 0 20px 20px; }
@@ -120,19 +120,19 @@ body { font-family: 'Outfit', sans-serif; background: #f0f4f8; }
 .card-dark { background: #0f172a; color: white; border: none; }
 .card-h { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #f1f5f9; }
 .card-label { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 1.5px; }
-
+ 
 .lbl { font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
 .inp { width: 100%; border: 1.5px solid #e2e8f0; padding: 9px 12px; border-radius: 10px; font-size: 12px; background: #f8fafc; color: #0f172a; outline: none; transition: border-color 0.2s; font-family: inherit; }
 .inp:focus { border-color: #2563eb; background: white; }
 .inp[readonly] { cursor: default; color: #64748b; }
 select.inp { cursor: pointer; }
-
+ 
 .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
 .g4 { display: grid; grid-template-columns: 1fr 1.4fr 1fr 1fr; gap: 12px; }
 .g-hub { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 16px; }
 .g-stats { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; margin-bottom: 16px; }
-
+ 
 .hub-val { font-size: 58px; font-weight: 900; color: #0f172a; line-height: 1; }
 .hub-val span { font-size: 22px; font-weight: 600; color: #64748b; }
 .hub-pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 99px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -146,7 +146,7 @@ select.inp { cursor: pointer; }
 .prog-sm-in { height: 100%; border-radius: 99px; background: #3b82f6; }
 .prog-mini { background: #f1f5f9; height: 8px; border-radius: 99px; margin-top: 8px; overflow: hidden; }
 .prog-mini-in { height: 100%; border-radius: 99px; transition: width 0.6s; }
-
+ 
 .stat-card { background: white; border-radius: 20px; border: 1px solid #f1f5f9; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
 .stat-label { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px; }
 .stat-val { font-size: 34px; font-weight: 900; color: #0f172a; line-height: 1; }
@@ -155,7 +155,7 @@ select.inp { cursor: pointer; }
 .bb-green { border-bottom: 5px solid #22c55e; }
 .bb-amber { border-bottom: 5px solid #f97316; }
 .bb-navy { border-bottom: 5px solid #1e40af; }
-
+ 
 .table-wrap { background: white; border-radius: 20px; border: 1px solid #f1f5f9; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.04); margin-bottom: 16px; }
 .table-bar { background: #0f172a; color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; }
 .table-sub-bar { background: #f8fafc; padding: 10px 20px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
@@ -164,7 +164,7 @@ th { padding: 10px 16px; text-align: left; font-size: 10px; font-weight: 800; co
 td { padding: 10px 16px; border-top: 1px solid #f8fafc; font-size: 12px; color: #0f172a; vertical-align: middle; }
 tr:hover td { background: #f8fafc; }
 .mono { font-family: monospace; font-weight: 800; color: #2563eb; font-size: 11px; }
-
+ 
 .badge { display: inline-flex; align-items: center; font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 99px; text-transform: uppercase; letter-spacing: 0.3px; }
 .bg-green { background: #dcfce7; color: #15803d; }
 .bg-yellow { background: #fef9c3; color: #854d0e; }
@@ -172,9 +172,9 @@ tr:hover td { background: #f8fafc; }
 .bg-blue { background: #dbeafe; color: #1e40af; }
 .bg-gray { background: #f1f5f9; color: #475569; }
 .bg-navy { background: #e0e7ff; color: #3730a3; }
-
+ 
 .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-
+ 
 .est-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; border-bottom: 1px solid #f8fafc; transition: background 0.15s; }
 .est-row:hover { background: #f8fafc; }
 .est-row:last-child { border-bottom: none; }
@@ -182,7 +182,7 @@ tr:hover td { background: #f8fafc; }
 .est-meta { font-size: 11px; color: #94a3b8; margin-top: 2px; }
 .est-vol { font-weight: 800; font-size: 13px; color: #2563eb; text-align: right; }
 .est-vol-note { font-size: 10px; color: #94a3b8; text-align: right; margin-top: 2px; }
-
+ 
 .transport-wrap { max-width: 460px; margin: 0 auto; }
 .t-card { background: white; border-radius: 24px; padding: 32px; border: 1px solid #f1f5f9; box-shadow: 0 4px 24px rgba(0,0,0,0.08); border-top: 6px solid #d97706; }
 .scan-box { background: #f8fafc; padding: 32px; border-radius: 18px; border: 3px dashed #e2e8f0; text-align: center; margin-bottom: 24px; }
@@ -203,16 +203,16 @@ tr:hover td { background: #f8fafc; }
 .c-item { padding: 10px 0; border-bottom: 1px solid #f8fafc; display: flex; gap: 10px; align-items: flex-start; }
 .c-item:last-child { border-bottom: none; }
 .c-dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; margin-top: 4px; flex-shrink: 0; }
-
+ 
 .info-pill { background: #fef9c3; border: 1px solid #fde68a; border-radius: 10px; padding: 10px 14px; font-size: 11px; color: #854d0e; font-weight: 700; margin-top: 10px; }
 .divider { height: 1px; background: #f1f5f9; margin: 16px 0; }
-
+ 
 .modal-overlay { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15,23,42,0.6); z-index: 200; border-radius: 20px; align-items: center; justify-content: center; min-height: 300px; }
 .modal-overlay.show { display: flex; }
 .modal { background: white; border-radius: 20px; padding: 28px; width: 90%; max-width: 500px; }
 .modal-h { font-size: 16px; font-weight: 900; color: #0f172a; margin-bottom: 20px; }
 </style>
-
+ 
 <nav class="nav">
   <div class="nav-left">
     <div class="nav-z">Z</div>
@@ -265,9 +265,9 @@ tr:hover td { background: #f8fafc; }
     </div>
   </div>
 </nav>
-
+ 
 <div class="wrap">
-
+ 
 <!-- ======= OPERADOR ======= -->
 <section id="sec-operador" class="sec on">
   <div class="top-bar">
@@ -289,7 +289,7 @@ tr:hover td { background: #f8fafc; }
       <button class="btn btn-ghost btn-xs" onclick="resetSessio()" title="Reiniciar dades locals" style="font-size:10px;">🔄 Nova sessió</button>
     </div>
   </div>
-
+ 
   <div class="g-hub">
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
@@ -328,7 +328,7 @@ tr:hover td { background: #f8fafc; }
       <div style="text-align:right;font-size:10px;color:#475569;margin-top:6px;font-weight:700;">0% completat</div>
     </div>
   </div>
-
+ 
   <div class="g-stats" style="margin-bottom:16px;">
     <div class="stat-card bb-green">
       <div class="stat-label">Hores flota alliberades</div>
@@ -351,7 +351,7 @@ tr:hover td { background: #f8fafc; }
       <div class="stat-note">2,64 kg CO2 per litre dièsel evitat</div>
     </div>
   </div>
-
+ 
   <!-- INDICADOR CAMIÓ ENVIAT pel Gestor -->
   <div id="op-camio-alert" style="display:none;background:#fff7ed;border:2px solid #f97316;border-radius:16px;padding:16px 20px;margin-bottom:16px;display:none;align-items:center;gap:14px;">
     <div style="font-size:32px;line-height:1;">🚛</div>
@@ -361,7 +361,7 @@ tr:hover td { background: #f8fafc; }
     </div>
     <button class="btn btn-ghost btn-xs" onclick="ackCamioAlert()" style="flex-shrink:0;">✓ Rebut</button>
   </div>
-
+ 
   <!-- CONFIGURACIÓ CÀLCUL D'ESTALVI — ara a l'Operador -->
   <div class="g2" style="margin-bottom:16px;">
     <div class="card card-bt-blue">
@@ -389,8 +389,8 @@ tr:hover td { background: #f8fafc; }
       </div>
     </div>
   </div>
-
-
+ 
+ 
   <div class="table-wrap">
     <div class="table-bar">
       <span>Registre operatiu avui</span>
@@ -407,7 +407,7 @@ tr:hover td { background: #f8fafc; }
     </table>
   </div>
 </section>
-
+ 
 <!-- ======= ESTABLIMENTS ======= -->
 <section id="sec-establiments" class="sec">
   <div class="top-bar">
@@ -417,7 +417,7 @@ tr:hover td { background: #f8fafc; }
     </div>
     <button class="btn btn-green" onclick="openModal()">+ Afegir establiment</button>
   </div>
-
+ 
   <div class="g-stats" style="margin-bottom:16px;">
     <div class="stat-card bb-blue">
       <div class="stat-label">Total establiments</div>
@@ -435,7 +435,7 @@ tr:hover td { background: #f8fafc; }
       <div class="stat-note">Pendents: <span id="est-pendents">1</span></div>
     </div>
   </div>
-
+ 
   <div class="table-wrap">
     <div class="table-bar">
       <span>Establiments registrats</span>
@@ -443,7 +443,7 @@ tr:hover td { background: #f8fafc; }
     </div>
     <div id="est-list"></div>
   </div>
-
+ 
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal">
       <div class="modal-h">Afegir / editar establiment</div>
@@ -469,17 +469,17 @@ tr:hover td { background: #f8fafc; }
     </div>
   </div>
 </section>
-
+ 
 <!-- ======= TRANSPORTISTA ======= -->
 <section id="sec-transport" class="sec">
   <div class="transport-wrap">
     <div class="t-card">
       <div style="text-align:center;font-size:20px;font-weight:900;text-transform:uppercase;font-style:italic;margin-bottom:6px;color:#0f172a;letter-spacing:-0.5px;">Nova recollida</div>
       <div style="text-align:center;font-size:11px;color:#94a3b8;font-weight:700;margin-bottom:24px;">Omple els camps i confirma · El pes és obligatori</div>
-
+ 
       <!-- FORMULARI PRINCIPAL -->
       <div id="t-form" class="t-form">
-
+ 
         <!-- Codi establiment — selector sincronitzat amb DB -->
         <div style="margin-bottom:18px;">
           <div class="lbl">Codi establiment <span style="color:#dc2626;">*</span></div>
@@ -489,7 +489,7 @@ tr:hover td { background: #f8fafc; }
           <div id="t-est-info" style="display:none;margin-top:8px;padding:10px 14px;background:#f0f9ff;border:1.5px solid #bae6fd;border-radius:10px;font-size:12px;color:#0369a1;font-weight:600;"></div>
           <div id="t-nom-warn" style="display:none;color:#dc2626;font-size:10px;font-weight:700;margin-top:4px;">⚠ Selecciona un establiment abans de continuar</div>
         </div>
-
+ 
         <!-- Barrils — el que sap el transportista -->
         <div class="g2" style="margin-bottom:18px;">
           <div>
@@ -501,19 +501,19 @@ tr:hover td { background: #f8fafc; }
             <input class="inp" type="number" id="t-buits" placeholder="0" style="font-size:18px;font-weight:700;color:#64748b;">
           </div>
         </div>
-
+ 
         <!-- Incidència — opcional -->
         <div style="margin-bottom:18px;">
           <div class="lbl">Incidència (opcional)</div>
           <input class="inp" type="text" id="t-incidencia" placeholder="Cap incidència">
         </div>
-
+ 
         <!-- Precinte — el transportista sí sap -->
         <div style="margin-bottom:18px;">
           <div class="lbl">Precinte/s</div>
           <input class="inp" type="text" id="t-precinte" placeholder="Ex: 101, 102" style="font-family:monospace;font-weight:700;letter-spacing:1px;">
         </div>
-
+ 
         <!-- Estat oli — visible al transportista -->
         <div style="margin-bottom:18px;">
           <div class="lbl">Estat oli <span style="color:#94a3b8;font-weight:600;">(opcional)</span></div>
@@ -524,27 +524,27 @@ tr:hover td { background: #f8fafc; }
             <option value="Pendent operador">No sé / Pendent operador</option>
           </select>
         </div>
-
+ 
         <!-- Camp ocult pes (el mesura l'operador) -->
         <input type="hidden" id="t-pes" value="0">
-
+ 
         <!-- GPS row -->
         <div class="gps-row" style="margin-bottom:16px;">
           <div class="gps-dot"></div>
           <div class="gps-text">GPS actiu · <span style="font-family:monospace;" id="t-gps-coords">obtenint posició...</span><br>Calella de la Costa — en temps real</div>
         </div>
-
+ 
         <!-- Botó confirmar -->
         <button class="sign-btn" id="t-confirm-btn" onclick="tConfirmarRecollida()">
           Confirmar recollida i enviar a operador
         </button>
-
+ 
         <!-- Confirmació visual après d'enviar -->
         <div id="t-confirm-box" style="display:none;background:#dcfce7;border:1.5px solid #22c55e;border-radius:12px;padding:14px;text-align:center;color:#15803d;font-weight:700;font-size:13px;margin-top:12px;">
           ✓ Recollida enviada a l'operador correctament
         </div>
       </div>
-
+ 
       <!-- LLISTA CONFIRMADES AVUI -->
       <div class="t-confirmed-list" id="t-confirmed-list" style="display:none;margin-top:20px;">
         <div style="font-size:11px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Confirmades avui</div>
@@ -553,7 +553,7 @@ tr:hover td { background: #f8fafc; }
     </div>
   </div>
 </section>
-
+ 
 <!-- MODAL CONFIRMACIÓ TRANSPORTISTA -->
 <div id="t-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.7);z-index:400;align-items:center;justify-content:center;" onclick="if(event.target===this){}">
   <div style="background:white;border-radius:24px;padding:28px;width:90%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.25);border-top:6px solid #d97706;">
@@ -570,7 +570,7 @@ tr:hover td { background: #f8fafc; }
     </div>
   </div>
 </div>
-
+ 
 <!-- ======= ESPINOSA ======= -->
 <section id="sec-espinosa" class="sec">
   <div class="top-bar">
@@ -590,7 +590,7 @@ tr:hover td { background: #f8fafc; }
       <button class="btn btn-dark" onclick="genPDF('esp')">Baixar informe</button>
     </div>
   </div>
-
+ 
   <div class="g-stats">
     <div class="stat-card bb-blue">
       <div class="stat-label">Stock Hub Calella</div>
@@ -614,7 +614,7 @@ tr:hover td { background: #f8fafc; }
       <div class="stat-note" style="color:#475569;">Rendibilitat neta Z-Ero</div>
     </div>
   </div>
-
+ 
   <div class="g2" style="margin-bottom:16px;">
     <!-- PANELL ENVIAR CAMIÓ -->
     <div class="card" style="border-top:4px solid #d97706;border-radius:0 0 20px 20px;">
@@ -652,7 +652,7 @@ tr:hover td { background: #f8fafc; }
       <div style="font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;">Gestor autoritzat: F. Espinosa Gestores S.L. · RED II · ISO 14001</div>
     </div>
   </div>
-
+ 
   <div class="table-wrap">
     <div class="table-bar">
       <span>Registre complet de recollides</span>
@@ -672,7 +672,7 @@ tr:hover td { background: #f8fafc; }
     </table>
   </div>
 </section>
-
+ 
 <!-- MODAL EDITAR HUB -->
 <div id="hub-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.65);z-index:300;align-items:center;justify-content:center;" onclick="if(event.target===this)closeHubModal()">
   <div style="background:white;border-radius:20px;padding:28px;width:90%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
@@ -689,7 +689,7 @@ tr:hover td { background: #f8fafc; }
     </div>
   </div>
 </div>
-
+ 
 <!-- MODAL CAMIÓ ESPINOSA -->
 <div id="camio-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.65);z-index:300;align-items:center;justify-content:center;" onclick="if(event.target===this)closeCamioModal()">
   <div style="background:white;border-radius:20px;padding:28px;width:90%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,0.2);border-top:5px solid #d97706;">
@@ -722,15 +722,15 @@ tr:hover td { background: #f8fafc; }
     </div>
   </div>
 </div>
-
-
-
+ 
+ 
+ 
 </div><!-- fi app-root -->
-
+ 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-
+ 
 // ============================================================
 // ⚙️  CONFIGURACIÓ FIREBASE — SUBSTITUEIX AMB LES TEVES DADES
 // Segueix la guia SETUP.md que trobaràs al costat d'aquest fitxer
@@ -744,31 +744,31 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "1027500466158",
   appId:             "1:1027500466158:web:ae5298fbcf6fa9635b38ff"
 };
-
+ 
 // Usuaris i rols
 const USER_ROLES = {
   "zerocarbonlogistic@gmail.com": { rol: "operador",     nom: "Z-Ero Carbon · Operador & Transportista", tabs: ["operador","establiments","transport"] },
   "fespinosaruiz@yahoo.es":      { rol: "gestor",        nom: "F. Espinosa Gestores",                    tabs: ["espinosa","establiments"] }
 };
 // ============================================================
-
+ 
 const EMAILJS_PUBLIC_KEY  = '-FHqxMOs0uW0675ql';
 const EMAILJS_SERVICE_ID  = 'service_5uf68zq';
 const EMAILJS_TEMPLATE_ID = 'template_50cr8x6';
 const MACANET_KM = 42;
-
+ 
 // ---- Firebase init ----
 let fbReady = false;
 let db = null;
 let auth = null;
 let currentUser = null;
 let currentRol = null;
-
+ 
 // Detectar si s'obre com arxiu local (file://)
 const isLocalFile = window.location.protocol === 'file:';
-
-
-
+ 
+ 
+ 
 try {
   firebase.initializeApp(FIREBASE_CONFIG);
   db   = firebase.database();
@@ -777,14 +777,14 @@ try {
 } catch(e) {
   console.warn('Firebase no configurat, mode local actiu:', e.message);
 }
-
+ 
 // ---- Estat local (fallback si Firebase no configurat) ----
 const DB_DEFAULTS = {};
-
+ 
 let DB = {};
 let hubLiters = 0, hubCap = 2000, hubBidonsRestants = 0, totalRec = 0, seq = 1;
 let todayRec = 0, scannedEst = null;
-
+ 
 // ============================================================
 // LOGIN / LOGOUT
 // ============================================================
@@ -794,14 +794,14 @@ function doLogin() {
   const btn   = document.getElementById('login-btn');
   const err   = document.getElementById('login-error');
   err.style.display = 'none';
-
+ 
   // Validació bàsica abans de res
   if (!email || !pass) {
     err.innerHTML = '⚠️ Introdueix el correu i la contrasenya.';
     err.style.display = 'block';
     return;
   }
-
+ 
   function showErr(msg) {
     err.style.background = '#fee2e2';
     err.style.borderColor = '#fca5a5';
@@ -811,7 +811,7 @@ function doLogin() {
     btn.disabled = false;
     btn.innerText = 'Entrar al sistema';
   }
-
+ 
   function loginLocal() {
     const roleInfo = USER_ROLES[email.toLowerCase()];
     if (roleInfo && pass.length >= 4) {
@@ -829,21 +829,21 @@ function doLogin() {
       showErr('❌ Contrasenya massa curta (mínim 4 caràcters).');
     }
   }
-
+ 
   // Si és arxiu local, sempre mode local — Firebase no funciona des de file://
   if (isLocalFile || !fbReady || !auth) {
     loginLocal();
     return;
   }
-
+ 
   // MODE FIREBASE (servidor real)
   btn.disabled = true;
   btn.innerText = 'Connectant...';
-
+ 
   const loginTimeout = setTimeout(() => {
     showErr('⏱️ Firebase no respon (10s). Verifica la connexió o el domini autoritzat.<br><span style="font-size:10px;opacity:0.7;">El domini ha d\'estar autoritzat a Firebase Console → Authentication → Settings → Authorized domains</span>');
   }, 10000);
-
+ 
   try {
     auth.signInWithEmailAndPassword(email, pass)
       .then(cred => {
@@ -875,33 +875,33 @@ function doLogin() {
     showErr('❌ Error inesperat: ' + ex.message);
   }
 }
-
+ 
 function enterApp(userInfo) {
   currentUser = userInfo;
   currentRol  = userInfo.rol;
-
+ 
   // Actualitzar nav user info
   document.getElementById('nav-user-name').innerText = userInfo.nom;
   document.getElementById('nav-user-rol').innerText  = userInfo.rol.toUpperCase();
-
+ 
   // Mostrar/ocultar tabs segons rol
   const allTabs = ['operador','establiments','transport','espinosa'];
   allTabs.forEach(t => {
     const tab = document.getElementById('tab-' + t);
     if (tab) tab.style.display = userInfo.tabs.includes(t) ? '' : 'none';
   });
-
+ 
   // Anar a la primera pestanya del rol
   switchView(userInfo.tabs[0]);
-
+ 
   // Amagar login, mostrar app
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app-root').style.display = 'block';
-
+ 
   // Inicialitzar dades (Firebase o local)
   initData();
 }
-
+ 
 function doLogout() {
   if (fbReady && auth) auth.signOut();
   document.getElementById('login-screen').style.display = 'flex';
@@ -910,7 +910,7 @@ function doLogout() {
   document.getElementById('login-pass').value = '';
   currentUser = null; currentRol = null;
 }
-
+ 
 // ============================================================
 // DADES: Firebase Realtime DB o localStorage
 // ============================================================
@@ -961,7 +961,7 @@ function initData() {
     updateHub(); recalcDiesel(); renderEstabliments();
   }
 }
-
+ 
 function saveState() {
   const hubData = { hubLiters, hubCap, hubBidonsRestants, totalRec, seq };
   if (fbReady && db) {
@@ -972,11 +972,11 @@ function saveState() {
     localStorage.setItem('zeroc_hub', JSON.stringify(hubData));
   }
 }
-
+ 
 function saveRecollida(ref, data) {
   // Actualitzar cache immediatament (no esperar Firebase ni localStorage)
   _pendingRecs[ref.toUpperCase()] = { key: ref.replace(/\./g,'-'), ...data };
-
+ 
   if (fbReady && db) {
     db.ref('recollides/' + ref.replace(/\./g,'-')).set(data);
   } else {
@@ -987,22 +987,22 @@ function saveRecollida(ref, data) {
     } catch(e) {}
   }
 }
-
+ 
 function renderRecollides(data) {
   const opTbody  = document.getElementById('op-tbody');
   const espTbody = document.getElementById('esp-tbody');
   if (!opTbody || !espTbody) return;
-
+ 
   const entries = Object.entries(data).sort((a,b) => b[0].localeCompare(a[0]));
   if (!entries.length) return;
-
+ 
   // Comptem recollides d'avui
   const todayStr = new Date().toLocaleDateString('ca-ES');
   let countAvui = 0;
-
+ 
   opTbody.innerHTML  = '';
   espTbody.innerHTML = '';
-
+ 
   entries.forEach(([key, d]) => {
     if (!d || !d.ref) return;
     const isTransp = d.id === 'TRANSP' || d.transportistaOk === true;
@@ -1014,7 +1014,7 @@ function renderRecollides(data) {
     const fluxBadge = isTransp
       ? '<span class="badge" style="background:#fef3c7;color:#92400e;">📱 Transp.</span>'
       : '<span class="badge bg-green">✓ Operador</span>';
-
+ 
     const refKey = d.ref.replace(/\./g,'-').replace(/\s/g,'_');
     const jaConfirmada = d.operadorOk === true;
     const accioCell = jaConfirmada
@@ -1022,7 +1022,7 @@ function renderRecollides(data) {
       : (isTransp
           ? `<td><button onclick="obrirConfirmacioInline('${d.ref}')" style="background:#2563eb;color:#fff;border:none;border-radius:8px;padding:5px 11px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;">⚖ Confirmar</button></td>`
           : '<td style="text-align:center;color:#94a3b8;font-size:11px;">—</td>');
-
+ 
     opTbody.insertAdjacentHTML('beforeend', `<tr id="row-${refKey}" style="${rowStyle}">
       <td class="mono">${d.ref}</td>
       <td><strong>${d.nom}</strong><br><span style="font-size:10px;color:${isTransp?'#d97706':'#94a3b8'};font-weight:${isTransp?'700':'400'};">${isTransp?'📱 Transportista':d.id||''}</span></td>
@@ -1077,7 +1077,7 @@ function renderRecollides(data) {
         </div>
       </td>
     </tr>` : ''}`);
-
+ 
     espTbody.insertAdjacentHTML('beforeend', `<tr>
       <td class="mono">${d.ref}</td>
       <td><strong>${d.nom}</strong></td>
@@ -1089,10 +1089,10 @@ function renderRecollides(data) {
       <td><span class="dot" style="background:#22c55e;"></span></td>
     </tr>`);
   });
-
+ 
   // Actualitzar cache de recollides (per autocompletar formulari operador)
   updatePendingRecsCache(data);
-
+ 
   // Actualitzar comptador d'avui
   todayRec = countAvui;
   const el = document.getElementById('op-count');
@@ -1100,10 +1100,10 @@ function renderRecollides(data) {
   const el2 = document.getElementById('op-today-count');
   if(el2) el2.innerText = countAvui;
 }
-
+ 
 // ── Confirmació inline des de la taula ─────────────────────────
 function _refKey(ref) { return ref.replace(/\./g,'-').replace(/\s/g,'_'); }
-
+ 
 function obrirConfirmacioInline(ref) {
   // Tancar qualsevol altre panel obert
   document.querySelectorAll('[id^="panel-"]').forEach(p => p.style.display = 'none');
@@ -1119,12 +1119,12 @@ function obrirConfirmacioInline(ref) {
     setTimeout(() => document.getElementById('inline-pes-' + _refKey(ref))?.focus(), 80);
   }
 }
-
+ 
 function tancarPanel(ref) {
   const panel = document.getElementById('panel-' + _refKey(ref));
   if (panel) panel.style.display = 'none';
 }
-
+ 
 async function confirmarInline(ref) {
   const rk  = _refKey(ref);
   const pes = parseInt(document.getElementById('inline-pes-' + rk)?.value);
@@ -1135,10 +1135,10 @@ async function confirmarInline(ref) {
   }
   const estat    = document.getElementById('inline-estat-' + rk)?.value || 'Net / Filtrat';
   const incidencia = document.getElementById('inline-inc-'  + rk)?.value.trim() || 'Cap incidència';
-
+ 
   const rec = _pendingRecs[ref.toUpperCase()];
   if (!rec) { alert('No s\'han trobat les dades originals. Utilitza el formulari manual.'); return; }
-
+ 
   const nom      = rec.nom || ref;
   const plens    = rec.plens || '0';
   const buits    = rec.buits || '0';
@@ -1147,18 +1147,18 @@ async function confirmarInline(ref) {
   const emailDest= DB[id]?.email || DB[Object.keys(DB).find(k=>DB[k].nom===nom)]?.email || '';
   const now      = new Date();
   const dataHora = now.toLocaleDateString('ca-ES') + ' ' + now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
-
+ 
   // Actualitzar hub (delta: el transportista va sumar 0 o el seu pes estimat)
   const pesPrevio = rec.pes || 0;
   hubLiters += (pes - pesPrevio);
   updateHub(); recalcDiesel();
-
+ 
   // Guardar
   const recData = { ref, id, nom, pes, plens, buits, estat, incidencia, precinte, dataHora, transportistaOk: true, operadorOk: true, gps: rec.gps || '' };
   saveRecollida(ref, recData);
   saveState();
   _pendingRecs[ref.toUpperCase()] = { ..._pendingRecs[ref.toUpperCase()], ...recData };
-
+ 
   // Actualitzar fila visualment (mode local i feedback immediat)
   const row = document.getElementById('row-' + rk);
   if (row) {
@@ -1172,7 +1172,7 @@ async function confirmarInline(ref) {
     if (cells[9]) cells[9].innerHTML = '<span style="color:#22c55e;font-size:16px;">✓</span>';
   }
   tancarPanel(ref);
-
+ 
   // Email
   const emailParams = { nom_establiment:nom, ref_id:ref, data_hora:dataHora, pes:pes+' kg', barrils_plens:plens, barrils_buits:buits, estat_oli:estat, incidencia, numero_precinte:precinte, operador:'Z-Ero Carbon Logistics · Hub Calella (08370)', qr_code:'REC-'+id };
   const result = await sendEmailJS(emailDest, nom, emailParams);
@@ -1187,7 +1187,7 @@ function enviarCamio() {
   const now    = new Date();
   const ts     = now.toLocaleDateString('ca-ES') + ' ' + now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
   const camioData = { ts, nota, litres, ack: false };
-
+ 
   if (fbReady && db) {
     db.ref('camio').set(camioData);
   } else {
@@ -1201,7 +1201,7 @@ function enviarCamio() {
   document.getElementById('esp-camio-litres').value = '';
   alert('🚛 Camió confirmat a ' + ts + '\nL\'operador rebrà l\'avís en temps real.');
 }
-
+ 
 function renderCamioHistorial(data) {
   const hist = document.getElementById('esp-camio-historial');
   if (!hist || !data) return;
@@ -1215,7 +1215,7 @@ function renderCamioHistorial(data) {
     <div style="font-size:10px;margin-top:6px;font-weight:700;color:${data.ack ? '#16a34a' : '#d97706'};">${data.ack ? '✓ Rebut per operador' : '⏳ Pendent de confirmació operador'}</div>
   </div>`;
 }
-
+ 
 function showCamioAlertOp(data) {
   const box = document.getElementById('op-camio-alert');
   if (!box || !data || data.ack) return;
@@ -1223,7 +1223,7 @@ function showCamioAlertOp(data) {
   const txt = document.getElementById('op-camio-alert-text');
   if (txt) txt.innerText = data.ts + (data.nota !== 'Sense nota' ? ' · ' + data.nota : '') + (data.litres > 0 ? ' · ~' + Number(data.litres).toLocaleString('ca') + ' L estimats' : '');
 }
-
+ 
 function ackCamioAlert() {
   const box = document.getElementById('op-camio-alert');
   if (box) box.style.display = 'none';
@@ -1233,7 +1233,7 @@ function ackCamioAlert() {
     try { const d = JSON.parse(localStorage.getItem('zeroc_camio')||'null'); if(d){d.ack=true;localStorage.setItem('zeroc_camio',JSON.stringify(d));renderCamioHistorial(d);} } catch(e){}
   }
 }
-
+ 
 // ============================================================
 // FUNCIONS APP (igual que v4 però saveState usa Firebase)
 // ============================================================
@@ -1246,13 +1246,13 @@ function switchView(v) {
   if (v === 'establiments') renderEstabliments();
   if (v === 'espinosa') recalcDiesel();
 }
-
+ 
 function calcKmRuta() {
   let km = MACANET_KM * 2;
   Object.values(DB).forEach(e => { km += (e.km || 0) * 2; });
   return Math.round(km);
 }
-
+ 
 function recalcDiesel() {
   const dp = parseFloat(document.getElementById('diesel-p')?.value || 1.65);
   const tc = parseFloat(document.getElementById('truck-c')?.value || 28);
@@ -1278,7 +1278,7 @@ function recalcDiesel() {
   if(s('op-hours'))       s('op-hours').innerText       = hores.toFixed(1).replace('.',',') + ' h';
   if(s('route-pill'))     s('route-pill').innerText     = 'Ruta: Maçanet de la Selva → Establiments → Hub Calella · ' + km + ' km ida+volta · ' + hores.toFixed(1) + ' h';
 }
-
+ 
 function updateHub() {
   const pct  = Math.min((hubLiters / hubCap) * 100, 100);
   const pctR = Math.round(pct);
@@ -1305,16 +1305,16 @@ function updateHub() {
   if(s('op-today-count')) s('op-today-count').innerText = todayRec;
   if(s('op-total-count')) s('op-total-count').innerText = totalRec;
 }
-
+ 
 function autoFill() {
   const id = document.getElementById('inp-codi').value.toUpperCase();
   const el = document.getElementById('inp-nom-auto');
   el.value = DB[id] ? DB[id].nom + ' · ' + DB[id].tel : '';
 }
-
+ 
 // Cache de recollides pendents (de transportista) per buscar per ref
 let _pendingRecs = {};
-
+ 
 // Quan Firebase carrega recollides, actualitzem el cache
 function updatePendingRecsCache(data) {
   _pendingRecs = {};
@@ -1322,22 +1322,22 @@ function updatePendingRecsCache(data) {
     if (d && d.ref) _pendingRecs[d.ref.toUpperCase()] = { key: k, ...d };
   });
 }
-
+ 
 // Autocompletar formulari operador a partir d'una ref del transportista
 function autoFillFromRef() {
   const refInput = document.getElementById('inp-ref-transp');
   const statusEl = document.getElementById('inp-ref-status');
   const refVal = refInput.value.trim().toUpperCase();
-
+ 
   if (!refVal) {
     statusEl.style.color = '#94a3b8';
     statusEl.innerHTML = 'Introdueix la ref. del transportista per autocompletar';
     return;
   }
-
+ 
   // Buscar en cache (s'omple quan arriben dades de Firebase o quan el transportista confirma)
   let rec = _pendingRecs[refVal];
-
+ 
   // Fallback: llegir localStorage (útil si el cache no s'ha omplit encara)
   if (!rec) {
     try {
@@ -1346,7 +1346,7 @@ function autoFillFromRef() {
       if (found) rec = { key: found[0], ...found[1] };
     } catch(e) {}
   }
-
+ 
   if (rec) {
     // Avisar si ja està confirmada per l'operador
     if (rec.operadorOk) {
@@ -1354,7 +1354,7 @@ function autoFillFromRef() {
       statusEl.innerHTML = '⚠ Aquesta recollida (<strong>' + rec.nom + '</strong>) ja ha estat confirmada per l\'operador.';
       return;
     }
-
+ 
     // Autocompletar camps del formulari
     document.getElementById('inp-nom-auto').value = rec.nom || '';
     if (rec.plens) document.getElementById('inp-plens').value = rec.plens;
@@ -1372,10 +1372,10 @@ function autoFillFromRef() {
     // Buscar codi establiment al DB per nom
     const codiFit = Object.keys(DB).find(k => DB[k].nom === rec.nom);
     if (codiFit) document.getElementById('inp-codi').value = codiFit;
-
+ 
     statusEl.style.color = '#15803d';
     statusEl.innerHTML = '✓ Ref. trobada · <strong>' + rec.nom + '</strong> · ' + rec.plens + 'P / ' + rec.buits + 'B · ' + (rec.dataHora||'') + '<br><span style="color:#2563eb;">Introdueix el pes i confirma per completar la recollida</span>';
-
+ 
     // Focus al camp pes
     setTimeout(() => document.getElementById('inp-pes').focus(), 100);
   } else if (refVal.length >= 8) {
@@ -1386,13 +1386,13 @@ function autoFillFromRef() {
     statusEl.innerHTML = 'Introdueix la ref. del transportista per autocompletar';
   }
 }
-
+ 
 // Actualitza el pes en temps real a la fila de la taula si la ref existeix
 function updatePesInRow() {
   const refVal = (document.getElementById('inp-ref-transp')?.value || '').trim().toUpperCase();
   const pes = document.getElementById('inp-pes')?.value;
   if (!refVal || !pes) return;
-
+ 
   const rows = document.getElementById('op-tbody')?.querySelectorAll('tr');
   if (!rows) return;
   rows.forEach(row => {
@@ -1405,32 +1405,32 @@ function updatePesInRow() {
     }
   });
 }
-
+ 
 async function addRecollida() {
   const refTransp = (document.getElementById('inp-ref-transp')?.value || '').trim().toUpperCase();
   const id  = document.getElementById('inp-codi').value.toUpperCase();
   const pes = parseInt(document.getElementById('inp-pes').value);
   if (!pes) { alert("El pes és obligatori."); document.getElementById('inp-pes').focus(); return; }
   if (!id && !refTransp) { alert("Introdueix el codi d'establiment o la referència del transportista."); return; }
-
+ 
   const plens     = document.getElementById('inp-plens').value || '0';
   const buits     = document.getElementById('inp-buits').value || '0';
   const estat     = document.getElementById('inp-estat').value;
   const incidencia= document.getElementById('inp-incidencia').value || 'Cap incidència';
   const precinte  = document.getElementById('inp-precinte')?.value?.trim() || '—';
-
+ 
   const isUpdate = !!refTransp && !!_pendingRecs[refTransp];
   const existingRec = isUpdate ? _pendingRecs[refTransp] : null;
-
+ 
   const nom       = existingRec?.nom || DB[id]?.nom || id;
   const emailDest = DB[id]?.email || (existingRec && DB[Object.keys(DB).find(k=>DB[k].nom===existingRec.nom)]?.email) || '';
   const ref       = isUpdate ? refTransp : ('Z-08370-' + String(seq).padStart(3,'0'));
   const now       = new Date();
   const dataHora  = now.toLocaleDateString('ca-ES') + ' ' + now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
-
+ 
   const btn = document.querySelector('[onclick="addRecollida()"]');
   if(btn){ btn.disabled=true; btn.innerText='Enviant...'; }
-
+ 
   // Actualitzar hub i comptadors
   if (isUpdate) {
     // El transportista ja va sumar el seu pes (0 o estimat). Ajustem la diferència.
@@ -1445,10 +1445,10 @@ async function addRecollida() {
     document.getElementById('next-id').innerText = 'ID: Z-08370-' + String(seq).padStart(3,'0');
     document.getElementById('op-count').innerText = todayRec + ' recollides';
   }
-
+ 
   const estatBadge = estat.startsWith('Net') ? 'bg-green' : estat.startsWith('Degradat') ? 'bg-red' : 'bg-yellow';
   const estatCurt  = estat.split(' ')[0];
-
+ 
   // Guardar/actualitzar a Firebase o localStorage
   const recData = {
     ref, id: id || existingRec?.id || 'TRANSP',
@@ -1459,12 +1459,12 @@ async function addRecollida() {
   };
   saveRecollida(ref, recData);
   saveState();
-
+ 
   // Actualitzar cache per prevenir doble confirmació
   if (_pendingRecs[ref.toUpperCase()]) {
     _pendingRecs[ref.toUpperCase()] = { ..._pendingRecs[ref.toUpperCase()], ...recData };
   }
-
+ 
   // Actualitzar UI — sempre, independentment de Firebase
   if (isUpdate) {
     // ACTUALITZAR fila existent
@@ -1550,7 +1550,7 @@ async function addRecollida() {
       </tr>`);
     }
   }
-
+ 
   // Netejar formulari
   ['inp-ref-transp','inp-codi','inp-nom-auto','inp-pes','inp-plens','inp-buits','inp-incidencia','inp-precinte'].forEach(i => {
     const el=document.getElementById(i); if(el) el.value='';
@@ -1558,7 +1558,7 @@ async function addRecollida() {
   const statusEl = document.getElementById('inp-ref-status');
   if (statusEl) { statusEl.style.color='#94a3b8'; statusEl.innerHTML='Introdueix la ref. del transportista per autocompletar'; }
   recalcDiesel();
-
+ 
   // Email a l'establiment
   const emailParams = { nom_establiment:nom, ref_id:ref, data_hora:dataHora, pes:pes+' kg', barrils_plens:plens, barrils_buits:buits, estat_oli:estat, incidencia, numero_precinte:precinte, operador:'Z-Ero Carbon Logistics · Hub Calella (08370)', qr_code:'REC-'+(seq-1)+'-'+(id||'TRANSP') };
   const result = await sendEmailJS(emailDest, nom, emailParams);
@@ -1567,7 +1567,7 @@ async function addRecollida() {
   else if(result.sim) alert('Recollida '+ref+(isUpdate?' actualitzada':' registrada')+'.\nATENCIÓ: Correu no enviat — configura EmailJS.');
   else alert('Recollida '+ref+(isUpdate?' actualitzada':' registrada')+'.\nError correu: '+(result.err||'desconegut'));
 }
-
+ 
 function resetHub() {
   if(confirm("Confirmes el buidatge total del Hub i el lliurament a Espinosa Gestors?")) {
     hubLiters=0; hubBidonsRestants=0;
@@ -1575,7 +1575,7 @@ function resetHub() {
     alert("Hub reiniciat a 0 L.");
   }
 }
-
+ 
 async function sendEmailJS(toEmail, toName, params) {
   if(typeof emailjs==='undefined') return {ok:false,sim:true};
   if(!EMAILJS_PUBLIC_KEY||EMAILJS_PUBLIC_KEY.includes('AQUI')) return {ok:false,sim:true};
@@ -1585,7 +1585,7 @@ async function sendEmailJS(toEmail, toName, params) {
     return {ok:true};
   } catch(err) { return {ok:false, err:err.text||err.message}; }
 }
-
+ 
 // HUB MODAL
 function openHubModal() {
   document.getElementById('hub-edit-liters').value = hubLiters;
@@ -1608,7 +1608,7 @@ function saveHubEdit() {
   hubLiters=l; hubCap=c; hubBidonsRestants=b;
   updateHub(); recalcDiesel(); saveState(); closeHubModal();
 }
-
+ 
 // CAMIÓ MODAL (Operador registra recollida física del camió)
 function openCamioModal() {
   document.getElementById('camio-hub-actual').innerText = hubLiters.toLocaleString('ca') + ' L';
@@ -1645,7 +1645,7 @@ function confirmCamio() {
   closeCamioModal();
   alert('Recollida camió registrada.\nEmportat: '+emporta.toLocaleString('ca')+' L\nHub: '+hubLiters.toLocaleString('ca')+' L'+(bidonsResten>0?'\n⚠ '+bidonsResten+' bidons pendents':''));
 }
-
+ 
 // ESTABLIMENTS
 function renderEstabliments() {
   const ids=Object.keys(DB);
@@ -1686,7 +1686,7 @@ function renderEstabliments() {
   // Refrescar selector del transportista
   tPopulateEstSelect();
 }
-
+ 
 function openModal(prefill) {
   document.getElementById('modal-overlay').classList.add('show');
   const fields=['m-id','m-nom','m-adreca','m-tel','m-email','m-volum'];
@@ -1706,7 +1706,7 @@ function editEst(id) { openModal({id,...DB[id]}); }
 function delEst(id) {
   if(confirm('Eliminar '+DB[id].nom+'?')){ delete DB[id]; renderEstabliments(); recalcDiesel(); saveState(); }
 }
-
+ 
 // QR TRANSPORTISTA
 function scanQR() {
   const code=document.getElementById('qr-input').value.trim().toUpperCase();
@@ -1721,7 +1721,7 @@ function scanQR() {
   document.getElementById('t-form').classList.remove('locked');
   document.getElementById('t-confirm').style.display='none';
 }
-
+ 
 async function signRecollida() {
   const pes = 0; // El pes es registra a l'operador quan arriba al hub
   const plens=document.getElementById('t-plens').value||'0';
@@ -1756,15 +1756,15 @@ async function signRecollida() {
   ['qr-input','t-plens','t-buits','t-incidencia'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
   scannedEst=null;
 }
-
+ 
 // PDF
-function genPDF(who) {
+async function genPDF(who) {
   const sel     = who==='op' ? 'op-pdf-sel' : 'esp-pdf-sel';
   const tipus   = document.getElementById(sel).value;
   const emissor = who==='op' ? 'Z-Ero Carbon Logistics · Operador' : 'F. Espinosa Gestores S.L. · Gestor autoritzat';
   const today   = new Date().toLocaleDateString('ca-ES');
   const km      = calcKmRuta();
-
+ 
   // Recalcular valors d'estalvi per al PDF
   const dp      = parseFloat(document.getElementById('diesel-p')?.value || 1.65);
   const tc      = parseFloat(document.getElementById('truck-c')?.value || 28);
@@ -1775,13 +1775,13 @@ function genPDF(who) {
   const hores   = km / av;
   const estalviTotal = hubLiters * 2.97;
   const fmt     = n => n.toFixed(2).replace('.',',') + ' €';
-
+ 
   if(typeof window.jspdf==='undefined'&&typeof jspdf==='undefined'){alert('jsPDF no carregat.');return;}
   const {jsPDF}=window.jspdf||jspdf;
   const doc=new jsPDF({unit:'mm',format:'a4'});
-
+ 
   const NAVY=[15,23,42],BLUE=[37,99,235],GREEN=[22,163,74],AMBER=[217,119,6],GRAY=[148,163,184],LGRAY=[241,245,249];
-
+ 
   // ── CAPÇALERA ──
   doc.setFillColor(...NAVY); doc.rect(0,0,210,28,'F');
   doc.setFontSize(18);doc.setFont('helvetica','bolditalic');doc.setTextColor(255,255,255);
@@ -1792,7 +1792,7 @@ function genPDF(who) {
   doc.setFillColor(...BLUE);doc.roundedRect(148,6,50,16,3,3,'F');
   doc.setFontSize(7);doc.setFont('helvetica','bold');doc.setTextColor(255,255,255);
   doc.text('Gestor E-1492.14',150,12);doc.text('T-902 · ISCC Cert.',150,18);
-
+ 
   // ── TÍTOL ──
   doc.setFontSize(16);doc.setFont('helvetica','bold');doc.setTextColor(...NAVY);
   doc.text(tipus.toUpperCase(),14,42);
@@ -1800,7 +1800,7 @@ function genPDF(who) {
   doc.text('Emissor: '+emissor,14,50);
   doc.text('Data: '+today+' · Hub Calella de la Costa (08370)',14,56);
   doc.setDrawColor(...BLUE);doc.setLineWidth(0.8);doc.line(14,60,196,60);
-
+ 
   // ── BLOC STATS PRINCIPALS (fila 1): Hub + Recollides + Ruta + Hores ──
   const stats1=[
     {label:'Litres al hub',    val:hubLiters.toLocaleString('ca')+' L', color:BLUE},
@@ -1816,40 +1816,60 @@ function genPDF(who) {
     doc.setFontSize(12);doc.setTextColor(...st.color);
     doc.text(st.val,x+3,80);
   });
-
+ 
   // ── BLOC ESTALVI (fila 2): Combustible + CO2 + Estalvi total ──
   doc.setFillColor(254,249,195);doc.roundedRect(14,91,60,22,3,3,'F');
   doc.setFillColor(220,252,231);doc.roundedRect(78,91,60,22,3,3,'F');
   doc.setFillColor(219,234,254);doc.roundedRect(142,91,54,22,3,3,'F');
-
+ 
   doc.setFontSize(6);doc.setFont('helvetica','bold');
   doc.setTextColor(...GRAY);doc.text('ESTALVI COMBUSTIBLE',17,97);
   doc.setTextColor(133,77,14);doc.setFontSize(12);doc.text(fmt(costFuel),17,106);
   doc.setFontSize(7);doc.setTextColor(...GRAY);doc.text(lDiesel.toFixed(1)+' L diesel · '+dp.toFixed(2).replace('.',',')+' €/L',17,111);
-
+ 
   doc.setFontSize(6);doc.setFont('helvetica','bold');
   doc.setTextColor(...GRAY);doc.text('CO2 EVITAT (EMPREMTA 0)',81,97);
   doc.setTextColor(22,163,74);doc.setFontSize(12);doc.text(co2.toFixed(1)+' kg',81,106);
   doc.setFontSize(7);doc.setTextColor(...GRAY);doc.text('2,64 kg CO2 per litre diesel evitat',81,111);
-
+ 
   doc.setFontSize(6);doc.setFont('helvetica','bold');
   doc.setTextColor(...GRAY);doc.text('ESTALVI TOTAL PROJECTAT',145,97);
   doc.setTextColor(37,99,235);doc.setFontSize(12);doc.text(fmt(estalviTotal),145,106);
   doc.setFontSize(7);doc.setTextColor(...GRAY);doc.text('Rendibilitat neta Z-Ero',145,111);
-
+ 
+  // ── LOGO F. ESPINOSA a la capçalera ──
+  try {
+    const logoImg = new Image(); logoImg.crossOrigin='anonymous';
+    await new Promise((resolve) => {
+      logoImg.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = logoImg.naturalWidth || 200; canvas.height = logoImg.naturalHeight || 60;
+          const ctx = canvas.getContext('2d'); ctx.drawImage(logoImg,0,0);
+          const dataUrl = canvas.toDataURL('image/jpeg');
+          doc.addImage(dataUrl,'JPEG',130,4,50,18);
+        } catch(e) {}
+        resolve();
+      };
+      logoImg.onerror = () => resolve();
+      logoImg.src = 'https://fespinosa.eu/wp-content/uploads/2021/01/logo-fespinosa.jpg';
+    });
+  } catch(e) {}
+ 
   // ── ETIQUETA SECCIÓ RECOLLIDES ──
   doc.setFontSize(8);doc.setFont('helvetica','bold');doc.setTextColor(...NAVY);
   doc.text('REGISTRE DE RECOLLIDES',14,122);
   doc.setDrawColor(...GRAY);doc.setLineWidth(0.3);doc.line(14,124,196,124);
-
+ 
   // ── TAULA RECOLLIDES ──
+  // Columnes de esp-tbody: 0=Ref, 1=Establiment, 2=Pes, 3=Barrils, 4=Estat oli, 5=Confirmat/Pendent, 6=Data/hora
   let yOff=126;
   doc.setFillColor(...NAVY);doc.rect(14,yOff,182,8,'F');
   doc.setFontSize(6.5);doc.setFont('helvetica','bold');doc.setTextColor(255,255,255);
-  const cols=['Codi RED II','Establiment','Pes','Barrils','Precinte','Estat','Data'];
+  const cols=['Codi RED II','Establiment','Pes','Barrils','Estat oli','Transportista','Data'];
   const cw=[28,48,16,18,24,18,30];let cx=16;
   cols.forEach((c,i)=>{doc.text(c,cx,yOff+5.5);cx+=cw[i];});
-
+ 
   const rows=document.getElementById('esp-tbody').querySelectorAll('tr');
   let y=yOff+8;
   rows.forEach((row,ri)=>{
@@ -1858,19 +1878,19 @@ function genPDF(who) {
     doc.rect(14,y,182,7,'F');
     doc.setFontSize(6.5);doc.setFont('helvetica','normal');doc.setTextColor(...NAVY);
     const vals=[
-      cells[0]?.innerText?.trim()||'',
-      cells[1]?.innerText?.replace(/\n/g,' ').trim().substring(0,26)||'',
-      cells[2]?.innerText?.trim()||'',
-      cells[3]?.innerText?.trim()||'',
-      cells[4]?.innerText?.trim().substring(0,12)||'',
-      cells[5]?.innerText?.trim()||'',
-      cells[8]?.innerText?.trim().substring(0,16)||'',
+      cells[0]?.innerText?.trim()||'',                           // Ref
+      cells[1]?.innerText?.replace(/\n/g,' ').trim().substring(0,26)||'', // Establiment
+      cells[2]?.innerText?.trim()||'',                           // Pes
+      cells[3]?.innerText?.trim()||'',                           // Barrils
+      cells[4]?.innerText?.trim().substring(0,12)||'',           // Estat oli
+      cells[5]?.innerText?.trim().substring(0,12)||'',           // Confirmat/Pendent
+      cells[6]?.innerText?.replace(/\n.*/,'').trim().substring(0,16)||'', // Data (primera línia)
     ];
     cx=16;vals.forEach((v,i)=>{doc.text(v,cx,y+5);cx+=cw[i];});
     y+=7;
     if(y>268){doc.addPage();y=20;}
   });
-
+ 
   // ── PIE DE PÀGINA ──
   doc.setFillColor(...NAVY);doc.rect(0,280,210,17,'F');
   doc.setFontSize(6.5);doc.setFont('helvetica','bold');doc.setTextColor(96,165,250);
@@ -1878,10 +1898,10 @@ function genPDF(who) {
   doc.setTextColor(100,116,139);
   doc.text('F. Espinosa Gestores S.L. · Gestor E-1492.14 · Transportista T-902 · ISCC-EU CERT-IT206',14,293);
   doc.text('Pàg. 1',192,288);
-
+ 
   doc.save('ZeroCarbon_'+tipus.replace(/ /g,'_')+'_'+today.replace(/\//g,'-')+'.pdf');
 }
-
+ 
 // ============================================================
 // TRANSPORTISTA — Nova lògica sense QR
 // ============================================================
@@ -1903,7 +1923,7 @@ window.addEventListener('DOMContentLoaded', () => {
   // Omplir selector establiments (s'actualitzarà de nou quan carregui Firebase/localStorage)
   setTimeout(tPopulateEstSelect, 500);
 });
-
+ 
 // ── Omplir selector d'establiments del transportista amb dades de DB ──
 function tPopulateEstSelect() {
   const sel = document.getElementById('t-codi-est');
@@ -1918,7 +1938,7 @@ function tPopulateEstSelect() {
     sel.appendChild(opt);
   });
 }
-
+ 
 // ── Quan el transportista selecciona establiment, mostrar info ──
 function tSyncEst() {
   const codiEl = document.getElementById('t-codi-est');
@@ -1937,7 +1957,7 @@ function tSyncEst() {
     infoEl.style.display = 'none';
   }
 }
-
+ 
 function tConfirmarRecollida() {
   const codi  = document.getElementById('t-codi-est')?.value || '';
   const plens = document.getElementById('t-plens')?.value || '0';
@@ -1945,7 +1965,7 @@ function tConfirmarRecollida() {
   const estat = document.getElementById('t-estat')?.value || 'Net / Filtrat';
   const prec  = (document.getElementById('t-precinte')?.value || '—').trim();
   const incid = (document.getElementById('t-incidencia')?.value || 'Cap incidencia').trim();
-
+ 
   if (!codi) {
     const w = document.getElementById('t-nom-warn');
     if(w) w.style.display = 'block';
@@ -1953,7 +1973,7 @@ function tConfirmarRecollida() {
     return;
   }
   const nom = DB[codi]?.nom || codi;
-
+ 
   const resum = document.getElementById('t-modal-resum');
   if(resum) {
     resum.innerHTML = '<div style="display:flex;flex-direction:column;gap:8px;">'
@@ -1968,7 +1988,7 @@ function tConfirmarRecollida() {
   }
   document.getElementById('t-modal-overlay').style.display = 'flex';
 }
-
+ 
 function tEnviarConfirmat() {
   const codi  = document.getElementById('t-codi-est')?.value || '';
   const nom   = DB[codi]?.nom || codi || 'Establiment';
@@ -1977,32 +1997,32 @@ function tEnviarConfirmat() {
   const estat = document.getElementById('t-estat')?.value || 'Net / Filtrat';
   const prec  = (document.getElementById('t-precinte')?.value || '—').trim();
   const incid = (document.getElementById('t-incidencia')?.value || 'Cap incidencia').trim();
-
+ 
   const ref     = 'Z-08370-' + String(seq).padStart(3,'0');
   const now     = new Date();
   const dataHora= now.toLocaleDateString('ca-ES') + ' ' + now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
   const gpsEl   = document.getElementById('t-gps-coords');
   const gps     = gpsEl ? gpsEl.innerText : '41.6143, 2.6621';
-
+ 
   document.getElementById('t-modal-overlay').style.display = 'none';
-
+ 
   // Guardar — el pes és 0 perquè encara no s'ha mesurat al hub
   const recData = { ref, id: codi || 'TRANSP', nom, pes: 0, plens, buits, estat, incidencia: incid, precinte: prec, dataHora, transportistaOk: true, operadorOk: false, gps };
   totalRec++; todayRec++; seq++;
-
+ 
   saveRecollida(ref, recData); // saveRecollida ja actualitza _pendingRecs
   saveState();
-
+ 
   const estatBadge = estat.startsWith('Net') ? 'bg-green' : estat.startsWith('Degradat') ? 'bg-red' : estat.startsWith('Pendent') ? 'bg-gray' : 'bg-yellow';
   const estatCurt  = estat.startsWith('Pendent') ? 'Pendent' : estat.split(' ')[0];
-
+ 
   // Actualitzar comptadors
   const opCountEl = document.getElementById('op-count');
   if(opCountEl) opCountEl.innerText = todayRec + ' recollides';
   const todayCountEl = document.getElementById('op-today-count');
   if(todayCountEl) todayCountEl.innerText = todayRec;
   document.getElementById('next-id').innerText = 'ID: Z-08370-' + String(seq).padStart(3,'0');
-
+ 
   // Inserir fila visual SEMPRE (en mode Firebase el listener reconstruirà després sense duplicat)
   const opTbody = document.getElementById('op-tbody');
   if(opTbody) {
@@ -2032,7 +2052,7 @@ function tEnviarConfirmat() {
       + '<div style="display:flex;gap:8px;padding-bottom:2px;"><button onclick="confirmarInline(\''+ref+'\')" style="background:#2563eb;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:12px;font-weight:700;cursor:pointer;">✓ Confirmar i enviar correu</button><button onclick="tancarPanel(\''+ref+'\')" style="background:#f1f5f9;color:#64748b;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;">Cancel·lar</button></div>'
       + '</div></td></tr>');
   }
-
+ 
   const espTbody = document.getElementById('esp-tbody');
   if(espTbody) {
     if(espTbody.querySelector('td[colspan]')) espTbody.innerHTML = '';
@@ -2047,9 +2067,9 @@ function tEnviarConfirmat() {
       + '<td><span class="dot" style="background:#f59e0b;"></span></td>'
       + '</tr>');
   }
-
+ 
   updateHub(); recalcDiesel();
-
+ 
   // Llista confirmades (vista transportista)
   const listWrap  = document.getElementById('t-confirmed-list');
   const listItems = document.getElementById('t-confirmed-items');
@@ -2063,7 +2083,7 @@ function tEnviarConfirmat() {
       + '</div></div>'
     );
   }
-
+ 
   // Netejar formulari transportista
   const codiSel = document.getElementById('t-codi-est'); if(codiSel) codiSel.value = '';
   const infoEl = document.getElementById('t-est-info'); if(infoEl) infoEl.style.display = 'none';
@@ -2071,12 +2091,12 @@ function tEnviarConfirmat() {
     const el = document.getElementById(i); if(el) el.value = '';
   });
   const tEstat = document.getElementById('t-estat'); if(tEstat) tEstat.selectedIndex = 0;
-
+ 
   // Notificació visual
   const confirmBox = document.getElementById('t-confirm-box');
   if(confirmBox) { confirmBox.style.display='block'; setTimeout(()=>{ confirmBox.style.display='none'; }, 4000); }
 }
-
+ 
 // Init app (Firebase auth listener)
 if(fbReady && auth) {
   auth.onAuthStateChanged(user => {
@@ -2086,9 +2106,9 @@ if(fbReady && auth) {
     }
   });
 }
-
+ 
 if(typeof emailjs!=='undefined') emailjs.init(EMAILJS_PUBLIC_KEY);
-
+ 
 // ===== RESET SESSIÓ (només buida la vista del dia, NO esborra dades) =====
 function resetSessio() {
   if(!confirm('Iniciar nova sessió del dia?\nAixò buidarà el registre visual d\'avui però NO s\'esborraran les dades — tot queda guardat a Firebase per als informes.')) return;
@@ -2117,4 +2137,3 @@ function resetSessio() {
 </script>
 </body>
 </html>
-<
