@@ -1788,12 +1788,12 @@ async function genPDF(who) {
   doc.setFillColor(...NAVY); doc.rect(0,0,210,30,'F');
   // Títol principal (jsPDF helvetica no suporta ₂ directament)
   doc.setFontSize(16);doc.setFont('helvetica','bolditalic');doc.setTextColor(255,255,255);
-  doc.text('Z-Ero CO',14,11);
+  doc.text('Z-Ero CO₂,14,11);
   // Superíndex "2" per simular ₂
-  doc.setFontSize(10);doc.text('2',14+doc.getTextWidth('Z-Ero CO'),8.5);
-  doc.setFontSize(16);doc.text(' \xB7 Logistica Milla Verda, S.L.',14+doc.getTextWidth('Z-Ero CO')+4,11);
+  doc.setFontSize(10);doc.text('2',14+doc.getTextWidth('Z-Ero CO₂),8.5);
+  doc.setFontSize(16);doc.text(' \xB7 Logistica Milla Verda, S.L.',14+doc.getTextWidth('Z-Ero CO₂')+4,11);
   doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor(96,165,250);
-  doc.text('RED II \xB7 HUB CALELLA \xB7 PARTNER TECNOL\xD2GIC',14,19);
+  doc.text('RED II \xB7 HUB CALELLA \xB7 Col·laborador Autoritzat\xD2GIC',14,19);
   doc.setTextColor(100,116,139);doc.text('Hub Calella \xB7 08370 \xB7 '+today,14,26);
   // Logo F. Espinosa — a la dreta, sense solapar el requadre de certificats
   try { doc.addImage(ESPINOSA_LOGO,'PNG',148,2,24,22); } catch(e) {}
