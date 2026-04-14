@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Z-Ero CO₂ · Logística Milla Verda, S.L. · RED II</title>
+  <title>Z-Ero CO₂ · Logística Milla Verda S.L. · RED II</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
   <!-- Firebase v9 compat -->
@@ -838,13 +838,14 @@ function doLogin() {
     return;
   }
 
-  // MODE FIREBASE (servidor real)
+  // MODE FIREBASE (servidor real) — amb fallback automàtic a mode local
   btn.disabled = true;
   btn.innerText = 'Connectant...';
 
+  // Si Firebase tarda més de 6s o falla per domini no autoritzat → mode local
   const loginTimeout = setTimeout(() => {
-    showErr('⏱️ Firebase no respon (10s). Verifica la connexió o el domini autoritzat.<br><span style="font-size:10px;opacity:0.7;">El domini ha d\'estar autoritzat a Firebase Console → Authentication → Settings → Authorized domains</span>');
-  }, 5000);
+    loginLocal();
+  }, 6000);
 
   try {
     auth.signInWithEmailAndPassword(email, pass)
@@ -861,20 +862,23 @@ function doLogin() {
       })
       .catch(e => {
         clearTimeout(loginTimeout);
-        const msgs = {
-          'auth/user-not-found':         '❌ Usuari no trobat a Firebase.',
-          'auth/wrong-password':         '❌ Contrasenya incorrecta.',
-          'auth/invalid-email':          '❌ Format de correu incorrecte.',
-          'auth/too-many-requests':      '⏱️ Massa intents. Espera uns minuts.',
-          'auth/network-request-failed': '🌐 Error de xarxa. Comprova connexió.',
-          'auth/invalid-credential':     '❌ Credencials incorrectes.',
-          'auth/operation-not-allowed':  '⚠️ Domini no autoritzat a Firebase.',
-        };
-        showErr((msgs[e.code] || '❌ ' + e.message) + '<br><span style="font-size:10px;opacity:0.7;">Codi: ' + (e.code||'desconegut') + '</span>');
+        // Errors de credencials → mostrar error real, NO fer fallback
+        const credErrors = ['auth/wrong-password','auth/invalid-credential','auth/too-many-requests'];
+        if (credErrors.includes(e.code)) {
+          const msgs = {
+            'auth/wrong-password':     '❌ Contrasenya incorrecta.',
+            'auth/invalid-credential': '❌ Credencials incorrectes.',
+            'auth/too-many-requests':  '⏱️ Massa intents. Espera uns minuts.',
+          };
+          showErr(msgs[e.code]);
+          return;
+        }
+        // Qualsevol altre error (domini no autoritzat, xarxa, etc.) → mode local
+        loginLocal();
       });
   } catch(ex) {
     clearTimeout(loginTimeout);
-    showErr('❌ Error inesperat: ' + ex.message);
+    loginLocal();
   }
 }
 
@@ -1791,9 +1795,9 @@ async function genPDF(who) {
   doc.text('Z-Ero CO₂,14,11);
   // Superíndex "2" per simular ₂
   doc.setFontSize(10);doc.text('2',14+doc.getTextWidth('Z-Ero CO₂),8.5);
-  doc.setFontSize(16);doc.text(' \xB7 Logistica Milla Verda, S.L.',14+doc.getTextWidth('Z-Ero CO₂')+4,11);
+  doc.setFontSize(16);doc.text(' \xB7 Logistica Milla Verda, S.L.',14+doc.getTextWidth('Z-Ero CO₂)+4,11);
   doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor(96,165,250);
-  doc.text('RED II \xB7 HUB CALELLA \xB7 Col·laborador Autoritzat\xD2GIC',14,19);
+  doc.text('RED II \xB7 HUB CALELLA \xB7 COL·LABORADOR AUTORITZAT\xD2GIC',14,19);
   doc.setTextColor(100,116,139);doc.text('Hub Calella \xB7 08370 \xB7 '+today,14,26);
   // Logo F. Espinosa — a la dreta, sense solapar el requadre de certificats
   try { doc.addImage(ESPINOSA_LOGO,'PNG',148,2,24,22); } catch(e) {}
