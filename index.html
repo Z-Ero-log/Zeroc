@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Z-Ero CO₂ · Logística Milla Verda S.L. · RED II</title>
+  <title>Z-Ero Carbon Analytics · Hub Calella · RED II · v18</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
   <!-- Firebase v9 compat -->
@@ -21,9 +21,9 @@
       <div style="display:inline-flex;align-items:center;gap:14px;">
         <div style="background:#2563eb;padding:12px 16px;border-radius:14px;font-weight:900;font-style:italic;font-size:28px;color:white;line-height:1;">Z</div>
         <div style="text-align:left;">
-          <div style="color:white;font-size:16px;font-weight:900;letter-spacing:0.3px;">Z-Ero CO&#x2082;</div>
-          <div style="color:#93c5fd;font-size:12px;font-weight:700;letter-spacing:0.2px;margin-top:2px;">Logística Milla Verda, S.L.</div>
-          <div style="color:#60a5fa;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-top:4px;">RED II - HUB Calella</div>
+          <div style="color:white;font-size:16px;font-weight:900;letter-spacing:0.5px;">Z-ERO CARBON</div>
+          <div style="color:#60a5fa;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-top:3px;">Logistics · Hub Calella</div>
+          <div style="color:#34d399;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-top:2px;">♻ Logística Circular · RED II</div>
         </div>
       </div>
     </div>
@@ -218,8 +218,8 @@ tr:hover td { background: #f8fafc; }
   <div class="nav-left">
     <div class="nav-z">Z</div>
     <div class="nav-brand-text">
-      <div class="nav-title">Z-Ero CO&#x2082; · Logística Milla Verda, S.L.</div>
-      <div class="nav-sub">RED II - HUB CALELLA</div>
+      <div class="nav-title">Z-ERO CARBON LOGISTICS</div>
+      <div class="nav-sub">LOGÍSTICA CIRCULAR · PARTNER TECNOLÒGIC</div>
     </div>
   </div>
   <div class="nav-tabs" id="nav-tabs">
@@ -309,7 +309,7 @@ tr:hover td { background: #f8fafc; }
         </div>
       </div>
       <div style="display:flex;justify-content:space-between;margin-top:10px;font-size:10px;color:#94a3b8;font-weight:700;">
-        <span>0 kg</span><span style="color:#2563eb;">Capacitat màxima: <span id="op-hub-cap-label">2.000</span> kg</span>
+        <span>0 L</span><span style="color:#2563eb;">Capacitat màxima: <span id="op-hub-cap-label">2.000</span> L</span>
       </div>
       <div style="margin-top:14px;border-top:1px solid #f1f5f9;padding-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
         <button class="btn btn-amber btn-xs" onclick="openCamioModal()" style="flex:1;">🚛 Registrar recollida camió Espinosa</button>
@@ -427,7 +427,7 @@ tr:hover td { background: #f8fafc; }
     </div>
     <div class="stat-card bb-green">
       <div class="stat-label">Volum mensual estimat</div>
-      <div class="stat-val" id="est-total-vol">870 kg</div>
+      <div class="stat-val" id="est-total-vol">870 L</div>
       <div class="stat-note">Suma de tots els establiments</div>
     </div>
     <div class="stat-card bb-amber">
@@ -577,7 +577,7 @@ tr:hover td { background: #f8fafc; }
   <div class="top-bar">
     <div>
       <div class="page-title" style="font-style:italic;">Dashboard gestor autoritzat</div>
-      <div class="page-sub">F. Espinosa Gestores S.L. · Maçanet de la Selva · Partner: Z-Ero CO₂</div>
+      <div class="page-sub">F. Espinosa Gestores S.L. · Maçanet de la Selva · Partner: Z-Ero Carbon</div>
     </div>
     <div class="top-actions">
       <select class="inp" id="esp-pdf-sel" style="width:auto;font-size:11px;font-weight:700;">
@@ -594,7 +594,7 @@ tr:hover td { background: #f8fafc; }
 
   <div class="g-stats">
     <div class="stat-card bb-blue">
-      <div class="stat-label">Stock Hub (kg)</div>
+      <div class="stat-label">Stock Hub Calella</div>
       <div class="stat-val" id="esp-liters">0 L</div>
       <div class="prog-mini" style="margin-top:10px;"><div class="prog-mini-in" id="esp-mini-bar" style="width:0%;background:#22c55e;"></div></div>
       <div class="stat-note" id="esp-hub-note" style="color:#2563eb;">0% · Validat GPS Z-Ero</div>
@@ -629,7 +629,7 @@ tr:hover td { background: #f8fafc; }
         <input class="inp" type="text" id="esp-camio-nota" placeholder="Ex: ETA 14:30h · Xofer: Miquel">
       </div>
       <div style="margin-bottom:14px;">
-        <div class="lbl">Kg estimats que porta el camió</div>
+        <div class="lbl">Litres estimats que porta el camió (L)</div>
         <input class="inp" type="number" id="esp-camio-litres" placeholder="0" style="font-size:18px;font-weight:900;color:#d97706;">
       </div>
       <button class="btn btn-amber btn-full" onclick="enviarCamio()" id="esp-camio-btn">🚛 Confirmar enviament del camió</button>
@@ -680,8 +680,8 @@ tr:hover td { background: #f8fafc; }
     <div style="font-size:16px;font-weight:900;color:#0f172a;margin-bottom:6px;">⚙ Editar Hub</div>
     <div style="font-size:11px;color:#94a3b8;font-weight:700;margin-bottom:20px;">Ajusta la capacitat i els litres actuals del hub</div>
     <div class="g2" style="margin-bottom:12px;">
-      <div><div class="lbl">Kg actuals</div><input class="inp" type="number" id="hub-edit-liters" placeholder="1150" style="font-size:18px;font-weight:900;color:#2563eb;"></div>
-      <div><div class="lbl">Capacitat màxima (kg)</div><input class="inp" type="number" id="hub-edit-cap" placeholder="2000"></div>
+      <div><div class="lbl">Litres actuals (L)</div><input class="inp" type="number" id="hub-edit-liters" placeholder="1150" style="font-size:18px;font-weight:900;color:#2563eb;"></div>
+      <div><div class="lbl">Capacitat màxima (L)</div><input class="inp" type="number" id="hub-edit-cap" placeholder="2000"></div>
     </div>
     <div style="margin-bottom:12px;"><div class="lbl">Bidons al hub (si el camió no s'ho ha emportat tot)</div><input class="inp" type="number" id="hub-edit-bidons" placeholder="0" oninput="calcHubBidons()"><div style="font-size:10px;color:#94a3b8;font-weight:700;margin-top:4px;" id="hub-bidons-calc"></div></div>
     <div style="display:flex;gap:8px;margin-top:4px;">
@@ -701,7 +701,7 @@ tr:hover td { background: #f8fafc; }
     </div>
     <div class="g2" style="margin-bottom:12px;">
       <div>
-        <div class="lbl">Kg que s'emporta el camió</div>
+        <div class="lbl">Litres que s'emporta el camió (L)</div>
         <input class="inp" type="number" id="camio-emporta" placeholder="0" oninput="calcCamioResta()" style="font-size:18px;font-weight:900;color:#d97706;">
       </div>
       <div>
@@ -710,7 +710,7 @@ tr:hover td { background: #f8fafc; }
       </div>
     </div>
     <div style="margin-bottom:12px;">
-      <div class="lbl">Kg per bidó</div>
+      <div class="lbl">Litres per bidó (L/bidó)</div>
       <input class="inp" type="number" id="camio-litres-bido" value="20" placeholder="20" oninput="calcCamioResta()">
     </div>
     <div style="background:#f0fdf4;border:1px solid #dcfce7;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:12px;color:#15803d;font-weight:700;" id="camio-resum">
@@ -749,7 +749,7 @@ const FIREBASE_CONFIG = {
 
 // Usuaris i rols
 const USER_ROLES = {
-  "zerocarbonlogistic@gmail.com": { rol: "operador",     nom: "Z-Ero CO₂ · Operador & Transportista", tabs: ["operador","establiments","transport"] },
+  "zerocarbonlogistic@gmail.com": { rol: "operador",     nom: "Z-Ero Carbon · Operador & Transportista", tabs: ["operador","establiments","transport"] },
   "fespinosaruiz@yahoo.es":      { rol: "gestor",        nom: "F. Espinosa Gestores",                    tabs: ["espinosa","establiments"] }
 };
 // ============================================================
@@ -838,14 +838,13 @@ function doLogin() {
     return;
   }
 
-  // MODE FIREBASE (servidor real) — amb fallback automàtic a mode local
+  // MODE FIREBASE (servidor real)
   btn.disabled = true;
   btn.innerText = 'Connectant...';
 
-  // Si Firebase tarda més de 6s o falla per domini no autoritzat → mode local
   const loginTimeout = setTimeout(() => {
-    loginLocal();
-  }, 6000);
+    showErr('⏱️ Firebase no respon (10s). Verifica la connexió o el domini autoritzat.<br><span style="font-size:10px;opacity:0.7;">El domini ha d\'estar autoritzat a Firebase Console → Authentication → Settings → Authorized domains</span>');
+  }, 10000);
 
   try {
     auth.signInWithEmailAndPassword(email, pass)
@@ -862,23 +861,20 @@ function doLogin() {
       })
       .catch(e => {
         clearTimeout(loginTimeout);
-        // Errors de credencials → mostrar error real, NO fer fallback
-        const credErrors = ['auth/wrong-password','auth/invalid-credential','auth/too-many-requests'];
-        if (credErrors.includes(e.code)) {
-          const msgs = {
-            'auth/wrong-password':     '❌ Contrasenya incorrecta.',
-            'auth/invalid-credential': '❌ Credencials incorrectes.',
-            'auth/too-many-requests':  '⏱️ Massa intents. Espera uns minuts.',
-          };
-          showErr(msgs[e.code]);
-          return;
-        }
-        // Qualsevol altre error (domini no autoritzat, xarxa, etc.) → mode local
-        loginLocal();
+        const msgs = {
+          'auth/user-not-found':         '❌ Usuari no trobat a Firebase.',
+          'auth/wrong-password':         '❌ Contrasenya incorrecta.',
+          'auth/invalid-email':          '❌ Format de correu incorrecte.',
+          'auth/too-many-requests':      '⏱️ Massa intents. Espera uns minuts.',
+          'auth/network-request-failed': '🌐 Error de xarxa. Comprova connexió.',
+          'auth/invalid-credential':     '❌ Credencials incorrectes.',
+          'auth/operation-not-allowed':  '⚠️ Domini no autoritzat a Firebase.',
+        };
+        showErr((msgs[e.code] || '❌ ' + e.message) + '<br><span style="font-size:10px;opacity:0.7;">Codi: ' + (e.code||'desconegut') + '</span>');
       });
   } catch(ex) {
     clearTimeout(loginTimeout);
-    loginLocal();
+    showErr('❌ Error inesperat: ' + ex.message);
   }
 }
 
@@ -926,11 +922,11 @@ function initData() {
     db.ref('hub').on('value', snap => {
       const d = snap.val();
       if (d) {
-        hubLiters = d.hubLiters || 0;
+        hubLiters = d.hubLiters || 1150;
         hubCap    = d.hubCap    || 2000;
         hubBidonsRestants = d.hubBidonsRestants || 0;
-        totalRec  = d.totalRec  || 0;
-        seq       = d.seq       || 1;
+        totalRec  = d.totalRec  || 44;
+        seq       = d.seq       || 45;
       }
       updateHub(); recalcDiesel();
     });
@@ -959,7 +955,7 @@ function initData() {
     const saved = localStorage.getItem('zeroc_db');
     if(saved) Object.assign(DB, JSON.parse(saved)); // si no hi ha res guardat, DB queda buit
     const hub = localStorage.getItem('zeroc_hub');
-    if (hub) { const h = JSON.parse(hub); hubLiters=h.hubLiters||0; hubCap=h.hubCap||2000; hubBidonsRestants=h.hubBidonsRestants||0; totalRec=h.totalRec||0; seq=h.seq||1; }
+    if (hub) { const h = JSON.parse(hub); hubLiters=h.hubLiters||1150; hubCap=h.hubCap||2000; hubBidonsRestants=h.hubBidonsRestants||0; totalRec=h.totalRec||44; seq=h.seq||45; }
     const camio = localStorage.getItem('zeroc_camio');
     if (camio) { const c = JSON.parse(camio); renderCamioHistorial(c); showCamioAlertOp(c); }
     const recs = localStorage.getItem('zeroc_recs');
@@ -1180,7 +1176,7 @@ async function confirmarInline(ref) {
   tancarPanel(ref);
 
   // Email
-  const emailParams = { nom_establiment:nom, ref_id:ref, data_hora:dataHora, pes:pes+' kg', barrils_plens:plens, barrils_buits:buits, estat_oli:estat, incidencia, numero_precinte:precinte, operador:'Z-Ero CO₂ · Logística Milla Verda, S.L. · Hub Calella (08370)', qr_code:'REC-'+id };
+  const emailParams = { nom_establiment:nom, ref_id:ref, data_hora:dataHora, pes:pes+' kg', barrils_plens:plens, barrils_buits:buits, estat_oli:estat, incidencia, numero_precinte:precinte, operador:'Z-Ero Carbon Logistics · Hub Calella (08370)', qr_code:'REC-'+id };
   const result = await sendEmailJS(emailDest, nom, emailParams);
   if (result.ok) alert('✓ Recollida ' + ref + ' confirmada.\nCorreu enviat a ' + (emailDest || nom) + '.');
   else if (result.sim) alert('✓ Recollida ' + ref + ' confirmada.\nATENCIÓ: Correu no enviat — configura EmailJS.');
@@ -1227,7 +1223,7 @@ function showCamioAlertOp(data) {
   if (!box || !data || data.ack) return;
   box.style.display = 'flex';
   const txt = document.getElementById('op-camio-alert-text');
-  if (txt) txt.innerText = data.ts + (data.nota !== 'Sense nota' ? ' · ' + data.nota : '') + (data.litres > 0 ? ' · ~' + Number(data.litres).toLocaleString('ca') + ' kg estimats' : '');
+  if (txt) txt.innerText = data.ts + (data.nota !== 'Sense nota' ? ' · ' + data.nota : '') + (data.litres > 0 ? ' · ~' + Number(data.litres).toLocaleString('ca') + ' L estimats' : '');
 }
 
 function ackCamioAlert() {
@@ -1289,7 +1285,7 @@ function updateHub() {
   const pct  = Math.min((hubLiters / hubCap) * 100, 100);
   const pctR = Math.round(pct);
   const s = id => document.getElementById(id);
-  if(s('op-hub-val'))       s('op-hub-val').innerHTML   = hubLiters.toLocaleString('ca') + ' <span>kg</span>';
+  if(s('op-hub-val'))       s('op-hub-val').innerHTML   = hubLiters.toLocaleString('ca') + ' <span>L</span>';
   if(s('op-hub-pct'))       s('op-hub-pct').innerText   = pctR + '%';
   if(s('op-hub-cap-label')) s('op-hub-cap-label').innerText = hubCap.toLocaleString('ca');
   const bar = s('op-hub-bar');
@@ -1302,7 +1298,7 @@ function updateHub() {
   }
   const bidonsLabel = s('op-hub-bidons-label');
   if(bidonsLabel){ bidonsLabel.innerText = hubBidonsRestants>0 ? '⚠ '+hubBidonsRestants+' bidó'+(hubBidonsRestants>1?'ns':'')+(hubBidonsRestants>1?' pendents':' pendent')+' al hub' : ''; if(hubBidonsRestants>0) bidonsLabel.style.color='#d97706'; }
-  if(s('esp-liters'))     s('esp-liters').innerText     = hubLiters.toLocaleString('ca') + ' kg';
+  if(s('esp-liters'))     s('esp-liters').innerText     = hubLiters.toLocaleString('ca') + ' L';
   const mb = s('esp-mini-bar');
   if(mb){ mb.style.width=pct+'%'; mb.style.background=pct<55?'#22c55e':pct<85?'#2563eb':'#dc2626'; }
   if(s('esp-hub-note'))   s('esp-hub-note').innerText   = pctR + '% · Validat GPS Z-Ero';
@@ -1566,7 +1562,7 @@ async function addRecollida() {
   recalcDiesel();
 
   // Email a l'establiment
-  const emailParams = { nom_establiment:nom, ref_id:ref, data_hora:dataHora, pes:pes+' kg', barrils_plens:plens, barrils_buits:buits, estat_oli:estat, incidencia, numero_precinte:precinte, operador:'Z-Ero CO₂ · Logística Milla Verda, S.L. · Hub Calella (08370)', qr_code:'REC-'+(seq-1)+'-'+(id||'TRANSP') };
+  const emailParams = { nom_establiment:nom, ref_id:ref, data_hora:dataHora, pes:pes+' kg', barrils_plens:plens, barrils_buits:buits, estat_oli:estat, incidencia, numero_precinte:precinte, operador:'Z-Ero Carbon Logistics · Hub Calella (08370)', qr_code:'REC-'+(seq-1)+'-'+(id||'TRANSP') };
   const result = await sendEmailJS(emailDest, nom, emailParams);
   if(btn){ btn.disabled=false; btn.innerText='Confirmar recollida i enviar correu'; }
   if(result.ok) alert('Recollida '+ref+(isUpdate?' actualitzada':' registrada')+'.\nCorreu enviat a '+(emailDest||nom)+'.');
@@ -1603,7 +1599,7 @@ function openHubModal() {
 function closeHubModal() { document.getElementById('hub-modal-overlay').style.display='none'; }
 function calcHubBidons() {
   const b = parseInt(document.getElementById('hub-edit-bidons').value)||0;
-  document.getElementById('hub-bidons-calc').innerText = b>0 ? b+' bidó/ns → ≈'+(b*20)+' kg pendents al hub' : '';
+  document.getElementById('hub-bidons-calc').innerText = b>0 ? b+' bidó/ns → ≈'+(b*20)+' L pendents al hub' : '';
 }
 function saveHubEdit() {
   const l=parseInt(document.getElementById('hub-edit-liters').value);
@@ -1617,7 +1613,7 @@ function saveHubEdit() {
 
 // CAMIÓ MODAL (Operador registra recollida física del camió)
 function openCamioModal() {
-  document.getElementById('camio-hub-actual').innerText = hubLiters.toLocaleString('ca') + ' kg';
+  document.getElementById('camio-hub-actual').innerText = hubLiters.toLocaleString('ca') + ' L';
   document.getElementById('camio-emporta').value='';
   document.getElementById('camio-bidons-resten').value=hubBidonsRestants||'';
   document.getElementById('camio-resum').innerText='Emplena els camps per veure el resum';
@@ -1633,7 +1629,7 @@ function calcCamioResta() {
   if(emporta<=0){ resum.innerText="Emplena els litres que s'emporta el camió"; return; }
   if(emporta>hubLiters){ resum.innerText='⚠ Supera el hub actual ('+hubLiters+' L)'; resum.style.cssText='background:#fee2e2;border-color:#fca5a5;color:#991b1b;'; return; }
   resum.style.cssText='background:#f0fdf4;border-color:#dcfce7;color:#15803d;';
-  resum.innerHTML='✓ Camió s\'emporta: <strong>'+emporta.toLocaleString('ca')+' kg</strong><br>'+(bidonsResten>0?'⚠ Queden <strong>'+bidonsResten+' bidons</strong> al hub<br>':'')+'Hub resultant: <strong>'+(hubLiters-emporta).toLocaleString('ca')+' kg</strong>';
+  resum.innerHTML='✓ Camió s\'emporta: <strong>'+emporta.toLocaleString('ca')+' L</strong><br>'+(bidonsResten>0?'⚠ Queden <strong>'+bidonsResten+' bidons</strong> al hub<br>':'')+'Hub resultant: <strong>'+(hubLiters-emporta).toLocaleString('ca')+' L</strong>';
 }
 function confirmCamio() {
   const emporta=parseInt(document.getElementById('camio-emporta').value)||0;
@@ -1646,10 +1642,10 @@ function confirmCamio() {
   hubBidonsRestants=bidonsResten;
   updateHub(); recalcDiesel(); saveState();
   const now=new Date(); const ts=now.toLocaleDateString('ca-ES')+' '+now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
-  const espRow=`<tr style="background:#fffbeb;"><td class="mono">${ref}</td><td><strong>🚛 Recollida camió Espinosa</strong></td><td style="font-weight:800;color:#d97706;">${emporta.toLocaleString('ca')} kg</td><td style="font-size:11px;">${bidonsResten>0?bidonsResten+' bidons restants':'—'}</td><td><span class="badge bg-green">Verificat</span></td><td><span class="badge" style="background:#fef3c7;color:#92400e;">Espinosa</span></td><td style="font-family:monospace;font-size:10px;color:#94a3b8;">${ts}<br>GPS validat</td><td><span class="dot" style="background:#22c55e;"></span></td></tr>`;
+  const espRow=`<tr style="background:#fffbeb;"><td class="mono">${ref}</td><td><strong>🚛 Recollida camió Espinosa</strong></td><td style="font-weight:800;color:#d97706;">${emporta.toLocaleString('ca')} L</td><td style="font-size:11px;">${bidonsResten>0?bidonsResten+' bidons restants':'—'}</td><td><span class="badge bg-green">Verificat</span></td><td><span class="badge" style="background:#fef3c7;color:#92400e;">Espinosa</span></td><td style="font-family:monospace;font-size:10px;color:#94a3b8;">${ts}<br>GPS validat</td><td><span class="dot" style="background:#22c55e;"></span></td></tr>`;
   document.getElementById('esp-tbody').insertAdjacentHTML('afterbegin', espRow);
   closeCamioModal();
-  alert('Recollida camió registrada.\nEmportat: '+emporta.toLocaleString('ca')+' kg\nHub: '+hubLiters.toLocaleString('ca')+' L'+(bidonsResten>0?'\n⚠ '+bidonsResten+' bidons pendents':''));
+  alert('Recollida camió registrada.\nEmportat: '+emporta.toLocaleString('ca')+' L\nHub: '+hubLiters.toLocaleString('ca')+' L'+(bidonsResten>0?'\n⚠ '+bidonsResten+' bidons pendents':''));
 }
 
 // ESTABLIMENTS
@@ -1747,7 +1743,7 @@ async function signRecollida() {
   // Marcar transportistaOk a Firebase
   if(fbReady&&db) db.ref('recollides/'+ref.replace(/\./g,'-')+'/transportistaOk').set(true);
   const dataHoraS=now.toLocaleDateString('ca-ES')+' '+now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
-  const emailParamsS={ nom_establiment:scannedEst?.nom||'Desconegut', ref_id:ref, data_hora:dataHoraS, pes:pes+' kg', barrils_plens:plens, barrils_buits:buits, estat_oli:estat, incidencia, numero_precinte:precinte, operador:'Z-Ero CO₂ · Logística Milla Verda, S.L. · Transportista · Hub Calella (08370)', qr_code:ref };
+  const emailParamsS={ nom_establiment:scannedEst?.nom||'Desconegut', ref_id:ref, data_hora:dataHoraS, pes:pes+' kg', barrils_plens:plens, barrils_buits:buits, estat_oli:estat, incidencia, numero_precinte:precinte, operador:'Z-Ero Carbon Logistics · Transportista · Hub Calella (08370)', qr_code:ref };
   const signBtn=document.querySelector('.sign-btn');
   if(signBtn){signBtn.disabled=true;signBtn.innerText='Enviant correu...';}
   const resS=await sendEmailJS(scannedEst?.email||'',scannedEst?.nom||'Desconegut',emailParamsS);
@@ -1767,7 +1763,7 @@ async function signRecollida() {
 async function genPDF(who) {
   const sel     = who==='op' ? 'op-pdf-sel' : 'esp-pdf-sel';
   const tipus   = document.getElementById(sel).value;
-  const emissor = who==='op' ? 'Z-Ero CO₂ · Logística Milla Verda, S.L. · Operador' : 'F. Espinosa Gestores S.L. · Gestor autoritzat';
+  const emissor = who==='op' ? 'Z-Ero Carbon Logistics · Operador' : 'F. Espinosa Gestores S.L. · Gestor autoritzat';
   const today   = new Date().toLocaleDateString('ca-ES');
   const km      = calcKmRuta();
 
@@ -1789,22 +1785,18 @@ async function genPDF(who) {
   const NAVY=[15,23,42],BLUE=[37,99,235],GREEN=[22,163,74],AMBER=[217,119,6],GRAY=[148,163,184],LGRAY=[241,245,249];
 
   // ── CAPÇALERA ──
-  doc.setFillColor(...NAVY); doc.rect(0,0,210,30,'F');
-  // Títol principal (jsPDF helvetica no suporta ₂ directament)
-  doc.setFontSize(16);doc.setFont('helvetica','bolditalic');doc.setTextColor(255,255,255);
-  doc.text('Z-Ero CO₂,14,11);
-  // Superíndex "2" per simular ₂
-  doc.setFontSize(10);doc.text('2',14+doc.getTextWidth('Z-Ero CO₂),8.5);
-  doc.setFontSize(16);doc.text(' \xB7 Logistica Milla Verda, S.L.',14+doc.getTextWidth('Z-Ero CO₂)+4,11);
+  doc.setFillColor(...NAVY); doc.rect(0,0,210,28,'F');
+  doc.setFontSize(18);doc.setFont('helvetica','bolditalic');doc.setTextColor(255,255,255);
+  doc.text('Z-ERO CARBON LOGISTICS',14,12);
   doc.setFontSize(8);doc.setFont('helvetica','normal');doc.setTextColor(96,165,250);
-  doc.text('RED II \xB7 HUB CALELLA \xB7 COL·LABORADOR AUTORITZAT\xD2GIC',14,19);
-  doc.setTextColor(100,116,139);doc.text('Hub Calella \xB7 08370 \xB7 '+today,14,26);
-  // Logo F. Espinosa — a la dreta, sense solapar el requadre de certificats
-  try { doc.addImage(ESPINOSA_LOGO,'PNG',148,2,24,22); } catch(e) {}
-  // Requadre blau certificats — extrem dret, separat del logo
-  doc.setFillColor(...BLUE);doc.roundedRect(175,7,32,16,2,2,'F');
+  doc.text('LOGÍSTICA CIRCULAR · PARTNER TECNOLÒGIC · RED II',14,19);
+  doc.setTextColor(100,116,139);doc.text('Hub Calella · 08370 · '+today,14,25);
+  // Logo F. Espinosa — petit, a la dreta, dins la capçalera fosca
+  try { doc.addImage(ESPINOSA_LOGO,'PNG',155,2,26,24); } catch(e) {}
+  // Requadre blau certificats — a la dreta del logo
+  doc.setFillColor(...BLUE);doc.roundedRect(183,6,24,16,2,2,'F');
   doc.setFontSize(5.5);doc.setFont('helvetica','bold');doc.setTextColor(255,255,255);
-  doc.text('E-1492.14',177,13);doc.text('T-902-ISCC',177,19);
+  doc.text('E-1492.14',184,11);doc.text('T-902·ISCC',184,17);
 
   // ── TÍTOL ──
   doc.setFontSize(16);doc.setFont('helvetica','bold');doc.setTextColor(...NAVY);
@@ -1816,7 +1808,7 @@ async function genPDF(who) {
 
   // ── BLOC STATS PRINCIPALS (fila 1): Hub + Recollides + Ruta + Hores ──
   const stats1=[
-    {label:'Kg al hub',    val:hubLiters.toLocaleString('ca')+' kg', color:BLUE},
+    {label:'Litres al hub',    val:hubLiters.toLocaleString('ca')+' L', color:BLUE},
     {label:'Total recollides', val:String(totalRec),                     color:GREEN},
     {label:'Ruta calculada',   val:km+' km',                             color:NAVY},
     {label:'Hores alliberades',val:hores.toFixed(1).replace('.',',')+' h',color:GRAY},
@@ -1888,7 +1880,7 @@ async function genPDF(who) {
   // ── PIE DE PÀGINA ──
   doc.setFillColor(...NAVY);doc.rect(0,280,210,17,'F');
   doc.setFontSize(6.5);doc.setFont('helvetica','bold');doc.setTextColor(96,165,250);
-  doc.text('Z-Ero CO₂ · Logística Milla Verda, S.L. · Hub Calella (08370) · Document certificat RED II · ISO 14001',14,288);
+  doc.text('Z-Ero Carbon Logistics · Hub Calella (08370) · Document certificat RED II · ISO 14001',14,288);
   doc.setTextColor(100,116,139);
   doc.text('F. Espinosa Gestores S.L. · Gestor E-1492.14 · Transportista T-902 · ISCC-EU CERT-IT206',14,293);
   doc.text('Pàg. 1',192,288);
@@ -1945,7 +1937,7 @@ function tSyncEst() {
     infoEl.innerHTML = '<strong>' + e.nom + '</strong> · ' + (e.tipus||'') + '<br>'
       + (e.adreca ? e.adreca + '<br>' : '')
       + (e.tel ? '📞 ' + e.tel + '  ' : '') + (e.email ? '✉ ' + e.email : '')
-      + '<br><span style="color:#0284c7;">Volum mensual estimat: ' + (e.volum||0) + ' kg</span>';
+      + '<br><span style="color:#0284c7;">Volum mensual estimat: ' + (e.volum||0) + ' L</span>';
     if(warnEl) warnEl.style.display = 'none';
   } else {
     infoEl.style.display = 'none';
