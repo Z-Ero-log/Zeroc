@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Z-Ero CO2 · Logística Milla Verda, S.L. · Hub Calella · RED II · v20</title>
+  <title>Z-Ero CO2 · Logística Milla Verda, S.L. · Hub Calella · RED II · v22</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
   <!-- Firebase v9 compat -->
@@ -168,6 +168,16 @@
       <div class="prog-sm"><div class="prog-sm-in" style="width:0%;"></div></div>
       <div style="text-align:right;font-size:10px;color:#475569;margin-top:6px;font-weight:700;">0% completat</div>
     </div>
+  </div>
+  <!-- Date range picker Operador -->
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;position:relative;">
+    <span style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;">Període:</span>
+    <button id="op-picker-btn" onclick="openPicker('op')" style="display:flex;align-items:center;gap:8px;background:white;border:1.5px solid #e2e8f0;border-radius:10px;padding:7px 14px;cursor:pointer;font-family:inherit;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#2563eb'" onmouseout="this.style.borderColor='#e2e8f0'">
+      <span style="font-size:16px;line-height:1;">📅</span>
+      <span id="op-picker-label" style="font-size:11px;font-weight:700;color:#0f172a;">Avui</span>
+      <span style="font-size:9px;color:#94a3b8;">▼</span>
+    </button>
+    <span id="op-period-label" style="font-size:10px;font-weight:700;color:#2563eb;background:#dbeafe;padding:3px 10px;border-radius:99px;">Avui</span>
   </div>
   <div class="g-stats" style="margin-bottom:16px;">
     <div class="stat-card bb-green">
@@ -407,6 +417,16 @@
       </select>
       <button class="btn btn-dark" onclick="genPDF('esp')">Baixar informe</button>
     </div>
+  </div>
+  <!-- Date range picker Espinosa -->
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;position:relative;">
+    <span style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;">Període:</span>
+    <button id="esp-picker-btn" onclick="openPicker('esp')" style="display:flex;align-items:center;gap:8px;background:white;border:1.5px solid #e2e8f0;border-radius:10px;padding:7px 14px;cursor:pointer;font-family:inherit;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#2563eb'" onmouseout="this.style.borderColor='#e2e8f0'">
+      <span style="font-size:16px;line-height:1;">📅</span>
+      <span id="esp-picker-label" style="font-size:11px;font-weight:700;color:#0f172a;">Avui</span>
+      <span style="font-size:9px;color:#94a3b8;">▼</span>
+    </button>
+    <span id="esp-period-label" style="font-size:10px;font-weight:700;color:#2563eb;background:#dbeafe;padding:3px 10px;border-radius:99px;">Avui</span>
   </div>
   <div class="g-stats">
     <div class="stat-card bb-blue">
@@ -725,7 +745,7 @@ if (hub) { const h = JSON.parse(hub); hubLiters=h.hubLiters||1150; hubCap=h.hubC
 const camio = localStorage.getItem('zeroc_camio');
 if (camio) { const c = JSON.parse(camio); renderCamioHistorial(c); showCamioAlertOp(c); }
 const recs = localStorage.getItem('zeroc_recs');
-if (recs) { const parsed = JSON.parse(recs); updatePendingRecsCache(parsed); renderRecollides(parsed); }
+if (recs) { const parsed = JSON.parse(recs); _allRecs = parsed; updatePendingRecsCache(parsed); renderRecollides(parsed); }
 updateHub(); recalcDiesel(); renderEstabliments();
 }
 }
@@ -741,6 +761,7 @@ localStorage.setItem('zeroc_hub', JSON.stringify(hubData));
 }
 function saveRecollida(ref, data) {
 _pendingRecs[ref.toUpperCase()] = { key: ref.replace(/\./g,'-'), ...data };
+_allRecs[ref.replace(/\./g,'-')] = data; // actualitza cache del filtre de períodes
 if (fbReady && db) {
 db.ref('recollides/' + ref.replace(/\./g,'-')).set(data);
 } else {
@@ -845,6 +866,7 @@ espTbody.insertAdjacentHTML('beforeend', `<tr>
 </tr>`);
 });
 updatePendingRecsCache(data);
+_allRecs = data; // cache per al filtre de períodes
 todayRec = countAvui;
 const el = document.getElementById('op-count');
 if(el) el.innerText = countAvui + ' recollides avui';
@@ -971,6 +993,183 @@ if (t) t.classList.toggle('on', s === v);
 if (v === 'establiments') renderEstabliments();
 if (v === 'espinosa') recalcDiesel();
 }
+// ── DATE RANGE PICKER ────────────────────────────────────────────────────────
+let _allRecs = {};
+const _picker = {
+  op:  { from: null, to: null, selecting: false, viewYear: new Date().getFullYear(), viewMonth: new Date().getMonth() },
+  esp: { from: null, to: null, selecting: false, viewYear: new Date().getFullYear(), viewMonth: new Date().getMonth() }
+};
+(function initPickers() {
+  const t = new Date(); t.setHours(0,0,0,0);
+  ['op','esp'].forEach(w => { _picker[w].from = new Date(t); _picker[w].to = new Date(t); });
+})();
+const MESOS_CA = ['Gener','Febrer','Març','Abril','Maig','Juny','Juliol','Agost','Setembre','Octubre','Novembre','Desembre'];
+const DIES_CA  = ['Dl','Dt','Dc','Dj','Dv','Ds','Dg'];
+
+function openPicker(who) {
+  const existing = document.getElementById('picker-popup-'+who);
+  if (existing) { existing.remove(); return; }
+  const popup = document.createElement('div');
+  popup.id = 'picker-popup-'+who;
+  popup.style.cssText = 'position:fixed;z-index:9000;background:white;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.18);border:1px solid #e2e8f0;padding:0;width:340px;max-width:96vw;';
+  popup.innerHTML = buildPickerHTML(who);
+  document.body.appendChild(popup);
+  const btn = document.getElementById(who+'-picker-btn');
+  const rect = btn.getBoundingClientRect();
+  popup.style.top  = (rect.bottom + 8) + 'px';
+  popup.style.left = Math.max(8, Math.min(rect.left, window.innerWidth - 348)) + 'px';
+  setTimeout(() => {
+    const handler = e => { if (!popup.contains(e.target) && e.target !== btn && !btn.contains(e.target)) { popup.remove(); document.removeEventListener('click', handler); } };
+    popup._outsideHandler = handler;
+    document.addEventListener('click', handler);
+  }, 10);
+}
+
+function buildPickerHTML(who) {
+  const p = _picker[who];
+  const shortcuts = [
+    {label:'Avui',fn:`quickPick('${who}','avui')`},
+    {label:'Ahir',fn:`quickPick('${who}','ahir')`},
+    {label:'Última setmana',fn:`quickPick('${who}','setmana')`},
+    {label:'Aquest mes',fn:`quickPick('${who}','mes')`},
+    {label:'Any en curs',fn:`quickPick('${who}','any')`},
+    {label:'Tot',fn:`quickPick('${who}','total')`},
+  ];
+  const sc = shortcuts.map(s =>
+    `<button onclick="${s.fn}" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:5px 10px;font-size:10px;font-weight:700;color:#334155;cursor:pointer;font-family:inherit;white-space:nowrap;" onmouseover="this.style.background='#dbeafe';this.style.borderColor='#2563eb'" onmouseout="this.style.background='#f8fafc';this.style.borderColor='#e2e8f0'">${s.label}</button>`
+  ).join('');
+  const m1m = p.viewMonth === 0 ? 11 : p.viewMonth - 1;
+  const m1y = p.viewMonth === 0 ? p.viewYear - 1 : p.viewYear;
+  const m2m = p.viewMonth; const m2y = p.viewYear;
+  const fromStr = p.from ? fmtDate(p.from) : '—';
+  const toStr   = p.to   ? fmtDate(p.to)   : (p.selecting ? 'Selecciona fi...' : '—');
+  return `<div style="padding:16px 18px 14px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div style="font-size:12px;font-weight:900;color:#0f172a;">Selecciona el rang de dates</div>
+      <button onclick="document.getElementById('picker-popup-${who}').remove()" style="background:#f1f5f9;border:none;border-radius:8px;width:26px;height:26px;cursor:pointer;font-size:16px;color:#64748b;line-height:1;">×</button>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">${sc}</div>
+    <div style="display:flex;align-items:center;gap:8px;background:#f8fafc;border-radius:12px;padding:10px 14px;margin-bottom:14px;">
+      <div style="flex:1;text-align:center;">
+        <div style="font-size:9px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px;">Des de</div>
+        <div style="font-size:13px;font-weight:800;color:#2563eb;">${fromStr}</div>
+      </div>
+      <div style="color:#94a3b8;font-size:18px;">→</div>
+      <div style="flex:1;text-align:center;">
+        <div style="font-size:9px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px;">Fins a</div>
+        <div style="font-size:13px;font-weight:800;color:${p.selecting?'#f97316':'#2563eb'};">${toStr}</div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <button onclick="navPicker('${who}',-1)" style="background:#f1f5f9;border:none;border-radius:8px;padding:5px 12px;cursor:pointer;font-size:14px;color:#334155;">‹</button>
+      <span style="font-size:11px;font-weight:800;color:#0f172a;">${MESOS_CA[m1m]} ${m1y} · ${MESOS_CA[m2m]} ${m2y}</span>
+      <button onclick="navPicker('${who}',1)" style="background:#f1f5f9;border:none;border-radius:8px;padding:5px 12px;cursor:pointer;font-size:14px;color:#334155;">›</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+      ${buildCalendar(who,m1y,m1m)} ${buildCalendar(who,m2y,m2m)}
+    </div>
+    ${p.selecting ? '<div style="text-align:center;font-size:10px;color:#f97316;font-weight:700;margin-bottom:10px;">📅 Ara clica el dia de fi del rang</div>' : ''}
+    <button onclick="applyPicker('${who}')" style="width:100%;padding:11px;background:#2563eb;color:white;border:none;border-radius:12px;font-weight:900;font-size:12px;cursor:pointer;font-family:inherit;">✓ Aplicar rang</button>
+    <div style="text-align:center;font-size:9px;color:#94a3b8;font-weight:600;margin-top:8px;">1r clic = inici · 2n clic = fi del rang</div>
+  </div>`;
+}
+
+function buildCalendar(who, year, month) {
+  const p = _picker[who];
+  const firstDay = (new Date(year, month, 1).getDay() + 6) % 7;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const today = new Date(); today.setHours(0,0,0,0);
+  let cells = DIES_CA.map(d => `<div style="font-size:9px;font-weight:800;color:#94a3b8;text-align:center;padding:2px 0;">${d}</div>`).join('');
+  for (let i = 0; i < firstDay; i++) cells += '<div></div>';
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(year, month, d);
+    const isFrom  = p.from && sameDay(date, p.from);
+    const isTo    = p.to   && sameDay(date, p.to);
+    const inRange = p.from && p.to && date > p.from && date < p.to;
+    const isToday = sameDay(date, today);
+    const isFuture= date > today;
+    let bg = 'transparent', color = isFuture ? '#cbd5e1' : '#334155', fw = '500', extra = '';
+    if (isFrom || isTo)  { bg = '#2563eb'; color = 'white'; fw = '900'; }
+    else if (inRange)    { bg = '#dbeafe'; color = '#1e40af'; fw = '700'; }
+    if (isToday && !isFrom && !isTo) { extra = 'outline:2px solid #2563eb;outline-offset:-2px;'; fw = '800'; color = inRange ? '#1e40af' : '#2563eb'; }
+    cells += `<div onclick="${isFuture?'':(`pickDay('${who}',${year},${month},${d})`)}" style="text-align:center;padding:4px 1px;border-radius:7px;background:${bg};color:${color};font-size:10px;font-weight:${fw};cursor:${isFuture?'default':'pointer'};${extra}">${d}</div>`;
+  }
+  return `<div><div style="font-size:10px;font-weight:800;color:#0f172a;text-align:center;margin-bottom:6px;">${MESOS_CA[month]} ${year}</div><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;">${cells}</div></div>`;
+}
+
+function pickDay(who, year, month, day) {
+  const p = _picker[who];
+  const clicked = new Date(year, month, day);
+  if (!p.selecting) {
+    p.from = clicked; p.to = null; p.selecting = true;
+  } else {
+    if (clicked < p.from) { p.to = new Date(p.from); p.from = clicked; }
+    else { p.to = clicked; }
+    p.selecting = false;
+  }
+  const popup = document.getElementById('picker-popup-'+who);
+  if (popup) popup.innerHTML = buildPickerHTML(who);
+}
+
+function navPicker(who, dir) {
+  const p = _picker[who];
+  p.viewMonth += dir;
+  if (p.viewMonth > 11) { p.viewMonth = 0; p.viewYear++; }
+  if (p.viewMonth < 0)  { p.viewMonth = 11; p.viewYear--; }
+  const popup = document.getElementById('picker-popup-'+who);
+  if (popup) popup.innerHTML = buildPickerHTML(who);
+}
+
+function quickPick(who, preset) {
+  const p = _picker[who];
+  const now = new Date(); now.setHours(0,0,0,0);
+  if (preset==='avui')    { p.from=new Date(now); p.to=new Date(now); }
+  if (preset==='ahir')    { const y=new Date(now); y.setDate(y.getDate()-1); p.from=y; p.to=new Date(y); }
+  if (preset==='setmana') { const f=new Date(now); f.setDate(f.getDate()-6); p.from=f; p.to=new Date(now); }
+  if (preset==='mes')     { p.from=new Date(now.getFullYear(),now.getMonth(),1); p.to=new Date(now); }
+  if (preset==='any')     { p.from=new Date(now.getFullYear(),0,1); p.to=new Date(now); }
+  if (preset==='total')   { p.from=new Date(2020,0,1); p.to=new Date(2099,11,31); }
+  p.selecting=false;
+  applyPicker(who);
+}
+
+function applyPicker(who) {
+  const p = _picker[who];
+  if (!p.from) return;
+  if (!p.to) { p.to = new Date(p.from); p.selecting = false; }
+  const isTotal = p.from.getFullYear()<=2020 && p.to.getFullYear()>=2099;
+  const label = isTotal ? 'Total acumulat' : sameDay(p.from,p.to) ? fmtDate(p.from) : fmtDate(p.from)+' → '+fmtDate(p.to);
+  const btnLabel = document.getElementById(who+'-picker-label');
+  if (btnLabel) btnLabel.innerText = label;
+  const periodLabel = document.getElementById(who+'-period-label');
+  if (periodLabel) periodLabel.innerText = label;
+  const popup = document.getElementById('picker-popup-'+who);
+  if (popup) popup.remove();
+  recalcDiesel();
+}
+
+function sameDay(a,b) { return a&&b&&a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate(); }
+function fmtDate(d)   { return d.getDate().toString().padStart(2,'0')+'/'+(d.getMonth()+1).toString().padStart(2,'0')+'/'+d.getFullYear(); }
+
+function _filterRecsByPeriod(who) {
+  const p = _picker[who];
+  const entries = Object.values(_allRecs);
+  if (!p.from) return entries;
+  const isTotal = p.from.getFullYear()<=2020 && (!p.to||p.to.getFullYear()>=2099);
+  if (isTotal) return entries;
+  const from = new Date(p.from); from.setHours(0,0,0,0);
+  const to   = p.to ? new Date(p.to) : new Date(from); to.setHours(23,59,59,999);
+  return entries.filter(d => {
+    if (!d||!d.dataHora) return false;
+    const parts = d.dataHora.split(' ')[0].split('/');
+    if (parts.length<3) return false;
+    const recDate = new Date(parseInt(parts[2]),parseInt(parts[1])-1,parseInt(parts[0]));
+    return recDate>=from && recDate<=to;
+  });
+}
+
+function setPeriod() {} // compatibilitat (no s'usa)
+
 function calcKmRuta() {
 let km = MACANET_KM * 2;
 Object.values(DB).forEach(e => { km += (e.km || 0) * 2; });
@@ -981,25 +1180,33 @@ const dp = parseFloat(document.getElementById('diesel-p')?.value || 1.65);
 const tc = parseFloat(document.getElementById('truck-c')?.value || 28);
 const av = parseFloat(document.getElementById('avg-v')?.value || 55);
 const km = calcKmRuta();
-const lDiesel = (km / 100) * tc;
-const cost = lDiesel * dp;
-const co2  = lDiesel * 2.64;
-const hores= km / av;
 const fmt  = n => n.toFixed(2).replace('.', ',') + ' €';
 const s = id => document.getElementById(id);
-if(s('esp-fuel'))       s('esp-fuel').innerText       = fmt(cost);
-if(s('esp-total'))      s('esp-total').innerText      = fmt(hubLiters * 2.97);
-if(s('esp-fuel-note'))  s('esp-fuel-note').innerText  = km + ' km · ' + lDiesel.toFixed(1) + ' L · ' + dp.toFixed(2).replace('.',',') + ' €/L';
-if(s('esp-co2'))        s('esp-co2').innerText        = co2.toFixed(1) + ' kg';
-if(s('esp-hours'))      s('esp-hours').innerText      = hores.toFixed(1).replace('.',',') + ' h';
-if(s('op-fuel'))        s('op-fuel').innerText        = fmt(cost);
-if(s('op-total-estalvi'))s('op-total-estalvi').innerText = fmt(hubLiters * 2.97);
-if(s('op-fuel-note'))   s('op-fuel-note').innerText   = km + ' km · ' + lDiesel.toFixed(1) + ' L · ' + dp.toFixed(2).replace('.',',') + ' €/L';
-if(s('op-co2'))         s('op-co2').innerText         = co2.toFixed(1) + ' kg';
-if(s('op-co2-detail'))  s('op-co2-detail').innerText  = co2.toFixed(1) + ' kg';
-if(s('op-total-count')) s('op-total-count').innerText = totalRec;
-if(s('op-hours'))       s('op-hours').innerText       = hores.toFixed(1).replace('.',',') + ' h';
-if(s('route-pill'))     s('route-pill').innerText     = 'Ruta: Maçanet de la Selva → Establiments → Hub Calella · ' + km + ' km ida+volta · ' + hores.toFixed(1) + ' h';
+const totalAll = Math.max(Object.keys(_allRecs).length, totalRec, 1);
+const recsOp   = _filterRecsByPeriod('op');
+const countOp  = recsOp.length;
+const pesOp    = recsOp.reduce((sum,d)=>sum+(parseFloat(d.pes)||0),0);
+const kmOp     = km*(countOp/totalAll);
+const lDOp     = (kmOp/100)*tc;
+if(s('op-fuel'))         s('op-fuel').innerText         = fmt(lDOp*dp);
+if(s('op-total-estalvi'))s('op-total-estalvi').innerText = fmt(pesOp*2.97);
+if(s('op-fuel-note'))    s('op-fuel-note').innerText     = Math.round(kmOp)+' km · '+lDOp.toFixed(1)+' L · '+dp.toFixed(2).replace('.',',')+' €/L · '+countOp+' recollides';
+if(s('op-co2'))          s('op-co2').innerText           = (lDOp*2.64).toFixed(1)+' kg';
+if(s('op-co2-detail'))   s('op-co2-detail').innerText    = (lDOp*2.64).toFixed(1)+' kg';
+if(s('op-total-count'))  s('op-total-count').innerText   = countOp;
+if(s('op-hours'))        s('op-hours').innerText         = (kmOp/av).toFixed(1).replace('.',',')+' h';
+if(s('route-pill'))      s('route-pill').innerText       = 'Ruta: Maçanet de la Selva → Establiments → Hub Calella · '+Math.round(kmOp)+' km · '+(kmOp/av).toFixed(1)+' h · '+countOp+' recollides';
+const recsEsp  = _filterRecsByPeriod('esp');
+const countEsp = recsEsp.length;
+const pesEsp   = recsEsp.reduce((sum,d)=>sum+(parseFloat(d.pes)||0),0);
+const kmEsp    = km*(countEsp/totalAll);
+const lDEsp    = (kmEsp/100)*tc;
+if(s('esp-fuel'))        s('esp-fuel').innerText        = fmt(lDEsp*dp);
+if(s('esp-total'))       s('esp-total').innerText       = fmt(pesEsp*2.97);
+if(s('esp-fuel-note'))   s('esp-fuel-note').innerText   = Math.round(kmEsp)+' km · '+lDEsp.toFixed(1)+' L · '+dp.toFixed(2).replace('.',',')+' €/L · '+countEsp+' recollides';
+if(s('esp-co2'))         s('esp-co2').innerText         = (lDEsp*2.64).toFixed(1)+' kg';
+if(s('esp-hours'))       s('esp-hours').innerText       = (kmEsp/av).toFixed(1).replace('.',',')+' h';
+if(s('esp-recollides'))  s('esp-recollides').innerText  = countEsp;
 }
 function updateHub() {
 const pct  = Math.min((hubLiters / hubCap) * 100, 100);
