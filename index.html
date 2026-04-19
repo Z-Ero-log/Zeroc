@@ -3,10 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Z-Ero CO2 · Logística Milla Verda, S.L. · Hub Calella · RED II · v22</title>
+  <title>Z-Ero CO2 · Logística Milla Verda, S.L. · Hub Calella · RED II · v26</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
   <!-- Firebase v9 compat -->
+  <!-- Google Maps API -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBjMhGkgr7ThjaLLgSOwIGMXepebZKzRew&libraries=places&language=ca&region=ES"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -21,8 +23,8 @@
         <div style="background:#2563eb;padding:12px 16px;border-radius:14px;font-weight:900;font-style:italic;font-size:28px;color:white;line-height:1;">Z</div>
         <div style="text-align:left;">
           <div style="color:white;font-size:16px;font-weight:900;letter-spacing:0.5px;">Z-ERO CO₂ · MILLA VERDA</div>
-          <div style="color:#60a5fa;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-top:3px;">Logistics · Hub Calella</div>
-          <div style="color:#34d399;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-top:2px;">♻ Logística Circular · RED II</div>
+          <div style="color:white;font-size:16px;font-weight:900;letter-spacing:0.5px;">LOSGISTICA, S.L.</div>
+          <div style="color:#60a5fa;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-top:3px;">♻ RED II · Hub Calella</div>
         </div>
       </div>
     </div>
@@ -115,7 +117,7 @@
   <div class="top-bar">
     <div>
       <div class="page-title">Centre Operatiu Calella</div>
-      <div class="page-sub">Hub Z-Ero · 08370 Calella de la Costa</div>
+      <div class="page-sub">Hub Z-Ero CO₂</div>
     </div>
     <div class="top-actions">
       <select class="inp" id="op-pdf-sel" style="width:auto;font-size:11px;font-weight:700;">
@@ -149,7 +151,7 @@
         </div>
       </div>
       <div style="display:flex;justify-content:space-between;margin-top:10px;font-size:10px;color:#94a3b8;font-weight:700;">
-        <span>0 L</span><span style="color:#2563eb;">Capacitat màxima: <span id="op-hub-cap-label">2.000</span> Kg</span>
+        <span>0 L</span><span style="color:#2563eb;">Capacitat màxima: <span id="op-hub-cap-label">8.000</span> Kg</span>
       </div>
       <div style="margin-top:14px;border-top:1px solid #f1f5f9;padding-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
         <button class="btn btn-amber btn-xs" onclick="openCamioModal()" style="flex:1;">🚛 Registrar recollida camió Espinosa</button>
@@ -157,12 +159,12 @@
       </div>
     </div>
     <div class="card card-dark">
-      <div class="card-label" style="color:#60a5fa;">Manteniment Flota BKL</div>
+      <div class="card-label" style="color:#60a5fa;">Manteniment Flota</div>
       <div style="display:flex;align-items:center;gap:16px;margin:14px 0;">
         <div style="font-size:28px;">&#x1F6B2;</div>
         <div>
           <div style="font-size:22px;font-weight:900;" id="flota-km">0 km</div>
-          <div style="font-size:10px;color:#64748b;margin-top:2px;">Pròxim servei: 1.000 km</div>
+          <div style="font-size:10px;color:#64748b;margin-top:2px;">Pròxim servei: 5.000 km</div>
         </div>
       </div>
       <div class="prog-sm"><div class="prog-sm-in" style="width:0%;"></div></div>
@@ -298,7 +300,15 @@
           <select class="inp" id="m-tipus"><option>Hotel</option><option>Restaurant</option><option>Bar / Cafeteria</option><option>Càtering industrial</option><option>Escola / Residència</option><option>Altre</option></select>
         </div>
       </div>
-      <div style="margin-bottom:10px;"><div class="lbl">Adreça completa</div><input class="inp" type="text" id="m-adreca" placeholder="C/ Major, 10, 08370 Calella"></div>
+      <div style="margin-bottom:10px;position:relative;">
+        <div class="lbl">Adreça completa amb número <span style="color:#22c55e;font-size:9px;font-weight:700;" id="m-geo-status"></span></div>
+        <input class="inp" type="text" id="m-carrer" placeholder="Ex: Passeig de les Roques, 45, Calella" autocomplete="off">
+        <input type="hidden" id="m-adreca" value="">
+        <input type="hidden" id="m-num" value="">
+        <div style="font-size:9px;color:#94a3b8;font-weight:600;margin-top:4px;">Escriu l'adreça completa amb número i selecciona del desplegable de Google</div>
+        <input type="hidden" id="m-lat" value="">
+        <input type="hidden" id="m-lng" value="">
+      </div>
       <div class="g3" style="margin-bottom:10px;">
         <div><div class="lbl">Telèfon</div><input class="inp" type="tel" id="m-tel" placeholder="937 XX XX XX"></div>
         <div><div class="lbl">Correu electrònic</div><input class="inp" type="email" id="m-email" placeholder="info@hotel.com"></div>
@@ -576,7 +586,10 @@ const USER_ROLES = {
 const EMAILJS_PUBLIC_KEY  = '-FHqxMOs0uW0675ql';
 const EMAILJS_SERVICE_ID  = 'service_5uf68zq';
 const EMAILJS_TEMPLATE_ID = 'template_50cr8x6';
-const MACANET_KM = 42;
+const MACANET_KM = 42; // km aprox Maçanet ↔ Calella (estimació inicial)
+const BASE_MACANET = { lat: 41.7153, lng: 2.7385, nom: 'Base Maçanet (F. Espinosa)' };
+const HUB_CALELLA  = { lat: 41.6143, lng: 2.6590, nom: 'Hub Calella (Z-Ero)' };
+let KM_RUTA_ZERO = 84; // Maçanet→Calella→Maçanet, s'actualitza via OSRM
 let fbReady = false;
 let db = null;
 let auth = null;
@@ -688,6 +701,7 @@ switchView(userInfo.tabs[0]);
 document.getElementById('login-screen').style.display = 'none';
 document.getElementById('app-root').style.display = 'block';
 initData();
+  initKmZero(); // Calcula distància fixa Z-Ero via OSRM en background
 }
 function doLogout() {
 // Tanquem sessió localment. No es fa auth.signOut() global per no desconnectar
@@ -1168,45 +1182,237 @@ function _filterRecsByPeriod(who) {
   });
 }
 
-function setPeriod() {} // compatibilitat (no s'usa)
+function setPeriod() {} // compatibilitat
 
-function calcKmRuta() {
-let km = MACANET_KM * 2;
-Object.values(DB).forEach(e => { km += (e.km || 0) * 2; });
-return Math.round(km);
+// ── OSRM: càlcul de ruta real per carretera ──────────────────────────────────
+// OSRM és gratuït, open-source, basat en OpenStreetMap. Sense clau API.
+const OSRM_BASE = 'https://router.project-osrm.org/route/v1/driving/';
+
+async function osrmRuta(punts) {
+  // punts: [{lat, lng}, ...] — mínim 2 punts
+  if (punts.length < 2) return 0;
+  const coords = punts.map(p => p.lng + ',' + p.lat).join(';');
+  try {
+    const r = await fetch(OSRM_BASE + coords + '?overview=false&steps=false');
+    const d = await r.json();
+    if (d.code === 'Ok' && d.routes && d.routes[0]) {
+      return d.routes[0].distance / 1000; // metres → km
+    }
+  } catch(e) { console.warn('OSRM error:', e); }
+  return null; // null = no disponible
 }
-function recalcDiesel() {
-const dp = parseFloat(document.getElementById('diesel-p')?.value || 1.65);
-const tc = parseFloat(document.getElementById('truck-c')?.value || 28);
-const av = parseFloat(document.getElementById('avg-v')?.value || 55);
-const km = calcKmRuta();
-const fmt  = n => n.toFixed(2).replace('.', ',') + ' €';
-const s = id => document.getElementById(id);
-const totalAll = Math.max(Object.keys(_allRecs).length, totalRec, 1);
-const recsOp   = _filterRecsByPeriod('op');
-const countOp  = recsOp.length;
-const pesOp    = recsOp.reduce((sum,d)=>sum+(parseFloat(d.pes)||0),0);
-const kmOp     = km*(countOp/totalAll);
-const lDOp     = (kmOp/100)*tc;
-if(s('op-fuel'))         s('op-fuel').innerText         = fmt(lDOp*dp);
-if(s('op-total-estalvi'))s('op-total-estalvi').innerText = fmt(pesOp*2.97);
-if(s('op-fuel-note'))    s('op-fuel-note').innerText     = Math.round(kmOp)+' km · '+lDOp.toFixed(1)+' L · '+dp.toFixed(2).replace('.',',')+' €/L · '+countOp+' recollides';
-if(s('op-co2'))          s('op-co2').innerText           = (lDOp*2.64).toFixed(1)+' kg';
-if(s('op-co2-detail'))   s('op-co2-detail').innerText    = (lDOp*2.64).toFixed(1)+' kg';
-if(s('op-total-count'))  s('op-total-count').innerText   = countOp;
-if(s('op-hours'))        s('op-hours').innerText         = (kmOp/av).toFixed(1).replace('.',',')+' h';
-if(s('route-pill'))      s('route-pill').innerText       = 'Ruta: Maçanet de la Selva → Establiments → Hub Calella · '+Math.round(kmOp)+' km · '+(kmOp/av).toFixed(1)+' h · '+countOp+' recollides';
-const recsEsp  = _filterRecsByPeriod('esp');
-const countEsp = recsEsp.length;
-const pesEsp   = recsEsp.reduce((sum,d)=>sum+(parseFloat(d.pes)||0),0);
-const kmEsp    = km*(countEsp/totalAll);
-const lDEsp    = (kmEsp/100)*tc;
-if(s('esp-fuel'))        s('esp-fuel').innerText        = fmt(lDEsp*dp);
-if(s('esp-total'))       s('esp-total').innerText       = fmt(pesEsp*2.97);
-if(s('esp-fuel-note'))   s('esp-fuel-note').innerText   = Math.round(kmEsp)+' km · '+lDEsp.toFixed(1)+' L · '+dp.toFixed(2).replace('.',',')+' €/L · '+countEsp+' recollides';
-if(s('esp-co2'))         s('esp-co2').innerText         = (lDEsp*2.64).toFixed(1)+' kg';
-if(s('esp-hours'))       s('esp-hours').innerText       = (kmEsp/av).toFixed(1).replace('.',',')+' h';
-if(s('esp-recollides'))  s('esp-recollides').innerText  = countEsp;
+
+// Calcula km ruta tradicional per un conjunt de recollides (ids d'establiments)
+// Ruta: Maçanet → Est1 → Est2 → ... → EstN → Maçanet
+async function calcRutaTradicional(estIds) {
+  const ests = estIds.map(id => DB[id]).filter(e => e && e.lat && e.lng);
+  if (!ests.length) return null;
+  // Optimització simple: ordena per proximitat geogràfica (nearest neighbor)
+  const sorted = nearestNeighbor(BASE_MACANET, ests);
+  const punts = [BASE_MACANET, ...sorted, BASE_MACANET];
+  return await osrmRuta(punts);
+}
+
+// Nearest neighbor greedy per ordenar parades
+function nearestNeighbor(start, ests) {
+  const remaining = [...ests];
+  const route = [];
+  let current = start;
+  while (remaining.length) {
+    let minDist = Infinity, minIdx = 0;
+    remaining.forEach((e, i) => {
+      const d = haversine(current.lat, current.lng, e.lat, e.lng);
+      if (d < minDist) { minDist = d; minIdx = i; }
+    });
+    route.push(remaining[minIdx]);
+    current = remaining[minIdx];
+    remaining.splice(minIdx, 1);
+  }
+  return route;
+}
+
+// Distància euclidiana (haversine) per ordenar parades
+function haversine(lat1, lng1, lat2, lng2) {
+  const R = 6371, dLat = (lat2-lat1)*Math.PI/180, dLng = (lng2-lng1)*Math.PI/180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+// Cache de resultats OSRM per evitar crides repetides
+const _osrmCache = {};
+async function getKmTradicio(who) {
+  const recs = _filterRecsByPeriod(who);
+  // Agrupem per dia per calcular una ruta per dia
+  const perDia = {};
+  recs.forEach(d => {
+    const dia = (d.dataHora||'').split(' ')[0];
+    if (!dia) return;
+    // Busquem l'id de l'establiment
+    const estId = d.id && d.id !== 'TRANSP' ? d.id : Object.keys(DB).find(k => DB[k].nom === d.nom);
+    if (!estId) return;
+    if (!perDia[dia]) perDia[dia] = new Set();
+    perDia[dia].add(estId);
+  });
+  const dies = Object.keys(perDia);
+  if (!dies.length) return { km: 0, senseGps: [] };
+  let totalKm = 0;
+  const senseGps = new Set(); // establiments sense coordenades GPS
+  for (const dia of dies) {
+    const estIds = [...perDia[dia]];
+    // Comprovar si TOTS els establiments d'aquest dia tenen coordenades GPS
+    const senseCoords = estIds.filter(id => !DB[id] || !DB[id].lat || !DB[id].lng);
+    if (senseCoords.length > 0) {
+      // Registrem els establiments sense GPS i no calculem per aquest dia
+      senseCoords.forEach(id => senseGps.add(id));
+      continue; // saltem aquest dia — no podem calcular sense GPS real
+    }
+    const cacheKey = who + '_' + dia + '_' + [...estIds].sort().join(',');
+    if (_osrmCache[cacheKey] !== undefined) {
+      totalKm += _osrmCache[cacheKey];
+      continue;
+    }
+    const km = await calcRutaTradicional(estIds);
+    if (km !== null && km !== undefined) {
+      _osrmCache[cacheKey] = km;
+      totalKm += km;
+    }
+    // Si OSRM falla (sense connexió), no sumem i no bloquejem — deixem el dia sense calcular
+  }
+  return { km: totalKm, senseGps: [...senseGps] };
+}
+
+// Ruta Z-Ero: Maçanet → Hub Calella → Maçanet (una sola vegada per dia amb recollida)
+async function getKmZero(who) {
+  const recs = _filterRecsByPeriod(who);
+  const diesAmbRec = new Set(recs.map(d => (d.dataHora||'').split(' ')[0]).filter(Boolean));
+  return diesAmbRec.size * KM_RUTA_ZERO;
+}
+
+// Inicialitza la distància fixa Z-Ero via OSRM
+async function initKmZero() {
+  const km = await osrmRuta([BASE_MACANET, HUB_CALELLA, BASE_MACANET]);
+  if (km) KM_RUTA_ZERO = km;
+}
+
+// ── GOOGLE PLACES AUTOCOMPLETE + GEOCODING ──────────────────────────────────
+const GOOGLE_API_KEY = 'AIzaSyBjMhGkgr7ThjaLLgSOwIGMXepebZKzRew';
+let _googleAutocomplete = null;
+let _geocodeTimer = null;
+
+function initGoogleAutocomplete() {
+  const input = document.getElementById('m-carrer');
+  if (!input) return;
+  if (typeof google === 'undefined' || !google.maps || !google.maps.places) {
+    setTimeout(initGoogleAutocomplete, 300);
+    return;
+  }
+  if (_googleAutocomplete) {
+    google.maps.event.clearInstanceListeners(_googleAutocomplete);
+  }
+  _googleAutocomplete = new google.maps.places.Autocomplete(input, {
+    componentRestrictions: { country: 'es' },
+    fields: ['formatted_address', 'geometry'],
+    types: ['address']
+  });
+  _googleAutocomplete.addListener('place_changed', function() {
+    const place = _googleAutocomplete.getPlace();
+    const status = document.getElementById('m-geo-status');
+    if (!place.geometry || !place.geometry.location) {
+      if (status) { status.innerText = 'Selecciona una opcio del desplegable'; status.style.color = '#dc2626'; }
+      return;
+    }
+    const lat = place.geometry.location.lat();
+    const lng = place.geometry.location.lng();
+    document.getElementById('m-lat').value = lat;
+    document.getElementById('m-lng').value = lng;
+    document.getElementById('m-adreca').value = place.formatted_address || input.value;
+    document.getElementById('m-carrer').value = place.formatted_address || input.value;
+    if (status) {
+      status.innerText = 'GPS: ' + lat.toFixed(4) + ', ' + lng.toFixed(4);
+      status.style.color = '#22c55e';
+    }
+  });
+}
+
+// Compatibilitat — ja no s'usen
+function geocodeAdresa() {}
+function selectAdresa() {}
+function updateAdrecaFull() {}
+// ── RECALCUL PRINCIPAL ────────────────────────────────────────────────────────
+async function recalcDiesel() {
+  const dp = parseFloat(document.getElementById('diesel-p')?.value || 1.65);
+  const tc = parseFloat(document.getElementById('truck-c')?.value || 28);
+  const av = parseFloat(document.getElementById('avg-v')?.value || 55);
+  const fmt = n => n.toFixed(2).replace('.', ',') + ' €';
+  const s = id => document.getElementById(id);
+
+  // Calcula les dues vistes en paral·lel
+  const [resOp, kmZeroOp, resEsp, kmZeroEsp] = await Promise.all([
+    getKmTradicio('op'), getKmZero('op'),
+    getKmTradicio('esp'), getKmZero('esp')
+  ]);
+
+  // ── Operador ───────────────────────────────────────────────────────────────
+  const recsOp  = _filterRecsByPeriod('op');
+  const countOp = recsOp.length;
+  const pesOp   = recsOp.reduce((sum,d)=>sum+(parseFloat(d.pes)||0),0);
+  const senseGpsOp = resOp.senseGps || [];
+  const kmTradOp   = resOp.km || 0;
+  // Mostra avís GPS operador
+  showGpsWarning('op', senseGpsOp);
+  // Si hi ha dies sense GPS, els stats de ruta mostren parcial o —
+  const hiHaDiesIncompletsOp = senseGpsOp.length > 0;
+  const kmEstOp = Math.max(0, kmTradOp - kmZeroOp);
+  const lDOp    = (kmEstOp / 100) * tc;
+  if(s('op-fuel'))         s('op-fuel').innerText         = hiHaDiesIncompletsOp && kmTradOp===0 ? '—' : fmt(lDOp*dp);
+  if(s('op-total-estalvi'))s('op-total-estalvi').innerText = fmt(pesOp * 2.97);
+  if(s('op-fuel-note'))    s('op-fuel-note').innerText     = hiHaDiesIncompletsOp && kmTradOp===0 ? '⚠ Afegeix GPS als establiments per calcular' : Math.round(kmEstOp)+' km estalviats · Trad: '+Math.round(kmTradOp)+' km · Z-Ero: '+Math.round(kmZeroOp)+' km · '+countOp+' rec.';
+  if(s('op-co2'))          s('op-co2').innerText           = hiHaDiesIncompletsOp && kmTradOp===0 ? '—' : (lDOp*2.64).toFixed(1)+' kg';
+  if(s('op-co2-detail'))   s('op-co2-detail').innerText    = hiHaDiesIncompletsOp && kmTradOp===0 ? '—' : (lDOp*2.64).toFixed(1)+' kg';
+  if(s('op-total-count'))  s('op-total-count').innerText   = countOp;
+  if(s('op-hours'))        s('op-hours').innerText         = hiHaDiesIncompletsOp && kmTradOp===0 ? '—' : (kmEstOp/av).toFixed(1).replace('.',',')+' h';
+  if(s('route-pill'))      s('route-pill').innerText       = hiHaDiesIncompletsOp && kmTradOp===0 ? '⚠ Ruta incompleta — establiments sense GPS' : 'Ruta trad.: '+Math.round(kmTradOp)+' km · Z-Ero: '+Math.round(kmZeroOp)+' km · Estalvi: '+Math.round(kmEstOp)+' km · '+countOp+' rec.';
+
+  // ── Espinosa ───────────────────────────────────────────────────────────────
+  const recsEsp  = _filterRecsByPeriod('esp');
+  const countEsp = recsEsp.length;
+  const pesEsp   = recsEsp.reduce((sum,d)=>sum+(parseFloat(d.pes)||0),0);
+  const senseGpsEsp = resEsp.senseGps || [];
+  const kmTradEsp   = resEsp.km || 0;
+  showGpsWarning('esp', senseGpsEsp);
+  const hiHaDiesIncompletsEsp = senseGpsEsp.length > 0;
+  const kmEstEsp = Math.max(0, kmTradEsp - kmZeroEsp);
+  const lDEsp    = (kmEstEsp / 100) * tc;
+  if(s('esp-fuel'))        s('esp-fuel').innerText        = hiHaDiesIncompletsEsp && kmTradEsp===0 ? '—' : fmt(lDEsp*dp);
+  if(s('esp-total'))       s('esp-total').innerText       = fmt(pesEsp * 2.97);
+  if(s('esp-fuel-note'))   s('esp-fuel-note').innerText   = hiHaDiesIncompletsEsp && kmTradEsp===0 ? '⚠ Afegeix GPS als establiments per calcular' : Math.round(kmEstEsp)+' km estalviats · Trad: '+Math.round(kmTradEsp)+' km · Z-Ero: '+Math.round(kmZeroEsp)+' km · '+countEsp+' rec.';
+  if(s('esp-co2'))         s('esp-co2').innerText         = hiHaDiesIncompletsEsp && kmTradEsp===0 ? '—' : (lDEsp*2.64).toFixed(1)+' kg';
+  if(s('esp-hours'))       s('esp-hours').innerText       = hiHaDiesIncompletsEsp && kmTradEsp===0 ? '—' : (kmEstEsp/av).toFixed(1).replace('.',',')+' h';
+  if(s('esp-recollides'))  s('esp-recollides').innerText  = countEsp;
+}
+
+// Mostra avís d'establiments sense GPS sota les stats
+function showGpsWarning(who, senseGps) {
+  const warnId = who + '-gps-warning';
+  let warnEl = document.getElementById(warnId);
+  if (!senseGps || senseGps.length === 0) {
+    if (warnEl) warnEl.remove();
+    return;
+  }
+  const noms = senseGps.map(id => DB[id]?.nom || id).join(', ');
+  const msg = `⚠️ <strong>${senseGps.length} establiment${senseGps.length>1?'s':''} sense GPS</strong> — Els càlculs de ruta no inclouen els dies amb: <span style="font-family:monospace;color:#dc2626;">${noms}</span>. <a href="#" onclick="switchView('establiments');return false;" style="color:#2563eb;font-weight:700;">Ves a Establiments → Edita i selecciona l'adreça del desplegable.</a>`;
+  if (!warnEl) {
+    warnEl = document.createElement('div');
+    warnEl.id = warnId;
+    warnEl.style.cssText = 'background:#fff7ed;border:2px solid #f97316;border-radius:14px;padding:14px 18px;font-size:11px;color:#9a3412;line-height:1.6;margin-bottom:16px;';
+    // Inserir sota el selector de període de la vista corresponent
+    const pickerBtn = document.getElementById(who+'-picker-btn');
+    if (pickerBtn) {
+      const pickerRow = pickerBtn.closest('div[style*="position:relative"]') || pickerBtn.parentElement;
+      pickerRow.insertAdjacentElement('afterend', warnEl);
+    }
+  }
+  warnEl.innerHTML = msg;
 }
 function updateHub() {
 const pct  = Math.min((hubLiters / hubCap) * 100, 100);
@@ -1536,11 +1742,12 @@ const list=sv('est-list');
 if(!list) return;
 list.innerHTML=ids.map(id=>{
 const e=DB[id]; const pct=Math.min((e.volum/600)*100,100);
+const gpsBadge = e.lat && e.lng ? '<span class="badge" style="background:#dcfce7;color:#15803d;margin-left:4px;">📍 GPS</span>' : '<span class="badge" style="background:#fee2e2;color:#dc2626;margin-left:4px;">⚠ Sense GPS</span>';
 return `<div class="est-row">
 <div style="display:flex;align-items:center;gap:14px;flex:1;">
 <div style="width:40px;height:40px;border-radius:12px;background:${e.valid?'#dcfce7':'#fef9c3'};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:${e.valid?'#15803d':'#854d0e'};flex-shrink:0;">${id.split('-')[0]}</div>
 <div style="flex:1;min-width:0;">
-<div class="est-name">${e.nom} <span class="badge ${e.valid?'bg-green':'bg-yellow'}" style="margin-left:6px;">${e.valid?'Verificat':'Pendent'}</span></div>
+<div class="est-name">${e.nom} <span class="badge ${e.valid?'bg-green':'bg-yellow'}" style="margin-left:6px;">${e.valid?'Verificat':'Pendent'}</span>${gpsBadge}</div>
 <div class="est-meta">${e.adreca||'—'}</div>
 <div class="est-meta">${e.tel||'—'} · ${e.email||'—'}</div>
 <div style="margin-top:6px;display:flex;align-items:center;gap:8px;">
@@ -1561,8 +1768,9 @@ tPopulateEstSelect();
 }
 function openModal(prefill) {
 document.getElementById('modal-overlay').classList.add('show');
-const fields=['m-id','m-nom','m-adreca','m-tel','m-email','m-volum'];
-if(prefill){ document.getElementById('m-id').value=prefill.id||''; document.getElementById('m-nom').value=prefill.nom||''; document.getElementById('m-tipus').value=prefill.tipus||'Hotel'; document.getElementById('m-adreca').value=prefill.adreca||''; document.getElementById('m-tel').value=prefill.tel||''; document.getElementById('m-email').value=prefill.email||''; document.getElementById('m-volum').value=prefill.volum||''; }
+  setTimeout(initGoogleAutocomplete, 150);
+const fields=['m-id','m-nom','m-carrer','m-adreca','m-tel','m-email','m-volum'];
+if(prefill){ document.getElementById('m-id').value=prefill.id||''; document.getElementById('m-nom').value=prefill.nom||''; document.getElementById('m-tipus').value=prefill.tipus||'Hotel'; document.getElementById('m-adreca').value=prefill.adreca||''; document.getElementById('m-carrer').value=prefill.adreca||''; document.getElementById('m-num').value=prefill.num||''; document.getElementById('m-lat').value=prefill.lat||''; document.getElementById('m-lng').value=prefill.lng||''; document.getElementById('m-tel').value=prefill.tel||''; document.getElementById('m-email').value=prefill.email||''; document.getElementById('m-volum').value=prefill.volum||''; if(prefill.lat){document.getElementById('m-geo-status').innerText='✓ GPS confirmat';document.getElementById('m-geo-status').style.color='#22c55e';} }
 else { fields.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';}); }
 }
 function closeModal() { document.getElementById('modal-overlay').classList.remove('show'); }
@@ -1570,7 +1778,11 @@ function saveEstabliment() {
 const id=document.getElementById('m-id').value.toUpperCase().trim();
 const nom=document.getElementById('m-nom').value.trim();
 if(!id||!nom){ alert("Codi i nom obligatoris."); return; }
-DB[id]={ nom, tipus:document.getElementById('m-tipus').value, adreca:document.getElementById('m-adreca').value, tel:document.getElementById('m-tel').value, email:document.getElementById('m-email').value, volum:parseInt(document.getElementById('m-volum').value)||0, valid:false };
+const lat    = parseFloat(document.getElementById('m-lat').value) || null;
+const lng    = parseFloat(document.getElementById('m-lng').value) || null;
+const adreca = document.getElementById('m-carrer').value.trim();
+if (!lat || !lng) { alert('Selecciona l\'adreça del desplegable de Google per obtenir les coordenades GPS exactes.'); return; }
+DB[id]={ nom, tipus:document.getElementById('m-tipus').value, adreca, lat, lng, tel:document.getElementById('m-tel').value, email:document.getElementById('m-email').value, volum:parseInt(document.getElementById('m-volum').value)||0, valid:false };
 closeModal(); renderEstabliments(); recalcDiesel(); saveState();
 alert('Establiment '+nom+' desat correctament.');
 }
