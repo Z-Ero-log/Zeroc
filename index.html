@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Z-Ero CO2 · Logística Milla Verda, S.L. · Hub Calella · RED II · v26</title>
+  <title>Logística Milla Verda · Z-Ero CO2 S.L. · Hub Calella · ♻ RED II</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
   <!-- Firebase v9 compat -->
-  <!-- Google Maps API -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBjMhGkgr7ThjaLLgSOwIGMXepebZKzRew&libraries=places&language=ca&region=ES"></script>
+  <!-- Google Maps API (nova versió amb PlaceAutocompleteElement) -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBjMhGkgr7ThjaLLgSOwIGMXepebZKzRew&libraries=places,maps&v=beta&language=ca&region=ES"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -22,9 +22,8 @@
       <div style="display:inline-flex;align-items:center;gap:14px;">
         <div style="background:#2563eb;padding:12px 16px;border-radius:14px;font-weight:900;font-style:italic;font-size:28px;color:white;line-height:1;">Z</div>
         <div style="text-align:left;">
-          <div style="color:white;font-size:16px;font-weight:900;letter-spacing:0.5px;">LOSGÍSTICA MILLA VERDA ♻</div>
-          <div style="color:white;font-size:16px;font-weight:900;letter-spacing:0.5px;">Z-ERO CO₂, S.L.</div>
-          <div style="color:#60a5fa;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-top:3px;">RED II · Hub Calella</div>
+          <div style="color:white;font-size:16px;font-weight:900;letter-spacing:0.5px;">LOGÍSTICA Z-ERO CO₂ · MILLA VERDA S.L.</div>
+          <div style="color:#60a5fa;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-top:3px;">♻ RED II · Hub Calella</div>
         </div>
       </div>
     </div>
@@ -75,8 +74,8 @@
   <div class="nav-left">
     <div class="nav-z">Z</div>
     <div class="nav-brand-text">
-      <div class="nav-title">Logística Milla Verda ♻ · Z-Ero CO₂, S.L.</div>
-      <div class="nav-sub">COL·LABORADOR AUTORITZAT · RED II</div>
+      <div class="nav-title">Logística Z-Ero CO₂ Milla Verda S.L.</div>
+      <div class="nav-sub">COL·LABORADOR AUTORITZAT · ♻ RED II</div>
     </div>
   </div>
   <div class="nav-tabs" id="nav-tabs">
@@ -116,7 +115,7 @@
 <section id="sec-operador" class="sec on">
   <div class="top-bar">
     <div>
-      <div class="page-title">Centre Operatiu Z-Ero CO₂</div>
+      <div class="page-title">Centre Operatiu: Z-Ero  </div>
       <div class="page-sub">Hub Calella</div>
     </div>
     <div class="top-actions">
@@ -137,7 +136,7 @@
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
         <div>
-          <div class="card-label">Capacitat Hub Z-Ero · Calella</div>
+          <div class="card-label">Capacitat Hub Z-Ero CO₂ · Calella</div>
           <div class="hub-val" id="op-hub-val" style="margin-top:6px;">0 <span>Kg</span></div>
         </div>
         <div style="display:flex;gap:8px;align-items:center;">
@@ -151,7 +150,7 @@
         </div>
       </div>
       <div style="display:flex;justify-content:space-between;margin-top:10px;font-size:10px;color:#94a3b8;font-weight:700;">
-        <span>0 L</span><span style="color:#2563eb;">Capacitat màxima: <span id="op-hub-cap-label">8.000</span> Kg</span>
+        <span>0 L</span><span style="color:#2563eb;">Capacitat màxima: <span id="op-hub-cap-label">2.000</span> Kg</span>
       </div>
       <div style="margin-top:14px;border-top:1px solid #f1f5f9;padding-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
         <button class="btn btn-amber btn-xs" onclick="openCamioModal()" style="flex:1;">🚛 Registrar recollida camió Espinosa</button>
@@ -159,12 +158,12 @@
       </div>
     </div>
     <div class="card card-dark">
-      <div class="card-label" style="color:#60a5fa;">Manteniment Flota</div>
+      <div class="card-label" style="color:#60a5fa;">Manteniment Flota BKL</div>
       <div style="display:flex;align-items:center;gap:16px;margin:14px 0;">
         <div style="font-size:28px;">&#x1F6B2;</div>
         <div>
           <div style="font-size:22px;font-weight:900;" id="flota-km">0 km</div>
-          <div style="font-size:10px;color:#64748b;margin-top:2px;">Pròxim servei: 5.000 km</div>
+          <div style="font-size:10px;color:#64748b;margin-top:2px;">Pròxim servei: 1.000 km</div>
         </div>
       </div>
       <div class="prog-sm"><div class="prog-sm-in" style="width:0%;"></div></div>
@@ -302,7 +301,8 @@
       </div>
       <div style="margin-bottom:10px;position:relative;">
         <div class="lbl">Adreça completa amb número <span style="color:#22c55e;font-size:9px;font-weight:700;" id="m-geo-status"></span></div>
-        <input class="inp" type="text" id="m-carrer" placeholder="Ex: Passeig de les Roques, 45, Calella" autocomplete="off">
+        <div id="m-place-container" style="width:100%;min-height:40px;"></div>
+        <input type="hidden" id="m-carrer" value="">
         <input type="hidden" id="m-adreca" value="">
         <input type="hidden" id="m-num" value="">
         <div style="font-size:9px;color:#94a3b8;font-weight:600;margin-top:4px;">Escriu l'adreça completa amb número i selecciona del desplegable de Google</div>
@@ -366,7 +366,7 @@
             <option value="Net / Filtrat">Net / Filtrat</option>
             <option value="Brut / Amb residus">Brut / Amb residus</option>
             <option value="Degradat">Degradat</option>
-            <option value="Pendent operador">No sé / Pendent operador</option>
+            <option value="Pendent operador">No sé / Pendent Gestor FESPINOSA</option>
           </select>
         </div>
         <!-- Camp ocult pes (el mesura l'operador) -->
@@ -414,8 +414,8 @@
   <div class="top-bar">
     <div>
       <div class="page-title" style="font-style:italic;">Dashboard gestor autoritzat</div>
-      <div class="page-sub">F. ESPINOSA GESTORES S.L. · Maçanet de la Selva</div>
-      <div class="page-sub">Col·laborador Autoritzat: Logística Milla Verda · Z-Ero CO₂ S.L.</div>
+      <div class="page-sub">F. Espinosa Gestores S.L. · Maçanet de la Selva</div>
+      <div class="page-sub">Col·loorador Autoritzat: Logística Z-Ero CO₂ Milla Verda, S.L.</div>
     </div>
     <div class="top-actions">
       <select class="inp" id="esp-pdf-sel" style="width:auto;font-size:11px;font-weight:700;">
@@ -1295,47 +1295,77 @@ async function initKmZero() {
   if (km) KM_RUTA_ZERO = km;
 }
 
-// ── GOOGLE PLACES AUTOCOMPLETE + GEOCODING ──────────────────────────────────
+// ── GOOGLE PLACES AUTOCOMPLETE + GEOCODING (nova API març 2025) ─────────────
 const GOOGLE_API_KEY = 'AIzaSyBjMhGkgr7ThjaLLgSOwIGMXepebZKzRew';
-let _googleAutocomplete = null;
 let _geocodeTimer = null;
+let _placeWidget = null;
 
 function initGoogleAutocomplete() {
-  const input = document.getElementById('m-carrer');
-  if (!input) return;
-  if (typeof google === 'undefined' || !google.maps || !google.maps.places) {
+  const container = document.getElementById('m-place-container');
+  if (!container) return;
+  if (typeof google === 'undefined' || !google.maps) {
     setTimeout(initGoogleAutocomplete, 300);
     return;
   }
-  if (_googleAutocomplete) {
-    google.maps.event.clearInstanceListeners(_googleAutocomplete);
+  // Neteja widget anterior si existeix
+  if (_placeWidget) { container.innerHTML = ''; _placeWidget = null; }
+  try {
+    // Nova API: PlaceAutocompleteElement (obligatòria des de març 2025)
+    _placeWidget = new google.maps.places.PlaceAutocompleteElement({
+      componentRestrictions: { country: 'es' },
+      types: ['address']
+    });
+    _placeWidget.style.cssText = 'width:100%;font-family:inherit;';
+    container.appendChild(_placeWidget);
+    _placeWidget.addEventListener('gmp-placeselect', async (e) => {
+      const place = e.place;
+      await place.fetchFields({ fields: ['formattedAddress', 'location'] });
+      const lat = place.location.lat();
+      const lng = place.location.lng();
+      document.getElementById('m-lat').value   = lat;
+      document.getElementById('m-lng').value   = lng;
+      document.getElementById('m-adreca').value = place.formattedAddress || '';
+      document.getElementById('m-carrer').value = place.formattedAddress || '';
+      const status = document.getElementById('m-geo-status');
+      if (status) {
+        status.innerText = 'GPS: ' + lat.toFixed(4) + ', ' + lng.toFixed(4);
+        status.style.color = '#22c55e';
+      }
+    });
+  } catch(e) {
+    console.warn('PlaceAutocompleteElement no disponible, fallback:', e);
+    // Fallback: camp de text manual si l'API nova no està disponible
+    useFallbackInput();
   }
-  _googleAutocomplete = new google.maps.places.Autocomplete(input, {
-    componentRestrictions: { country: 'es' },
-    fields: ['formatted_address', 'geometry'],
-    types: ['address']
-  });
-  _googleAutocomplete.addListener('place_changed', function() {
-    const place = _googleAutocomplete.getPlace();
-    const status = document.getElementById('m-geo-status');
-    if (!place.geometry || !place.geometry.location) {
-      if (status) { status.innerText = 'Selecciona una opcio del desplegable'; status.style.color = '#dc2626'; }
-      return;
-    }
-    const lat = place.geometry.location.lat();
-    const lng = place.geometry.location.lng();
-    document.getElementById('m-lat').value = lat;
-    document.getElementById('m-lng').value = lng;
-    document.getElementById('m-adreca').value = place.formatted_address || input.value;
-    document.getElementById('m-carrer').value = place.formatted_address || input.value;
-    if (status) {
-      status.innerText = 'GPS: ' + lat.toFixed(4) + ', ' + lng.toFixed(4);
-      status.style.color = '#22c55e';
-    }
-  });
 }
 
-// Compatibilitat — ja no s'usen
+function useFallbackInput() {
+  const container = document.getElementById('m-place-container');
+  if (!container) return;
+  container.innerHTML = '<input class="inp" type="text" id="m-carrer-input" placeholder="Escriu l\'adreça completa amb número..." style="width:100%;" oninput="geocodeFallback(this.value)">';
+}
+
+// Fallback Nominatim per si Google no carrega
+function geocodeFallback(val) {
+  clearTimeout(_geocodeTimer);
+  if (val.length < 5) return;
+  _geocodeTimer = setTimeout(async () => {
+    try {
+      const url = 'https://nominatim.openstreetmap.org/search?q=' + encodeURIComponent(val + ', Espanya') + '&format=json&limit=1&addressdetails=1&countrycodes=es';
+      const r = await fetch(url, { headers: { 'User-Agent': 'ZeroCO2-App/1.0' } });
+      const data = await r.json();
+      if (data.length) {
+        document.getElementById('m-lat').value = data[0].lat;
+        document.getElementById('m-lng').value = data[0].lon;
+        document.getElementById('m-adreca').value = val;
+        document.getElementById('m-carrer').value = val;
+        const s = document.getElementById('m-geo-status');
+        if (s) { s.innerText = 'GPS (OSM): ' + parseFloat(data[0].lat).toFixed(4) + ', ' + parseFloat(data[0].lon).toFixed(4); s.style.color = '#f97316'; }
+      }
+    } catch(e) {}
+  }, 600);
+}
+
 function geocodeAdresa() {}
 function selectAdresa() {}
 function updateAdrecaFull() {}
@@ -1771,7 +1801,11 @@ function openModal(prefill) {
 document.getElementById('modal-overlay').classList.add('show');
   setTimeout(initGoogleAutocomplete, 150);
 const fields=['m-id','m-nom','m-carrer','m-adreca','m-tel','m-email','m-volum'];
-if(prefill){ document.getElementById('m-id').value=prefill.id||''; document.getElementById('m-nom').value=prefill.nom||''; document.getElementById('m-tipus').value=prefill.tipus||'Hotel'; document.getElementById('m-adreca').value=prefill.adreca||''; document.getElementById('m-carrer').value=prefill.adreca||''; document.getElementById('m-num').value=prefill.num||''; document.getElementById('m-lat').value=prefill.lat||''; document.getElementById('m-lng').value=prefill.lng||''; document.getElementById('m-tel').value=prefill.tel||''; document.getElementById('m-email').value=prefill.email||''; document.getElementById('m-volum').value=prefill.volum||''; if(prefill.lat){document.getElementById('m-geo-status').innerText='✓ GPS confirmat';document.getElementById('m-geo-status').style.color='#22c55e';} }
+if(prefill){ document.getElementById('m-id').value=prefill.id||''; document.getElementById('m-nom').value=prefill.nom||''; document.getElementById('m-tipus').value=prefill.tipus||'Hotel'; document.getElementById('m-adreca').value=prefill.adreca||'';
+document.getElementById('m-carrer').value=prefill.adreca||'';
+// Mostra l'adreça actual si existeix
+const pc=document.getElementById('m-place-container');
+if(pc&&prefill.adreca){const pv=document.createElement('div');pv.style.cssText='padding:9px 12px;background:#f0fdf4;border:1.5px solid #22c55e;border-radius:10px;font-size:12px;color:#15803d;font-weight:700;margin-bottom:4px;';pv.innerText='Adreça actual: '+prefill.adreca;pc.insertAdjacentElement('beforebegin',pv);} document.getElementById('m-num').value=prefill.num||''; document.getElementById('m-lat').value=prefill.lat||''; document.getElementById('m-lng').value=prefill.lng||''; document.getElementById('m-tel').value=prefill.tel||''; document.getElementById('m-email').value=prefill.email||''; document.getElementById('m-volum').value=prefill.volum||''; if(prefill.lat){document.getElementById('m-geo-status').innerText='✓ GPS confirmat';document.getElementById('m-geo-status').style.color='#22c55e';} }
 else { fields.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';}); }
 }
 function closeModal() { document.getElementById('modal-overlay').classList.remove('show'); }
