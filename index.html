@@ -15,55 +15,55 @@
 <body>
 <!-- ===== PANTALLA LOGIN ===== -->
 <div id="login-screen" style="display:flex;position:fixed;inset:0;z-index:9999;background:#0f172a;align-items:center;justify-content:center;flex-direction:column;">
-  <div style="width:100%;max-width:520px;padding:30px;">
+  <div style="width:100%;max-width:400px;padding:24px;">
     <!-- Logo -->
-    <div style="text-align:center;margin-bottom:40px;">
-      <div style="display:inline-flex;align-items:center;gap:18px;">
-        <div style="background:#2563eb;padding:15px 20px;border-radius:16px;font-weight:900;font-style:italic;font-size:35px;color:white;line-height:1;">Z</div>
+    <div style="text-align:center;margin-bottom:32px;">
+      <div style="display:inline-flex;align-items:center;gap:14px;">
+        <div style="background:#2563eb;padding:12px 16px;border-radius:14px;font-weight:900;font-style:italic;font-size:28px;color:white;line-height:1;">Z</div>
         <div style="text-align:left;">
-          <div style="color:white;font-size:20px;font-weight:900;letter-spacing:0.5px;">LOGÍSTICA Z-Ero CO₂</div>
-          <div style="color:#60a5fa;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-top:4px;">MILLA VERDA S.L.</div>
-          <div style="color:#34d399;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-top:3px;">♻ RED II · HUB CALELLA</div>
+          <div style="color:white;font-size:16px;font-weight:900;letter-spacing:0.5px;">LOGÍSTICA Z-Ero CO₂</div>
+          <div style="color:#60a5fa;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-top:3px;">MILLA VERDA S.L.</div>
+          <div style="color:#34d399;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-top:2px;">♻ RED II · HUB CALELLA</div>
         </div>
       </div>
     </div>
     <!-- Card login -->
-    <div style="background:#1e293b;border-radius:24px;padding:36px;border:1px solid #334155;">
-      <div style="font-size:18px;font-weight:900;color:white;margin-bottom:8px;">Accés al sistema</div>
-      <div style="font-size:14px;color:#64748b;font-weight:600;margin-bottom:30px;">Introdueix les teves credencials</div>
-      <div id="login-error" style="display:none;background:#fee2e2;border:1px solid #fca5a5;border-radius:10px;padding:13px 18px;font-size:14px;color:#991b1b;font-weight:700;margin-bottom:20px;"></div>
-      <div style="margin-bottom:18px;">
-        <div style="font-size:13px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;">Correu electrònic</div>
+    <div style="background:#1e293b;border-radius:20px;padding:28px;border:1px solid #334155;">
+      <div style="font-size:14px;font-weight:900;color:white;margin-bottom:6px;">Accés al sistema</div>
+      <div style="font-size:11px;color:#64748b;font-weight:600;margin-bottom:24px;">Introdueix les teves credencials</div>
+      <div id="login-error" style="display:none;background:#fee2e2;border:1px solid #fca5a5;border-radius:10px;padding:10px 14px;font-size:11px;color:#991b1b;font-weight:700;margin-bottom:16px;"></div>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:5px;">Correu electrònic</div>
         <input id="login-email" type="email" placeholder="nom@empresa.com"
-          style="width:100%;border:1.5px solid #334155;padding:14px 18px;border-radius:12px;font-size:16px;background:#0f172a;color:white;outline:none;font-family:inherit;box-sizing:border-box;"
+          style="width:100%;border:1.5px solid #334155;padding:11px 14px;border-radius:10px;font-size:13px;background:#0f172a;color:white;outline:none;font-family:inherit;box-sizing:border-box;"
           onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#334155'">
       </div>
-      <div style="margin-bottom:26px;">
-        <div style="font-size:13px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;">Contrasenya</div>
+      <div style="margin-bottom:20px;">
+        <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:5px;">Contrasenya</div>
         <input id="login-pass" type="password" placeholder="••••••••"
-          style="width:100%;border:1.5px solid #334155;padding:14px 18px;border-radius:12px;font-size:16px;background:#0f172a;color:white;outline:none;font-family:inherit;box-sizing:border-box;"
+          style="width:100%;border:1.5px solid #334155;padding:11px 14px;border-radius:10px;font-size:13px;background:#0f172a;color:white;outline:none;font-family:inherit;box-sizing:border-box;"
           onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#334155'"
           onkeydown="if(event.key==='Enter')doLogin()">
       </div>
       <button id="login-btn" onclick="doLogin()"
-        style="width:100%;padding:17px;background:#2563eb;color:white;border:none;border-radius:14px;font-weight:900;font-size:16px;cursor:pointer;font-family:inherit;letter-spacing:0.5px;transition:background 0.2s;"
+        style="width:100%;padding:13px;background:#2563eb;color:white;border:none;border-radius:12px;font-weight:900;font-size:13px;cursor:pointer;font-family:inherit;letter-spacing:0.5px;transition:background 0.2s;"
         onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
         Entrar al sistema
       </button>
-      <div style="text-align:center;margin-top:20px;font-size:13px;color:#475569;font-weight:600;">
+      <div style="text-align:center;margin-top:16px;font-size:10px;color:#475569;font-weight:600;">
         Si has oblidat la contrasenya, contacta l'administrador
       </div>
-      <div id="local-file-warning" style="display:none;background:#fef3c7;border:1px solid #f59e0b;border-radius:10px;padding:13px 18px;font-size:13px;color:#92400e;font-weight:700;margin-top:14px;line-height:1.6;">
+      <div id="local-file-warning" style="display:none;background:#fef3c7;border:1px solid #f59e0b;border-radius:10px;padding:10px 14px;font-size:10px;color:#92400e;font-weight:700;margin-top:12px;line-height:1.6;">
         ⚠️ <strong>Mode local actiu</strong> · Arxiu obert des del teu ordinador.<br>
         Les dades <u>no es compartiran</u> entre dispositius.<br>
         <span style="color:#b45309;font-weight:600;">Per sincronitzar, puja l'arxiu a un servidor (ex: tiiny.host).</span>
       </div>
     </div>
     <!-- Indicador rols -->
-    <div style="display:flex;gap:10px;margin-top:20px;justify-content:center;flex-wrap:wrap;">
-      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;padding:7px 16px;font-size:11px;font-weight:700;color:#60a5fa;text-transform:uppercase;letter-spacing:0.5px;">Operador</div>
-      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;padding:7px 16px;font-size:11px;font-weight:700;color:#fbbf24;text-transform:uppercase;letter-spacing:0.5px;">Transportista</div>
-      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;padding:7px 16px;font-size:11px;font-weight:700;color:#34d399;text-transform:uppercase;letter-spacing:0.5px;">Gestor Espinosa</div>
+    <div style="display:flex;gap:8px;margin-top:16px;justify-content:center;flex-wrap:wrap;">
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:8px;padding:5px 12px;font-size:9px;font-weight:700;color:#60a5fa;text-transform:uppercase;letter-spacing:0.5px;">Operador</div>
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:8px;padding:5px 12px;font-size:9px;font-weight:700;color:#fbbf24;text-transform:uppercase;letter-spacing:0.5px;">Transportista</div>
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:8px;padding:5px 12px;font-size:9px;font-weight:700;color:#34d399;text-transform:uppercase;letter-spacing:0.5px;">Gestor Espinosa</div>
     </div>
   </div>
 </div>
@@ -272,7 +272,7 @@
     </div>
     <div class="stat-card bb-green">
       <div class="stat-label">Volum mensual estimat</div>
-      <div class="stat-val" id="est-total-vol">0 Kg</div>
+      <div class="stat-val" id="est-total-vol">870 Kg</div>
       <div class="stat-note">Suma de tots els establiments</div>
     </div>
     <div class="stat-card bb-amber">
@@ -314,13 +314,6 @@
         <div><div class="lbl">Telèfon</div><input class="inp" type="tel" id="m-tel" placeholder="937 XX XX XX"></div>
         <div><div class="lbl">Correu electrònic</div><input class="inp" type="email" id="m-email" placeholder="info@hotel.com"></div>
         <div><div class="lbl">Volum mensual estimat (Kg)</div><input class="inp" type="number" id="m-volum" placeholder="0"></div>
-      </div>
-      <div style="margin-bottom:14px;background:#f0fdf4;border:1.5px solid #86efac;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;">
-        <input type="checkbox" id="m-valid" style="width:18px;height:18px;accent-color:#16a34a;cursor:pointer;">
-        <div>
-          <div style="font-size:12px;font-weight:800;color:#15803d;">Verificat RED II ♻</div>
-          <div style="font-size:10px;color:#4ade80;font-weight:600;">Marca si l'establiment té documentació RED II vàlida</div>
-        </div>
       </div>
       <div style="display:flex;gap:8px;margin-top:4px;">
         <button class="btn btn-green" style="flex:1;" onclick="saveEstabliment()">Desar establiment</button>
@@ -1938,7 +1931,7 @@ const totalVol=ids.reduce((s,id)=>s+(DB[id].volum||0),0);
 const verificats=ids.filter(id=>DB[id].valid).length;
 const sv=id=>document.getElementById(id);
 if(sv('est-total-count')) sv('est-total-count').innerText=ids.length;
-if(sv('est-total-vol'))   sv('est-total-vol').innerText=totalVol.toLocaleString('ca')+' Kg';
+if(sv('est-total-vol'))   sv('est-total-vol').innerText=totalVol.toLocaleString('ca')+' L';
 if(sv('est-verificats'))  sv('est-verificats').innerText=verificats;
 if(sv('est-pendents'))    sv('est-pendents').innerText=ids.length-verificats;
 if(sv('est-count-badge')) sv('est-count-badge').innerText=ids.length+' actius';
@@ -1957,7 +1950,7 @@ return `<div class="est-row">
 <div class="est-meta">${e.tel||'—'} · ${e.email||'—'}</div>
 <div style="margin-top:6px;display:flex;align-items:center;gap:8px;">
 <div style="flex:1;background:#f1f5f9;height:5px;border-radius:99px;overflow:hidden;"><div style="width:${pct}%;height:100%;background:#2563eb;border-radius:99px;"></div></div>
-<span style="font-size:10px;font-weight:700;color:#2563eb;">${e.volum} Kg/mes</span>
+<span style="font-size:10px;font-weight:700;color:#2563eb;">${e.volum} L/mes</span>
 </div>
 </div>
 </div>
@@ -1977,11 +1970,10 @@ document.getElementById('modal-overlay').classList.add('show');
 const fields=['m-id','m-nom','m-carrer','m-adreca','m-tel','m-email','m-volum'];
 if(prefill){ document.getElementById('m-id').value=prefill.id||''; document.getElementById('m-nom').value=prefill.nom||''; document.getElementById('m-tipus').value=prefill.tipus||'Hotel'; document.getElementById('m-adreca').value=prefill.adreca||'';
 document.getElementById('m-carrer').value=prefill.adreca||'';
-document.getElementById('m-valid').checked = prefill.valid === true;
 // Mostra l'adreça actual si existeix
 const pc=document.getElementById('m-place-container');
 if(pc&&prefill.adreca){const pv=document.createElement('div');pv.style.cssText='padding:9px 12px;background:#f0fdf4;border:1.5px solid #22c55e;border-radius:10px;font-size:12px;color:#15803d;font-weight:700;margin-bottom:4px;';pv.innerText='Adreça actual: '+prefill.adreca;pc.insertAdjacentElement('beforebegin',pv);} document.getElementById('m-num').value=prefill.num||''; document.getElementById('m-lat').value=prefill.lat||''; document.getElementById('m-lng').value=prefill.lng||''; document.getElementById('m-tel').value=prefill.tel||''; document.getElementById('m-email').value=prefill.email||''; document.getElementById('m-volum').value=prefill.volum||''; if(prefill.lat){document.getElementById('m-geo-status').innerText='✓ GPS confirmat';document.getElementById('m-geo-status').style.color='#22c55e';} }
-else { fields.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';}); document.getElementById('m-valid').checked = false; }
+else { fields.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';}); }
 }
 function closeModal() { document.getElementById('modal-overlay').classList.remove('show'); }
 function saveEstabliment() {
@@ -2002,7 +1994,7 @@ if (!lat || !lng) {
   alert('Introdueix una adreça vàlida per obtenir les coordenades GPS.');
   return;
 }
-DB[id]={ nom, tipus:document.getElementById('m-tipus').value, adreca, lat, lng, tel:document.getElementById('m-tel').value, email:document.getElementById('m-email').value, volum:parseInt(document.getElementById('m-volum').value)||0, valid: document.getElementById('m-valid').checked };
+DB[id]={ nom, tipus:document.getElementById('m-tipus').value, adreca, lat, lng, tel:document.getElementById('m-tel').value, email:document.getElementById('m-email').value, volum:parseInt(document.getElementById('m-volum').value)||0, valid:false };
 closeModal(); renderEstabliments(); recalcDiesel(); saveState();
 alert('Establiment '+nom+' desat correctament.');
 }
@@ -2010,19 +2002,61 @@ function editEst(id) { openModal({id,...DB[id]}); }
 function delEst(id) {
 if(confirm('Eliminar '+DB[id].nom+'?')){ delete DB[id]; renderEstabliments(); recalcDiesel(); saveState(); }
 }
-
+function scanQR() {
+const code=document.getElementById('qr-input').value.trim().toUpperCase();
+if(!code){ alert("Introdueix el codi QR."); return; }
+const parts=code.split('-'); const estId=parts.length>=3?parts.slice(2).join('-'):null;
+scannedEst=estId?DB[estId]:null;
+document.getElementById('t-nom-display').innerText=scannedEst?scannedEst.nom:'Establiment no trobat';
+document.getElementById('t-adreca-display').innerText=scannedEst?scannedEst.adreca:'—';
+document.getElementById('t-ref-display').innerText='Ref: '+code+(scannedEst?' · Volum esperat: '+scannedEst.volum+' L/mes':'');
+document.getElementById('scan-status').innerText='QR validat: '+(scannedEst?scannedEst.nom:code);
+document.getElementById('scan-status').className='scan-status ok';
+document.getElementById('t-form').classList.remove('locked');
+document.getElementById('t-confirm').style.display='none';
+}
+async function signRecollida() {
+const pes = 0; // El pes es registra a l'operador quan arriba al hub
+const plens=document.getElementById('t-plens').value||'0';
+const buits=document.getElementById('t-buits').value||'0';
+const estat=document.getElementById('t-estat').value;
+const incidencia=document.getElementById('t-incidencia').value||'Cap';
+const precinte=document.getElementById('t-precinte')?.value?.trim()||'—';
+const nom=scannedEst?scannedEst.nom:'Desconegut';
+const ref=document.getElementById('qr-input').value.toUpperCase();
+const now=new Date(); const ts=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+hubLiters+=pes; totalRec++; todayRec++; // pes=0 aquí (es registra a l'operador)
+updateHub(); recalcDiesel(); saveState();
+document.getElementById('t-confirm').style.display='block';
+const cItems=document.getElementById('t-confirmed-items');
+document.getElementById('t-confirmed-list').style.display='block';
+cItems.innerHTML=`<div class="c-item"><div class="c-dot"></div><div><div style="font-weight:700;font-size:12px;">${ref} · ${nom}</div><div style="font-size:11px;color:#64748b;margin-top:2px;">${pes} kg · ${plens}P/${buits}B · ${estat.split('/')[0].trim()} · ${ts}h${incidencia!=='Cap'?' · ⚠ '+incidencia:''}</div></div></div>`+cItems.innerHTML;
+if(fbReady&&db) db.ref('recollides/'+ref.replace(/\./g,'-')+'/transportistaOk').set(true);
+const dataHoraS=now.toLocaleDateString('ca-ES')+' '+now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+const emailParamsS={ nom_establiment:scannedEst?.nom||'Desconegut', ref_id:ref, data_hora:dataHoraS, pes:pes+' kg', barrils_plens:plens, barrils_buits:buits, estat_oli:estat, incidencia, numero_precinte:precinte, operador:'Z-Ero CO₂ · Logística Milla Verda, S.L. · Transportista · Hub Calella (08370)', qr_code:ref };
+const signBtn=document.querySelector('.sign-btn');
+if(signBtn){signBtn.disabled=true;signBtn.innerText='Enviant correu...';}
+const resS=await sendEmailJS(scannedEst?.email||'',scannedEst?.nom||'Desconegut',emailParamsS);
+if(signBtn){signBtn.disabled=false;signBtn.innerText='Signar recollida digitalment';}
+const confirmBox=document.getElementById('t-confirm');
+if(resS.ok){confirmBox.innerText='Recollida signada · Correu enviat';confirmBox.style.cssText='background:#f0fdf4;border-color:#22c55e;color:#15803d;display:block;';}
+else if(resS.sim){confirmBox.innerText='Recollida signada · Configura EmailJS';confirmBox.style.cssText='background:#fef9c3;border-color:#fde68a;color:#854d0e;display:block;';}
+else{confirmBox.innerText='Recollida signada · Error correu';confirmBox.style.cssText='background:#fff5f5;border-color:#fc8181;color:#991b1b;display:block;';}
+document.getElementById('t-form').classList.add('locked');
+document.getElementById('scan-status').innerText='Escaneig pendent...';
+document.getElementById('scan-status').className='scan-status';
+['qr-input','t-plens','t-buits','t-incidencia'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
+scannedEst=null;
+}
 async function genPDF(who) {
 const sel     = who==='op' ? 'op-pdf-sel' : 'esp-pdf-sel';
 const tipus   = document.getElementById(sel).value;
 const emissor = who==='op' ? 'OP' : 'F. Espinosa Gestores S.L. - Gestor autoritzat';
 const today   = new Date().toLocaleDateString('ca-ES');
+const km      = calcKmRuta();
 const dp      = parseFloat(document.getElementById('diesel-p')?.value || 1.65);
 const tc      = parseFloat(document.getElementById('truck-c')?.value || 28);
 const av      = parseFloat(document.getElementById('avg-v')?.value || 55);
-// Càlcul km correcte (async)
-const [resKm, kmZero] = await Promise.all([getKmTradicio(who), getKmZero(who)]);
-const kmTrad  = resKm.km || 0;
-const km      = Math.max(0, kmTrad - kmZero);
 const lDiesel = (km / 100) * tc;
 const costFuel= lDiesel * dp;
 const co2     = lDiesel * 2.64;
@@ -2134,10 +2168,9 @@ if(y>268){doc.addPage();y=20;}
 doc.setFillColor(...NAVY);doc.rect(0,280,210,17,'F');
 doc.setFontSize(6.5);doc.setFont('helvetica','bold');doc.setTextColor(96,165,250);
 doc.setFontSize(6.5);doc.setFont('helvetica','bold');doc.setTextColor(96,165,250);
-var fPre='Z-Ero CO';
 doc.text(fPre,14,288);
 doc.setFontSize(4);doc.text('2',14+doc.getTextWidth(fPre),289.2);
-doc.setFontSize(6.5);doc.text(' - Logistica Milla Verda, S.L. - Hub Calella (08370) - COLLABORADOR AUTORITZAT RED II - ISO 14001',14+doc.getTextWidth(fPre+'2'),288);
+doc.setFontSize(6.5);doc.text('COLLABORADOR AUTORITZAT: Logistica Z-Ero CO₂ Milla Verda, S.L. · Hub Calella · ♻ RED II · ISO 14001',14+doc.getTextWidth(fPre+'2'),288);
 doc.setTextColor(100,116,139);
 doc.text('F. Espinosa Gestores S.L. · Gestor E-1492.14 · Transportista T-902 · ISCC-EU-CERT-IT206-59',14,293);
 doc.text('Pàg. 1',192,288);
