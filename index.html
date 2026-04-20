@@ -1294,61 +1294,111 @@ async function initKmZero() {
   if (km) KM_RUTA_ZERO = km;
 }
 
-// ── GEOCODIFICACIÓ VIA GOOGLE GEOCODING API ──────────────────────────────────
-// Usem la Geocoding API directament via fetch — sense widget, sense problemes
+// ── GEOCODIFICACIÓ AMB DESPLEGABLE DE SUGGERIMENTS (Places JS API widget) ─────
 const GOOGLE_API_KEY = 'AIzaSyBjMhGkgr7ThjaLLgSOwIGMXepebZKzRew';
-let _geocodeTimer = null;
-let _placeWidget = null;
+let _gmapsLoaded = false;
+let _gmapsLoading = false;
+let _pendingInit = false;
+let _autocompleteObj = null;
 
-function initGoogleAutocomplete() {
-  // Usem un camp de text simple + geocodificació automàtica mentre escrius
-  const container = document.getElementById('m-place-container');
-  if (!container) return;
-  // Crea el camp si no existeix
-  if (!document.getElementById('m-carrer-input')) {
-    container.innerHTML = '<input type="text" id="m-carrer-input" class="inp" placeholder="Ex: Carrer Major 45, Calella" autocomplete="off" style="width:100%;" oninput="geocodeEnEscriure(this.value)">';
+function loadGoogleMapsSDK(callback) {
+  if (_gmapsLoaded && window.google && window.google.maps && window.google.maps.places) {
+    callback(); return;
   }
-  // Si hi havia adreça guardada, mostra-la
-  const carrerVal = document.getElementById('m-carrer').value;
-  if (carrerVal) document.getElementById('m-carrer-input').value = carrerVal;
+  if (_gmapsLoading) { window._gmapsCallback = callback; return; }
+  _gmapsLoading = true;
+  window._gmapsReadyCb = function() {
+    _gmapsLoaded = true; _gmapsLoading = false;
+    callback();
+    if (window._gmapsCallback) { window._gmapsCallback(); window._gmapsCallback = null; }
+  };
+  const s = document.createElement('script');
+  s.src = 'https://maps.googleapis.com/maps/api/js?key=' + GOOGLE_API_KEY + '&libraries=places&language=ca&callback=_gmapsReadyCb';
+  s.async = true; s.defer = true;
+  document.head.appendChild(s);
 }
 
-function geocodeEnEscriure(val) {
-  document.getElementById('m-lat').value = '';
-  document.getElementById('m-lng').value = '';
-  const status = document.getElementById('m-geo-status');
-  if (status) { status.innerText = ''; }
-  clearTimeout(_geocodeTimer);
-  if (val.length < 5) return;
-  if (status) { status.innerText = '🔍'; status.style.color = '#94a3b8'; }
-  _geocodeTimer = setTimeout(() => geocodeAdresa(val), 600);
+function initGoogleAutocomplete() {
+  const container = document.getElementById('m-place-container');
+  if (!container) return;
+
+  // Crea el camp de text si no existeix
+  if (!document.getElementById('m-carrer-input')) {
+    container.innerHTML = '<input type="text" id="m-carrer-input" class="inp" placeholder="Ex: Carrer Major 45, Calella" autocomplete="off" style="width:100%;">';
+  }
+
+  // Restaura valor si hi havia adreça guardada
+  const carrerVal = document.getElementById('m-carrer').value;
+  if (carrerVal) document.getElementById('m-carrer-input').value = carrerVal;
+
+  // Carrega el SDK i inicialitza l'autocomplete
+  loadGoogleMapsSDK(function() {
+    const inp = document.getElementById('m-carrer-input');
+    if (!inp) return;
+    // Destrueix l'anterior si existia
+    if (_autocompleteObj) google.maps.event.clearInstanceListeners(_autocompleteObj);
+
+    _autocompleteObj = new google.maps.places.Autocomplete(inp, {
+      types: ['address'],
+      componentRestrictions: { country: 'es' },
+      fields: ['formatted_address', 'geometry', 'name']
+    });
+
+    // Estil del desplegable de Google
+    const style = document.getElementById('pac-style') || document.createElement('style');
+    style.id = 'pac-style';
+    style.innerHTML = '.pac-container{z-index:99999!important;border-radius:0 0 10px 10px;border:1.5px solid #2563eb;border-top:none;box-shadow:0 8px 24px rgba(0,0,0,0.12);font-family:\'Outfit\',sans-serif;}.pac-item{padding:8px 14px;font-size:12px;cursor:pointer;}.pac-item:hover{background:#eff6ff;}.pac-item-query{font-weight:700;color:#0f172a;font-size:12px;}.pac-matched{color:#2563eb;}.pac-icon{display:none;}';
+    document.head.appendChild(style);
+
+    _autocompleteObj.addListener('place_changed', function() {
+      const place = _autocompleteObj.getPlace();
+      const status = document.getElementById('m-geo-status');
+      if (!place.geometry || !place.geometry.location) {
+        // L'usuari ha premut Enter sense seleccionar — geocodifica manualment
+        geocodeAdresa(inp.value); return;
+      }
+      const lat = place.geometry.location.lat();
+      const lng = place.geometry.location.lng();
+      const adrecaFull = place.formatted_address || inp.value;
+      document.getElementById('m-lat').value    = lat;
+      document.getElementById('m-lng').value    = lng;
+      document.getElementById('m-carrer').value  = adrecaFull;
+      document.getElementById('m-adreca').value  = adrecaFull;
+      inp.value = adrecaFull;
+      if (status) { status.innerText = '✓ GPS: ' + lat.toFixed(4) + ', ' + lng.toFixed(4); status.style.color = '#22c55e'; }
+    });
+
+    // Fallback si l'usuari escriu i no selecciona del desplegable
+    inp.addEventListener('blur', function() {
+      setTimeout(function() {
+        const lat = document.getElementById('m-lat').value;
+        if (!lat && inp.value.length > 4) geocodeAdresa(inp.value);
+      }, 300);
+    });
+  });
 }
 
 async function geocodeAdresa(val) {
   const status = document.getElementById('m-geo-status');
+  if (status) { status.innerText = '🔍 Cercant...'; status.style.color = '#94a3b8'; }
   try {
     const url = 'https://maps.googleapis.com/maps/api/geocode/json?address='
       + encodeURIComponent(val + ', Catalunya, Espanya')
-      + '&key=' + GOOGLE_API_KEY
-      + '&language=ca&region=ES';
+      + '&key=' + GOOGLE_API_KEY + '&language=ca&region=ES';
     const r = await fetch(url);
     const data = await r.json();
     if (data.status === 'OK' && data.results && data.results[0]) {
-      const result = data.results[0];
-      const lat = result.geometry.location.lat;
-      const lng = result.geometry.location.lng;
-      const adrecaFull = result.formatted_address;
-      document.getElementById('m-lat').value   = lat;
-      document.getElementById('m-lng').value   = lng;
-      document.getElementById('m-carrer').value = adrecaFull;
-      document.getElementById('m-adreca').value = adrecaFull;
-      // Actualitza el camp visible amb l'adreça formatada de Google
+      const res = data.results[0];
+      const lat = res.geometry.location.lat;
+      const lng = res.geometry.location.lng;
+      const adrecaFull = res.formatted_address;
+      document.getElementById('m-lat').value    = lat;
+      document.getElementById('m-lng').value    = lng;
+      document.getElementById('m-carrer').value  = adrecaFull;
+      document.getElementById('m-adreca').value  = adrecaFull;
       const inp = document.getElementById('m-carrer-input');
       if (inp) inp.value = adrecaFull;
-      if (status) {
-        status.innerText = '✓ GPS: ' + lat.toFixed(4) + ', ' + lng.toFixed(4);
-        status.style.color = '#22c55e';
-      }
+      if (status) { status.innerText = '✓ GPS: ' + lat.toFixed(4) + ', ' + lng.toFixed(4); status.style.color = '#22c55e'; }
     } else {
       if (status) { status.innerText = '⚠ No trobat — prova amb més detalls'; status.style.color = '#f97316'; }
     }
@@ -1357,6 +1407,7 @@ async function geocodeAdresa(val) {
   }
 }
 
+function geocodeEnEscriure(val) {} // compatibilitat (ja no s'usa)
 function selectAdresa() {}
 function updateAdrecaFull() {}
 // ── RECALCUL PRINCIPAL ────────────────────────────────────────────────────────
