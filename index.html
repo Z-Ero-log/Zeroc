@@ -115,8 +115,8 @@
 <section id="sec-operador" class="sec on">
   <div class="top-bar">
     <div>
-      <div class="page-title">Centre Operatiu: Z-Ero CO₂</div>
-      <div class="page-sub">Hub Calella</div>
+      <div class="page-title">Centre Operatiu:</div>
+      <div class="page-sub"> Z-Ero CO₂ · Hub Calella</div>
     </div>
     <div class="top-actions">
       <select class="inp" id="op-pdf-sel" style="width:auto;font-size:11px;font-weight:700;">
@@ -297,7 +297,7 @@
       </div>
       <div style="margin-bottom:10px;">
         <div><div class="lbl">Tipus</div>
-          <select class="inp" id="m-tipus"><option>Hotel</option><option>Restaurant</option><option>Bar / Cafeteria</option><option>Rostisseria</option><option>Escola / Campings</option><option>Altre</option></select>
+          <select class="inp" id="m-tipus"><option>Hotel</option><option>Restaurant</option><option>Bar / Cafeteria</option><option>Rostisseria</option><option>Escola/<option>Camping</option><option>Altre</option></select>
         </div>
       </div>
       <div style="margin-bottom:10px;position:relative;">
@@ -1931,7 +1931,7 @@ const totalVol=ids.reduce((s,id)=>s+(DB[id].volum||0),0);
 const verificats=ids.filter(id=>DB[id].valid).length;
 const sv=id=>document.getElementById(id);
 if(sv('est-total-count')) sv('est-total-count').innerText=ids.length;
-if(sv('est-total-vol'))   sv('est-total-vol').innerText=totalVol.toLocaleString('ca')+' L';
+if(sv('est-total-vol'))   sv('est-total-vol').innerText=totalVol.toLocaleString('ca')+' Kg';
 if(sv('est-verificats'))  sv('est-verificats').innerText=verificats;
 if(sv('est-pendents'))    sv('est-pendents').innerText=ids.length-verificats;
 if(sv('est-count-badge')) sv('est-count-badge').innerText=ids.length+' actius';
@@ -1950,7 +1950,7 @@ return `<div class="est-row">
 <div class="est-meta">${e.tel||'—'} · ${e.email||'—'}</div>
 <div style="margin-top:6px;display:flex;align-items:center;gap:8px;">
 <div style="flex:1;background:#f1f5f9;height:5px;border-radius:99px;overflow:hidden;"><div style="width:${pct}%;height:100%;background:#2563eb;border-radius:99px;"></div></div>
-<span style="font-size:10px;font-weight:700;color:#2563eb;">${e.volum} L/mes</span>
+<span style="font-size:10px;font-weight:700;color:#2563eb;">${e.volum} Kg/mes</span>
 </div>
 </div>
 </div>
