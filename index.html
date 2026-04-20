@@ -727,11 +727,11 @@ if (fbReady && db) {
 db.ref('hub').on('value', snap => {
 const d = snap.val();
 if (d) {
-hubLiters = d.hubLiters || 1150;
+hubLiters = d.hubLiters != null ? d.hubLiters : 0;
 hubCap    = d.hubCap    || 2000;
 hubBidonsRestants = d.hubBidonsRestants || 0;
-totalRec  = d.totalRec  || 44;
-seq       = d.seq       || 45;
+totalRec  = d.totalRec  != null ? d.totalRec : 0;
+seq       = d.seq       != null ? d.seq : 1;
 }
 updateHub(); recalcDiesel();
 });
@@ -757,7 +757,7 @@ if (d) { renderCamioHistorial(d); showCamioAlertOp(d); }
 const saved = localStorage.getItem('zeroc_db');
 if(saved) Object.assign(DB, JSON.parse(saved)); // si no hi ha res guardat, DB queda buit
 const hub = localStorage.getItem('zeroc_hub');
-if (hub) { const h = JSON.parse(hub); hubLiters=h.hubLiters||1150; hubCap=h.hubCap||2000; hubBidonsRestants=h.hubBidonsRestants||0; totalRec=h.totalRec||44; seq=h.seq||45; }
+if (hub) { const h = JSON.parse(hub); hubLiters=h.hubLiters!=null?h.hubLiters:0; hubCap=h.hubCap||2000; hubBidonsRestants=h.hubBidonsRestants||0; totalRec=h.totalRec!=null?h.totalRec:0; seq=h.seq!=null?h.seq:1; }
 const camio = localStorage.getItem('zeroc_camio');
 if (camio) { const c = JSON.parse(camio); renderCamioHistorial(c); showCamioAlertOp(c); }
 const recs = localStorage.getItem('zeroc_recs');
@@ -888,6 +888,10 @@ const el = document.getElementById('op-count');
 if(el) el.innerText = countAvui + ' recollides avui';
 const el2 = document.getElementById('op-today-count');
 if(el2) el2.innerText = countAvui;
+// Hub automàtic: recalcula a partir de les recollides
+recalcHub();
+updateHub();
+saveState();
 }
 function _refKey(ref) { return ref.replace(/\./g,'-').replace(/\s/g,'_'); }
 function obrirConfirmacioInline(ref) {
@@ -928,7 +932,9 @@ const emailDest= DB[id]?.email || DB[Object.keys(DB).find(k=>DB[k].nom===nom)]?.
 const now      = new Date();
 const dataHora = now.toLocaleDateString('ca-ES') + ' ' + now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
 const pesPrevio = rec.pes || 0;
-hubLiters += (pes - pesPrevio);
+// hub es recalcula automàticament
+_allRecs[ref.replace(/\./g,'-')] = recData;
+recalcHub();
 updateHub(); recalcDiesel();
 const recData = { ref, id, nom, pes, plens, buits, estat, incidencia, precinte, dataHora, transportistaOk: true, operadorOk: true, gps: rec.gps || '' };
 saveRecollida(ref, recData);
@@ -1016,8 +1022,16 @@ const _picker = {
   esp: { from: null, to: null, selecting: false, viewYear: new Date().getFullYear(), viewMonth: new Date().getMonth() }
 };
 (function initPickers() {
-  const t = new Date(); t.setHours(0,0,0,0);
-  ['op','esp'].forEach(w => { _picker[w].from = new Date(t); _picker[w].to = new Date(t); });
+  ['op','esp'].forEach(w => { _picker[w].from = new Date(2020,0,1); _picker[w].to = new Date(2099,11,31); });
+  // Actualitza les etiquetes dels botons al DOM quan estigui llest
+  setTimeout(() => {
+    ['op','esp'].forEach(w => {
+      const btnLabel = document.getElementById(w+'-picker-label');
+      if (btnLabel) btnLabel.innerText = 'Total acumulat';
+      const periodLabel = document.getElementById(w+'-period-label');
+      if (periodLabel) periodLabel.innerText = 'Total acumulat';
+    });
+  }, 200);
 })();
 const MESOS_CA = ['Gener','Febrer','Març','Abril','Maig','Juny','Juliol','Agost','Setembre','Octubre','Novembre','Desembre'];
 const DIES_CA  = ['Dl','Dt','Dc','Dj','Dv','Ds','Dg'];
@@ -1585,6 +1599,27 @@ if(s('esp-table-count'))s('esp-table-count').innerText= totalRec + ' registres';
 if(s('op-today-count')) s('op-today-count').innerText = todayRec;
 if(s('op-total-count')) s('op-total-count').innerText = totalRec;
 }
+function recalcHub() {
+// Calcula automàticament els kg al hub:
+// suma tots els kg de recollides confirmades per l'operador (pes > 0)
+// i resta les recollides del camió Espinosa (guardades a Firebase sota 'recollides_camio')
+let kgTotal = 0;
+Object.values(_allRecs).forEach(d => {
+  if (d && d.operadorOk === true && d.pes > 0) {
+    kgTotal += parseFloat(d.pes) || 0;
+  }
+});
+// Resta els kg que ha recollit el camió (registrats via confirmCamio)
+Object.values(_allRecs).forEach(d => {
+  if (d && d._esCamio === true && d.emportat > 0) {
+    kgTotal -= d.emportat;
+  }
+});
+// Suma bidons restants estimats (20 kg/bidó)
+kgTotal += (hubBidonsRestants || 0) * 20;
+hubLiters = Math.max(0, Math.round(kgTotal));
+}
+
 function autoFill() {
 const id = document.getElementById('inp-codi').value.toUpperCase();
 const el = document.getElementById('inp-nom-auto');
@@ -1684,9 +1719,8 @@ const btn = document.querySelector('[onclick="addRecollida()"]');
 if(btn){ btn.disabled=true; btn.innerText='Enviant...'; }
 if (isUpdate) {
 const pesPrevio = existingRec?.pes || 0;
-hubLiters += (pes - pesPrevio); // ajust delta
+// hub es recalcularà automàticament via recalcHub()
 } else {
-hubLiters += pes;
 totalRec++; todayRec++; seq++;
 }
 updateHub();
@@ -1705,6 +1739,9 @@ gps: existingRec?.gps || ''
 };
 saveRecollida(ref, recData);
 saveState();
+// Recalcula hub automàticament a partir de totes les recollides
+_allRecs[ref.replace(/\./g,'-')] = recData;
+recalcHub();
 if (_pendingRecs[ref.toUpperCase()]) {
 _pendingRecs[ref.toUpperCase()] = { ..._pendingRecs[ref.toUpperCase()], ...recData };
 }
@@ -1863,10 +1900,26 @@ const litresBido=parseInt(document.getElementById('camio-litres-bido').value)||2
 const ref=document.getElementById('camio-ref').value.trim().toUpperCase()||('CAMIO-'+new Date().toLocaleDateString('ca-ES').replace(/\//g,'-'));
 if(!emporta){ alert("Introdueix els litres que s'emporta el camió."); return; }
 if(emporta>hubLiters){ alert("Error: els litres superen el hub actual."); return; }
-hubLiters=hubLiters-emporta+(bidonsResten*litresBido);
-hubBidonsRestants=bidonsResten;
-updateHub(); recalcDiesel(); saveState();
+// Guarda la recollida del camió com a entrada especial a _allRecs / Firebase
 const now=new Date(); const ts=now.toLocaleDateString('ca-ES')+' '+now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+const camioKey='CAMIO-'+ref.replace(/[^A-Z0-9]/g,'-');
+const camioRec = { ref: camioKey, _esCamio: true, emportat: emporta, nom: 'Camió Espinosa', dataHora: ts, operadorOk: true, pes: 0, bidonsRestants: bidonsResten };
+// Actualitza bidons restants al hub
+hubBidonsRestants=bidonsResten;
+// Guarda a Firebase/localStorage
+if (fbReady && db) {
+  db.ref('recollides/'+camioKey).set(camioRec);
+} else {
+  try {
+    const recs = JSON.parse(localStorage.getItem('zeroc_recs') || '{}');
+    recs[camioKey] = camioRec;
+    localStorage.setItem('zeroc_recs', JSON.stringify(recs));
+    _allRecs[camioKey] = camioRec;
+  } catch(e) {}
+}
+// Recalcula hub automàticament
+recalcHub();
+updateHub(); recalcDiesel(); saveState();
 const espRow=`<tr style="background:#fffbeb;"><td class="mono">${ref}</td><td><strong>🚛 Recollida camió Espinosa</strong></td><td style="font-weight:800;color:#d97706;">${emporta.toLocaleString('ca')} L</td><td style="font-size:11px;">${bidonsResten>0?bidonsResten+' bidons restants':'—'}</td><td><span class="badge bg-green">Verificat</span></td><td><span class="badge" style="background:#fef3c7;color:#92400e;">Espinosa</span></td><td style="font-family:monospace;font-size:10px;color:#94a3b8;">${ts}<br>GPS validat</td><td><span class="dot" style="background:#22c55e;"></span></td></tr>`;
 document.getElementById('esp-tbody').insertAdjacentHTML('afterbegin', espRow);
 closeCamioModal();
@@ -1972,7 +2025,7 @@ const precinte=document.getElementById('t-precinte')?.value?.trim()||'—';
 const nom=scannedEst?scannedEst.nom:'Desconegut';
 const ref=document.getElementById('qr-input').value.toUpperCase();
 const now=new Date(); const ts=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
-hubLiters+=pes; totalRec++; todayRec++;
+hubLiters+=pes; totalRec++; todayRec++; // pes=0 aquí (es registra a l'operador)
 updateHub(); recalcDiesel(); saveState();
 document.getElementById('t-confirm').style.display='block';
 const cItems=document.getElementById('t-confirmed-items');
