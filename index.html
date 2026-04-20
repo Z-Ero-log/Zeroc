@@ -130,6 +130,7 @@
       <button class="btn btn-dark" onclick="genPDF('op')">Generar PDF</button>
       <button class="btn btn-red" onclick="resetHub()">Buidar Hub</button>
       <button class="btn btn-ghost btn-xs" onclick="resetSessio()" title="Reiniciar dades locals" style="font-size:10px;">🔄 Nova sessió</button>
+      <button class="btn btn-xs" onclick="resetPresentacio()" title="Esborra totes les recollides i posa el hub a 0 per a la presentació" style="font-size:10px;background:#7c3aed;color:white;">🎯 Reset Presentació</button>
     </div>
   </div>
   <div class="g-hub">
@@ -2286,6 +2287,47 @@ const el = document.getElementById(i); if(el) el.value = '';
 const tEstat = document.getElementById('t-estat'); if(tEstat) tEstat.selectedIndex = 0;
 const confirmBox = document.getElementById('t-confirm-box');
 if(confirmBox) { confirmBox.style.display='block'; setTimeout(()=>{ confirmBox.style.display='none'; }, 4000); }
+}
+// ── RESET PER A PRESENTACIÓ ───────────────────────────────────────────────────
+async function resetPresentacio() {
+if (!confirm('🎯 RESET PRESENTACIÓ\n\nAixò esborrarà:\n• Totes les recollides (Firebase + local)\n• L\'historial del camió\n• El Hub → 0 Kg\n• Comptadors (seq, totalRec → 0)\n\n✅ Els establiments es MANTINDRAN intactes.\n\nContinuar?')) return;
+
+// Reinicia variables locals
+hubLiters = 0; hubBidonsRestants = 0; totalRec = 0; seq = 1; todayRec = 0;
+_allRecs = {}; _pendingRecs = {};
+
+const hubData = { hubLiters: 0, hubCap: hubCap, hubBidonsRestants: 0, totalRec: 0, seq: 1 };
+
+if (fbReady && db) {
+  // Esborra recollides i camió de Firebase, reinicia hub
+  await Promise.all([
+    db.ref('recollides').remove(),
+    db.ref('camio').remove(),
+    db.ref('hub').set(hubData),
+  ]);
+} else {
+  // Mode local: esborra localStorage
+  localStorage.removeItem('zeroc_recs');
+  localStorage.removeItem('zeroc_camio');
+  localStorage.setItem('zeroc_hub', JSON.stringify(hubData));
+}
+
+// Actualitza UI
+updateHub(); recalcDiesel();
+const opTbody = document.getElementById('op-tbody');
+if (opTbody) opTbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#94a3b8;padding:20px;font-size:12px;">Sense recollides registrades avui</td></tr>';
+const espTbody = document.getElementById('esp-tbody');
+if (espTbody) espTbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#94a3b8;padding:20px;font-size:12px;">Sense recollides registrades</td></tr>';
+const camioHist = document.getElementById('esp-camio-historial');
+if (camioHist) camioHist.innerHTML = '';
+const camioPill = document.getElementById('esp-camio-status-pill');
+if (camioPill) { camioPill.style.display = 'none'; camioPill.innerText = ''; }
+const opCamioAlert = document.getElementById('op-camio-alert');
+if (opCamioAlert) opCamioAlert.style.display = 'none';
+const opCount = document.getElementById('op-count');
+if (opCount) opCount.innerText = '0 recollides avui';
+
+alert('✅ Reset completat!\n\nFirebase net:\n• Recollides: 0\n• Hub: 0 Kg\n• Seq: 1\n\nEls establiments s\'han mantingut intactes.\nLlest per a la presentació! 🎯');
 }
 // onAuthStateChanged eliminat intencionadament:
 // Cada dispositiu/pestanya gestiona la seva pròpia sessió de forma independent.
