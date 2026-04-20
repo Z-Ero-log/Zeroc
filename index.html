@@ -2002,52 +2002,6 @@ function editEst(id) { openModal({id,...DB[id]}); }
 function delEst(id) {
 if(confirm('Eliminar '+DB[id].nom+'?')){ delete DB[id]; renderEstabliments(); recalcDiesel(); saveState(); }
 }
-function scanQR() {
-const code=document.getElementById('qr-input').value.trim().toUpperCase();
-if(!code){ alert("Introdueix el codi QR."); return; }
-const parts=code.split('-'); const estId=parts.length>=3?parts.slice(2).join('-'):null;
-scannedEst=estId?DB[estId]:null;
-document.getElementById('t-nom-display').innerText=scannedEst?scannedEst.nom:'Establiment no trobat';
-document.getElementById('t-adreca-display').innerText=scannedEst?scannedEst.adreca:'—';
-document.getElementById('t-ref-display').innerText='Ref: '+code+(scannedEst?' · Volum esperat: '+scannedEst.volum+' L/mes':'');
-document.getElementById('scan-status').innerText='QR validat: '+(scannedEst?scannedEst.nom:code);
-document.getElementById('scan-status').className='scan-status ok';
-document.getElementById('t-form').classList.remove('locked');
-document.getElementById('t-confirm').style.display='none';
-}
-async function signRecollida() {
-const pes = 0; // El pes es registra a l'operador quan arriba al hub
-const plens=document.getElementById('t-plens').value||'0';
-const buits=document.getElementById('t-buits').value||'0';
-const estat=document.getElementById('t-estat').value;
-const incidencia=document.getElementById('t-incidencia').value||'Cap';
-const precinte=document.getElementById('t-precinte')?.value?.trim()||'—';
-const nom=scannedEst?scannedEst.nom:'Desconegut';
-const ref=document.getElementById('qr-input').value.toUpperCase();
-const now=new Date(); const ts=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
-hubLiters+=pes; totalRec++; todayRec++; // pes=0 aquí (es registra a l'operador)
-updateHub(); recalcDiesel(); saveState();
-document.getElementById('t-confirm').style.display='block';
-const cItems=document.getElementById('t-confirmed-items');
-document.getElementById('t-confirmed-list').style.display='block';
-cItems.innerHTML=`<div class="c-item"><div class="c-dot"></div><div><div style="font-weight:700;font-size:12px;">${ref} · ${nom}</div><div style="font-size:11px;color:#64748b;margin-top:2px;">${pes} kg · ${plens}P/${buits}B · ${estat.split('/')[0].trim()} · ${ts}h${incidencia!=='Cap'?' · ⚠ '+incidencia:''}</div></div></div>`+cItems.innerHTML;
-if(fbReady&&db) db.ref('recollides/'+ref.replace(/\./g,'-')+'/transportistaOk').set(true);
-const dataHoraS=now.toLocaleDateString('ca-ES')+' '+now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
-const emailParamsS={ nom_establiment:scannedEst?.nom||'Desconegut', ref_id:ref, data_hora:dataHoraS, pes:pes+' kg', barrils_plens:plens, barrils_buits:buits, estat_oli:estat, incidencia, numero_precinte:precinte, operador:'Z-Ero CO₂ · Logística Milla Verda, S.L. · Transportista · Hub Calella (08370)', qr_code:ref };
-const signBtn=document.querySelector('.sign-btn');
-if(signBtn){signBtn.disabled=true;signBtn.innerText='Enviant correu...';}
-const resS=await sendEmailJS(scannedEst?.email||'',scannedEst?.nom||'Desconegut',emailParamsS);
-if(signBtn){signBtn.disabled=false;signBtn.innerText='Signar recollida digitalment';}
-const confirmBox=document.getElementById('t-confirm');
-if(resS.ok){confirmBox.innerText='Recollida signada · Correu enviat';confirmBox.style.cssText='background:#f0fdf4;border-color:#22c55e;color:#15803d;display:block;';}
-else if(resS.sim){confirmBox.innerText='Recollida signada · Configura EmailJS';confirmBox.style.cssText='background:#fef9c3;border-color:#fde68a;color:#854d0e;display:block;';}
-else{confirmBox.innerText='Recollida signada · Error correu';confirmBox.style.cssText='background:#fff5f5;border-color:#fc8181;color:#991b1b;display:block;';}
-document.getElementById('t-form').classList.add('locked');
-document.getElementById('scan-status').innerText='Escaneig pendent...';
-document.getElementById('scan-status').className='scan-status';
-['qr-input','t-plens','t-buits','t-incidencia'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
-scannedEst=null;
-}
 async function genPDF(who) {
 const sel     = who==='op' ? 'op-pdf-sel' : 'esp-pdf-sel';
 const tipus   = document.getElementById(sel).value;
