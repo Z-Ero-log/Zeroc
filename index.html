@@ -182,7 +182,7 @@
     </button>
     <span id="op-period-label" style="font-size:10px;font-weight:700;color:#2563eb;background:#dbeafe;padding:3px 10px;border-radius:99px;">Avui</span>
   </div>
-  <div class="g-stats" style="margin-bottom:16px;">
+  <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-bottom:16px;">
     <div class="stat-card bb-green">
       <div class="stat-label">Hores flota alliberades</div>
       <div class="stat-val" style="color:#22c55e;" id="op-hours">—</div>
@@ -193,15 +193,20 @@
       <div class="stat-val" style="color:#f97316;" id="op-fuel">—</div>
       <div class="stat-note" id="op-fuel-note">Calculant ruta...</div>
     </div>
+    <div class="stat-card" style="border-bottom:4px solid #16a34a;">
+      <div class="stat-label">CO₂ evitat estimat</div>
+      <div class="stat-val" style="color:#16a34a;" id="op-co2">— kg</div>
+      <div class="stat-note">2,64 kg CO₂ per litre dièsel evitat</div>
+    </div>
+    <div class="stat-card" style="border-bottom:4px solid #2563eb;">
+      <div class="stat-label">Recollides avui / Total</div>
+      <div class="stat-val" style="color:#2563eb;" id="op-today-count">0</div>
+      <div class="stat-note">Total acumulat: <span id="op-total-count">—</span></div>
+    </div>
     <div class="stat-card bb-navy" style="background:#0f172a;">
       <div class="stat-label" style="color:#60a5fa;">Valor UCO recollit</div>
       <div class="stat-val" style="color:white;" id="op-total-estalvi">—</div>
       <div class="stat-note" style="color:#475569;">Valor matèria primera RED II (2,97 €/kg)</div>
-    </div>
-    <div class="stat-card" style="border-bottom:4px solid #16a34a;">
-      <div class="stat-label">CO2 evitat estimat</div>
-      <div class="stat-val" style="color:#16a34a;" id="op-co2">— kg</div>
-      <div class="stat-note">2,64 kg CO2 per litre dièsel evitat</div>
     </div>
   </div>
   <!-- INDICADOR CAMIÓ ENVIAT pel Gestor -->
@@ -228,14 +233,14 @@
       <div class="card-h"><span class="card-label">Resum ambiental RED II</span></div>
       <div class="g2">
         <div>
-          <div class="lbl">CO2 evitat (ruta)</div>
+          <div class="lbl">CO₂ evitat (ruta)</div>
           <div style="font-size:26px;font-weight:900;color:#16a34a;" id="op-co2-detail">— kg</div>
-          <div class="stat-note">2,64 kg CO2 per litre dièsel</div>
+          <div class="stat-note">2,64 kg CO₂ per litre dièsel</div>
         </div>
         <div>
-          <div class="lbl">Recollides avui</div>
-          <div style="font-size:26px;font-weight:900;color:#0f172a;" id="op-today-count">0</div>
-          <div class="stat-note">Total acumulat: <span id="op-total-count">—</span></div>
+          <div class="lbl">Estalvi total projectat</div>
+          <div style="font-size:26px;font-weight:900;color:#2563eb;" id="op-estalvi-total-eur">—</div>
+          <div class="stat-note">Basat en kg acumulats al hub</div>
         </div>
       </div>
     </div>
@@ -316,11 +321,20 @@
         <div><div class="lbl">Correu electrònic</div><input class="inp" type="email" id="m-email" placeholder="info@hotel.com"></div>
         <div><div class="lbl">Volum mensual estimat (Kg)</div><input class="inp" type="number" id="m-volum" placeholder="0"></div>
       </div>
-      <div style="margin-bottom:14px;background:#f0fdf4;border:1.5px solid #86efac;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;">
-        <input type="checkbox" id="m-valid" style="width:18px;height:18px;accent-color:#16a34a;cursor:pointer;">
-        <div>
-          <div style="font-size:12px;font-weight:800;color:#15803d;">Verificat RED II ♻</div>
-          <div style="font-size:10px;color:#4ade80;font-weight:600;">Marca si l'establiment té documentació RED II vàlida</div>
+      <div style="margin-bottom:14px;background:#f0fdf4;border:1.5px solid #86efac;border-radius:12px;padding:12px 16px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <input type="checkbox" id="m-valid" style="width:18px;height:18px;accent-color:#16a34a;cursor:pointer;">
+          <div>
+            <div style="font-size:12px;font-weight:800;color:#15803d;">Verificat RED II ♻</div>
+            <div style="font-size:10px;color:#4ade80;font-weight:600;">Marca quan l'establiment compleixi els requisits</div>
+          </div>
+        </div>
+        <div style="font-size:10px;color:#166534;background:#dcfce7;border-radius:8px;padding:8px 10px;line-height:1.6;">
+          <strong>Com es verifica un establiment RED II:</strong><br>
+          1. L'establiment ha signat el contracte de cessió d'UCO<br>
+          2. S'ha inspeccionat i els bidons compleixen el format correcte<br>
+          3. El gestor autoritzat (F. Espinosa) ha confirmat la traçabilitat<br>
+          4. L'establiment té codi ID Z-Ero assignat i GPS validat
         </div>
       </div>
       <div style="display:flex;gap:8px;margin-top:4px;">
@@ -1626,6 +1640,7 @@ async function recalcDiesel() {
 
   if(s('op-fuel'))          s('op-fuel').innerText          = hiHaDiesIncompletsOp && kmTradOp===0 ? '—' : fmt(lDOp*dp);
   if(s('op-total-estalvi')) s('op-total-estalvi').innerText  = fmt(pesOp * 2.97);
+  if(s('op-estalvi-total-eur')) s('op-estalvi-total-eur').innerText = fmt(hubLiters * 2.97);
   if(s('op-fuel-note'))     s('op-fuel-note').innerText      = hiHaDiesIncompletsOp && kmTradOp===0
     ? '⚠ Afegeix GPS als establiments per calcular'
     : Math.round(kmEstOp)+' km estalviats · Trad: '+Math.round(kmTradOp)+' km · Z-Ero: '+Math.round(kmZeroOp)+' km · '+countOp+' rec.';
@@ -1643,6 +1658,15 @@ async function recalcDiesel() {
   if(s('route-pill')) s('route-pill').innerText = hiHaDiesIncompletsOp && kmTradOp===0
     ? '⚠ Ruta incompleta — establiments sense GPS'
     : 'Ruta trad.: '+Math.round(kmTradOp)+' km · Z-Ero: '+Math.round(kmZeroOp)+' km · Estalvi: '+Math.round(kmEstOp)+' km · '+countOp+' rec.';
+  // Manteniment flota: km acumulats del vehicle elèctric Z-Ero
+  const flotaKmTotal = Math.round(kmZeroOp);
+  const flotaServeiciKm = 500;
+  const flotaPct = Math.min(100, Math.round((flotaKmTotal / flotaServeiciKm) * 100));
+  if(s('flota-km')) s('flota-km').innerText = flotaKmTotal.toLocaleString('ca') + ' km';
+  const flotaBar = document.querySelector('#sec-operador .prog-sm-in');
+  if(flotaBar) flotaBar.style.width = flotaPct + '%';
+  const flotaPctLabel = document.querySelector('#sec-operador .prog-sm + div');
+  if(flotaPctLabel) flotaPctLabel.innerText = flotaPct + '% completat · ' + Math.max(0, flotaServeiciKm - flotaKmTotal) + ' km fins al proper servei';
 
   // ── Espinosa ───────────────────────────────────────────────────────────────
   const recsEsp  = _filterRecsByPeriod('esp');
@@ -1719,7 +1743,7 @@ if(bidonsLabel){ bidonsLabel.innerText = hubBidonsRestants>0 ? '⚠ '+hubBidonsR
 if(s('esp-liters'))     s('esp-liters').innerText     = hubLiters.toLocaleString('ca') + ' Kg';
 const mb = s('esp-mini-bar');
 if(mb){ mb.style.width=pct+'%'; mb.style.background=pct<55?'#22c55e':pct<85?'#2563eb':'#dc2626'; }
-if(s('esp-hub-note'))   s('esp-hub-note').innerText   = pctR + '% · Validat GPS Z-Ero';
+if(s('esp-hub-note'))   s('esp-hub-note').innerText   = pctR + '% · Validat GPS Z-Ero' + (hubBidonsRestants > 0 ? ' · ⚠ ' + hubBidonsRestants + ' bidó' + (hubBidonsRestants > 1 ? 'ns pendents' : ' pendent') : '');
 if(s('esp-recollides')) s('esp-recollides').innerText = totalRec;
 if(s('esp-table-count'))s('esp-table-count').innerText= totalRec + ' registres';
 if(s('op-today-count')) s('op-today-count').innerText = todayRec;
@@ -2258,10 +2282,10 @@ if(y>268){doc.addPage();y=20;}
 doc.setFillColor(...NAVY);doc.rect(0,280,210,17,'F');
 doc.setFontSize(6.5);doc.setFont('helvetica','bold');doc.setTextColor(96,165,250);
 doc.setFontSize(6.5);doc.setFont('helvetica','bold');doc.setTextColor(96,165,250);
-var fPre='Z-Ero CO';
+var fPre='Logística Z-Ero CO';
 doc.text(fPre,14,288);
 doc.setFontSize(4);doc.text('2',14+doc.getTextWidth(fPre),289.2);
-doc.setFontSize(6.5);doc.text(' - Logistica Milla Verda, S.L. - Hub Calella (08370) - COLLABORADOR AUTORITZAT RED II - ISO 14001',14+doc.getTextWidth(fPre+'2'),288);
+doc.setFontSize(6.5);doc.text(' Milla Verda, S.L. - Hub Calella (08370) - COLLABORADOR AUTORITZAT RED II - ISO 14001',14+doc.getTextWidth(fPre+'2'),288);
 doc.setTextColor(100,116,139);
 doc.text('F. Espinosa Gestores S.L. · Gestor E-1492.14 · Transportista T-902 · ISCC-EU-CERT-IT206-59',14,293);
 doc.text('Pàg. 1',192,288);
