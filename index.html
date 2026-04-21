@@ -95,6 +95,7 @@
         </div>
         <button onclick="doLogout()" style="background:#dc2626;color:white;border:none;border-radius:6px;padding:3px 8px;font-size:9px;font-weight:700;cursor:pointer;margin-left:4px;">Sortir</button>
       </div>
+      <div id="offline-badge" onclick="_flushOfflineQueue()" title="Clic per reintantar sincronització" style="display:none;background:#f59e0b;color:white;border-radius:8px;padding:5px 10px;font-size:9px;font-weight:800;cursor:pointer;align-items:center;white-space:nowrap;max-width:200px;">⚠ Offline</div>
       <div style="background:white;border-radius:8px;padding:4px 8px;display:flex;align-items:center;height:46px;flex-shrink:0;max-width:110px;overflow:hidden;">
         <img src="https://fespinosa.eu/wp-content/uploads/2021/01/logo-fespinosa.jpg"
              alt="F. Espinosa Gestores"
@@ -217,10 +218,10 @@
     <div class="card card-bt-blue">
       <div class="card-h"><span class="card-label">Configuració de càlcul d'estalvi</span></div>
       <div class="g2" style="margin-bottom:10px;">
-        <div><div class="lbl">Preu dièsel avui (€/L)</div><input class="inp" type="number" id="diesel-p" value="1.65" step="0.01" oninput="recalcDiesel()"></div>
-        <div><div class="lbl">Consum camió (L/100km)</div><input class="inp" type="number" id="truck-c" value="28" step="1" oninput="recalcDiesel()"></div>
+        <div><div class="lbl">Preu dièsel avui (€/L)</div><input class="inp" type="number" id="diesel-p" value="1.65" step="0.01" oninput="recalcDieselDebounced()"></div>
+        <div><div class="lbl">Consum camió (L/100km)</div><input class="inp" type="number" id="truck-c" value="28" step="1" oninput="recalcDieselDebounced()"></div>
       </div>
-      <div><div class="lbl">Velocitat mitjana ruta (km/h)</div><input class="inp" type="number" id="avg-v" value="55" step="5" oninput="recalcDiesel()"></div>
+      <div><div class="lbl">Velocitat mitjana ruta (km/h)</div><input class="inp" type="number" id="avg-v" value="55" step="5" oninput="recalcDieselDebounced()"></div>
       <div class="info-pill" id="route-pill">Calculant ruta des de Maçanet de la Selva...</div>
     </div>
     <div class="card" style="border-top:3px solid #16a34a;border-radius:0 0 20px 20px;">
@@ -740,7 +741,7 @@ hubBidonsRestants = d.hubBidonsRestants || 0;
 totalRec  = d.totalRec  != null ? d.totalRec : 0;
 seq       = d.seq       != null ? d.seq : 1;
 }
-updateHub(); recalcDiesel();
+updateHub(); recalcDieselDebounced();
 });
 db.ref('establiments').on('value', snap => {
 const d = snap.val();
@@ -750,7 +751,7 @@ Object.assign(DB, d);
 } else {
 }
 renderEstabliments();
-recalcDiesel();
+recalcDieselDebounced();
 });
 db.ref('recollides').on('value', snap => {
 const d = snap.val();
@@ -769,38 +770,73 @@ const camio = localStorage.getItem('zeroc_camio');
 if (camio) { const c = JSON.parse(camio); renderCamioHistorial(c); showCamioAlertOp(c); }
 const recs = localStorage.getItem('zeroc_recs');
 if (recs) { const parsed = JSON.parse(recs); _allRecs = parsed; updatePendingRecsCache(parsed); renderRecollides(parsed); }
-updateHub(); recalcDiesel(); renderEstabliments();
+updateHub(); recalcDieselDebounced(); renderEstabliments();
 }
 }
-function saveState() {
+function saveHub() {
 const hubData = { hubLiters, hubCap, hubBidonsRestants, totalRec, seq };
 if (fbReady && db) {
 db.ref('hub').set(hubData);
-db.ref('establiments').set(DB);
 } else {
-localStorage.setItem('zeroc_db', JSON.stringify(DB));
 localStorage.setItem('zeroc_hub', JSON.stringify(hubData));
 }
 }
-function saveRecollida(ref, data) {
-_pendingRecs[ref.toUpperCase()] = { key: ref.replace(/\./g,'-'), ...data };
-_allRecs[ref.replace(/\./g,'-')] = data; // actualitza cache del filtre de períodes
+function saveEstabliments() {
 if (fbReady && db) {
-db.ref('recollides/' + ref.replace(/\./g,'-')).set(data);
+db.ref('establiments').set(DB);
 } else {
+localStorage.setItem('zeroc_db', JSON.stringify(DB));
+}
+}
+function saveState() { saveHub(); saveEstabliments(); }
+// ── SEQ ATÒMIC: evita referències duplicades amb transacció Firebase ─────────
+async function getNextSeq() {
+  if (fbReady && db) {
+    return new Promise((resolve) => {
+      db.ref('hub/seq').transaction(current => {
+        return (current || 1) + 1;
+      }, (error, committed, snap) => {
+        if (!error && committed) {
+          seq = snap.val(); // sincronitza local
+          resolve(seq);
+        } else {
+          // Fallback local si la transacció falla
+          seq++;
+          resolve(seq);
+        }
+      });
+    });
+  } else {
+    seq++;
+    return seq;
+  }
+}
+function saveRecollida(ref, data) {
+const key = ref.replace(/\./g,'-');
+_pendingRecs[ref.toUpperCase()] = { key, ...data };
+_allRecs[key] = data;
+// Sempre guardem en local com a còpia de seguretat
 try {
-const recs = JSON.parse(localStorage.getItem('zeroc_recs') || '{}');
-recs[ref.replace(/\./g,'-')] = data;
-localStorage.setItem('zeroc_recs', JSON.stringify(recs));
+  const recs = JSON.parse(localStorage.getItem('zeroc_recs') || '{}');
+  recs[key] = data;
+  localStorage.setItem('zeroc_recs', JSON.stringify(recs));
 } catch(e) {}
+// I enviem a Firebase amb cua offline si cal
+if (fbReady && db) {
+  saveWithQueue('recollides/' + key, data);
 }
 }
-function renderRecollides(data) {
+function renderRecollides(data, resetPage=true) {
 const opTbody  = document.getElementById('op-tbody');
 const espTbody = document.getElementById('esp-tbody');
 if (!opTbody || !espTbody) return;
-const entries = Object.entries(data).sort((a,b) => b[0].localeCompare(a[0]));
-if (!entries.length) return;
+const allEntries = Object.entries(data).sort((a,b) => b[0].localeCompare(a[0]));
+if (!allEntries.length) return;
+if (resetPage) { _opPage = 1; _espPage = 1; }
+const entries = allEntries.slice(0, _opPage * PAGE_SIZE);
+const espEntries = allEntries.slice(0, _espPage * PAGE_SIZE);
+const hasMoreOp  = allEntries.length > _opPage * PAGE_SIZE;
+const hasMoreEsp = allEntries.length > _espPage * PAGE_SIZE;
 const todayStr = new Date().toLocaleDateString('ca-ES');
 let countAvui = 0;
 opTbody.innerHTML  = '';
@@ -892,14 +928,89 @@ updatePendingRecsCache(data);
 _allRecs = data; // cache per al filtre de períodes
 todayRec = countAvui;
 const el = document.getElementById('op-count');
-if(el) el.innerText = countAvui + ' recollides avui';
+if(el) el.innerText = countAvui + ' recollides avui' + (allEntries.length > PAGE_SIZE ? ' · ' + allEntries.length + ' total' : '');
 const el2 = document.getElementById('op-today-count');
 if(el2) el2.innerText = countAvui;
+// Botó "Carregar més" operador
+const existOp = document.getElementById('op-load-more');
+if (existOp) existOp.remove();
+if (hasMoreOp) {
+  const btn = document.createElement('tr');
+  btn.id = 'op-load-more';
+  btn.innerHTML = '<td colspan="10" style="text-align:center;padding:14px;"><button onclick="_opPage++;renderRecollides(_allRecs,false)" style="background:#f1f5f9;border:1.5px solid #e2e8f0;border-radius:10px;padding:8px 24px;font-size:11px;font-weight:700;color:#334155;cursor:pointer;">Carregar més (' + (allEntries.length - _opPage*PAGE_SIZE) + ' restants)</button></td>';
+  opTbody.appendChild(btn);
+}
+// Botó "Carregar més" Espinosa
+const existEsp = document.getElementById('esp-load-more');
+if (existEsp) existEsp.remove();
+if (hasMoreEsp) {
+  const btnE = document.createElement('tr');
+  btnE.id = 'esp-load-more';
+  btnE.innerHTML = '<td colspan="8" style="text-align:center;padding:14px;"><button onclick="_espPage++;renderRecollides(_allRecs,false)" style="background:#f1f5f9;border:1.5px solid #e2e8f0;border-radius:10px;padding:8px 24px;font-size:11px;font-weight:700;color:#334155;cursor:pointer;">Carregar més (' + (allEntries.length - _espPage*PAGE_SIZE) + ' restants)</button></td>';
+  espTbody.appendChild(btnE);
+}
 // Hub automàtic: recalcula a partir de les recollides
 recalcHub();
 updateHub();
-saveState();
+saveHub();
 }
+
+// ── CODA OFFLINE: evita pèrdua de dades si es perd connexió ──────────────────
+const _offlineQueue = JSON.parse(localStorage.getItem('zeroc_offline_queue') || '[]');
+let _syncingQueue = false;
+
+function _persistQueue() {
+  localStorage.setItem('zeroc_offline_queue', JSON.stringify(_offlineQueue));
+}
+
+async function _flushOfflineQueue() {
+  if (_syncingQueue || !fbReady || !db || !_offlineQueue.length) return;
+  _syncingQueue = true;
+  const badge = document.getElementById('offline-badge');
+  while (_offlineQueue.length > 0) {
+    const item = _offlineQueue[0];
+    try {
+      await db.ref(item.path).set(item.data);
+      _offlineQueue.shift(); // remove if success
+      _persistQueue();
+    } catch(e) {
+      break; // stop if still offline
+    }
+  }
+  _syncingQueue = false;
+  if (badge) badge.style.display = _offlineQueue.length > 0 ? 'flex' : 'none';
+}
+
+function saveWithQueue(path, data) {
+  if (fbReady && db) {
+    db.ref(path).set(data).catch(() => {
+      // Firebase write failed — queue it
+      _offlineQueue.push({ path, data, ts: Date.now() });
+      _persistQueue();
+      const badge = document.getElementById('offline-badge');
+      if (badge) { badge.style.display = 'flex'; badge.innerText = '⚠ ' + _offlineQueue.length + ' pendent' + (_offlineQueue.length > 1 ? 's' : '') + ' (offline)'; }
+    });
+  } else {
+    // Mode local — guardem directament
+    const key = path.replace(/\//g, '_');
+    localStorage.setItem('zeroc_q_' + key, JSON.stringify(data));
+  }
+}
+
+// Reintenta la cua cada cop que recuperem connexió
+window.addEventListener('online', () => {
+  const badge = document.getElementById('offline-badge');
+  if (badge && _offlineQueue.length > 0) {
+    badge.innerText = '🔄 Sincronitzant...';
+    badge.style.display = 'flex';
+  }
+  setTimeout(_flushOfflineQueue, 1000);
+});
+window.addEventListener('offline', () => {
+  const badge = document.getElementById('offline-badge');
+  if (badge) { badge.style.display = 'flex'; badge.innerText = '📵 Sense connexió — les recollides es guardaran localment'; }
+});
+
 function _refKey(ref) { return ref.replace(/\./g,'-').replace(/\s/g,'_'); }
 function obrirConfirmacioInline(ref) {
 document.querySelectorAll('[id^="panel-"]').forEach(p => p.style.display = 'none');
@@ -942,7 +1053,7 @@ const pesPrevio = rec.pes || 0;
 // hub es recalcula automàticament
 _allRecs[ref.replace(/\./g,'-')] = recData;
 recalcHub();
-updateHub(); recalcDiesel();
+updateHub(); recalcDieselDebounced();
 const recData = { ref, id, nom, pes, plens, buits, estat, incidencia, precinte, dataHora, transportistaOk: true, operadorOk: true, gps: rec.gps || '' };
 saveRecollida(ref, recData);
 saveState();
@@ -1020,10 +1131,13 @@ const t = document.getElementById('tab-' + s);
 if (t) t.classList.toggle('on', s === v);
 });
 if (v === 'establiments') renderEstabliments();
-if (v === 'espinosa') recalcDiesel();
+if (v === 'espinosa') recalcDieselDebounced();
 }
 // ── DATE RANGE PICKER ────────────────────────────────────────────────────────
 let _allRecs = {};
+const PAGE_SIZE = 50; // recollides per pàgina
+let _opPage = 1;
+let _espPage = 1;
 const _picker = {
   op:  { from: null, to: null, selecting: false, viewYear: new Date().getFullYear(), viewMonth: new Date().getMonth() },
   esp: { from: null, to: null, selecting: false, viewYear: new Date().getFullYear(), viewMonth: new Date().getMonth() }
@@ -1182,7 +1296,7 @@ function applyPicker(who) {
   if (periodLabel) periodLabel.innerText = label;
   const popup = document.getElementById('picker-popup-'+who);
   if (popup) popup.remove();
-  recalcDiesel();
+  recalcDieselDebounced();
 }
 
 function sameDay(a,b) { return a&&b&&a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate(); }
@@ -1474,6 +1588,11 @@ function calcHoresAlliberades(recs) {
   };
 }
 
+let _recalcDieselTimer = null;
+function recalcDieselDebounced() {
+  clearTimeout(_recalcDieselTimer);
+  _recalcDieselTimer = setTimeout(() => recalcDiesel(), 300);
+}
 async function recalcDiesel() {
   const dp = parseFloat(document.getElementById('diesel-p')?.value || 1.65);
   const tc = parseFloat(document.getElementById('truck-c')?.value || 28);
@@ -1719,20 +1838,21 @@ const isUpdate = !!refTransp && !!_pendingRecs[refTransp];
 const existingRec = isUpdate ? _pendingRecs[refTransp] : null;
 const nom       = existingRec?.nom || DB[id]?.nom || id;
 const emailDest = DB[id]?.email || (existingRec && DB[Object.keys(DB).find(k=>DB[k].nom===existingRec.nom)]?.email) || '';
-const ref       = isUpdate ? refTransp : ('Z-08370-' + String(seq).padStart(3,'0'));
+const nextSeqVal = isUpdate ? seq : await getNextSeq();
+const ref       = isUpdate ? refTransp : ('Z-08370-' + String(nextSeqVal).padStart(3,'0'));
 const now       = new Date();
 const dataHora  = now.toLocaleDateString('ca-ES') + ' ' + now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
 const btn = document.querySelector('[onclick="addRecollida()"]');
 if(btn){ btn.disabled=true; btn.innerText='Enviant...'; }
 if (isUpdate) {
-const pesPrevio = existingRec?.pes || 0;
 // hub es recalcularà automàticament via recalcHub()
 } else {
-totalRec++; todayRec++; seq++;
+totalRec++; todayRec++;
+// seq ja incrementat per getNextSeq()
 }
 updateHub();
 if (!isUpdate) {
-document.getElementById('next-id').innerText = 'ID: Z-08370-' + String(seq).padStart(3,'0');
+document.getElementById('next-id').innerText = 'ID: Z-08370-' + String(seq+1).padStart(3,'0');
 document.getElementById('op-count').innerText = todayRec + ' recollides';
 }
 const estatBadge = estat.startsWith('Net') ? 'bg-green' : estat.startsWith('Degradat') ? 'bg-red' : 'bg-yellow';
@@ -1836,7 +1956,7 @@ const el=document.getElementById(i); if(el) el.value='';
 });
 const statusEl = document.getElementById('inp-ref-status');
 if (statusEl) { statusEl.style.color='#94a3b8'; statusEl.innerHTML='Introdueix la ref. del transportista per autocompletar'; }
-recalcDiesel();
+recalcDieselDebounced();
 const emailParams = { nom_establiment:nom, ref_id:ref, data_hora:dataHora, pes:pes+' kg', barrils_plens:plens, barrils_buits:buits, estat_oli:estat, incidencia, numero_precinte:precinte, operador:'Z-Ero CO₂ · Logística Milla Verda, S.L. · Hub Calella (08370)', qr_code:'REC-'+(seq-1)+'-'+(id||'TRANSP') };
 const result = await sendEmailJS(emailDest, nom, emailParams);
 if(btn){ btn.disabled=false; btn.innerText='Confirmar recollida i enviar correu'; }
@@ -1847,7 +1967,7 @@ else alert('Recollida '+ref+(isUpdate?' actualitzada':' registrada')+'.\nError c
 function resetHub() {
 if(confirm("Confirmes el buidatge total del Hub i el lliurament a Espinosa Gestors?")) {
 hubLiters=0; hubBidonsRestants=0;
-updateHub(); recalcDiesel(); saveState();
+updateHub(); recalcDieselDebounced(); saveHub();
 alert("Hub reiniciat a 0 L.");
 }
 }
@@ -1879,7 +1999,7 @@ const b=parseInt(document.getElementById('hub-edit-bidons').value)||0;
 if(!l||!c){ alert("Introdueix els litres i la capacitat."); return; }
 if(l>c){ alert("Els litres no poden superar la capacitat."); return; }
 hubLiters=l; hubCap=c; hubBidonsRestants=b;
-updateHub(); recalcDiesel(); saveState(); closeHubModal();
+updateHub(); recalcDieselDebounced(); saveHub(); closeHubModal();
 }
 function openCamioModal() {
 document.getElementById('camio-hub-actual').innerText = hubLiters.toLocaleString('ca') + ' Kg';
@@ -1926,7 +2046,7 @@ if (fbReady && db) {
 }
 // Recalcula hub automàticament
 recalcHub();
-updateHub(); recalcDiesel(); saveState();
+updateHub(); recalcDieselDebounced(); saveHub();
 const espRow=`<tr style="background:#fffbeb;"><td class="mono">${ref}</td><td><strong>🚛 Recollida camió Espinosa</strong></td><td style="font-weight:800;color:#d97706;">${emporta.toLocaleString('ca')} L</td><td style="font-size:11px;">${bidonsResten>0?bidonsResten+' bidons restants':'—'}</td><td><span class="badge bg-green">Verificat</span></td><td><span class="badge" style="background:#fef3c7;color:#92400e;">Espinosa</span></td><td style="font-family:monospace;font-size:10px;color:#94a3b8;">${ts}<br>GPS validat</td><td><span class="dot" style="background:#22c55e;"></span></td></tr>`;
 document.getElementById('esp-tbody').insertAdjacentHTML('afterbegin', espRow);
 closeCamioModal();
@@ -2003,12 +2123,12 @@ if (!lat || !lng) {
   return;
 }
 DB[id]={ nom, tipus:document.getElementById('m-tipus').value, adreca, lat, lng, tel:document.getElementById('m-tel').value, email:document.getElementById('m-email').value, volum:parseInt(document.getElementById('m-volum').value)||0, valid: document.getElementById('m-valid').checked };
-closeModal(); renderEstabliments(); recalcDiesel(); saveState();
+closeModal(); renderEstabliments(); recalcDieselDebounced(); saveEstabliments();
 alert('Establiment '+nom+' desat correctament.');
 }
 function editEst(id) { openModal({id,...DB[id]}); }
 function delEst(id) {
-if(confirm('Eliminar '+DB[id].nom+'?')){ delete DB[id]; renderEstabliments(); recalcDiesel(); saveState(); }
+if(confirm('Eliminar '+DB[id].nom+'?')){ delete DB[id]; renderEstabliments(); recalcDieselDebounced(); saveEstabliments(); }
 }
 
 async function genPDF(who) {
@@ -2111,33 +2231,37 @@ doc.setFontSize(6.5);doc.setFont('helvetica','bold');doc.setTextColor(255,255,25
 const cols=['Codi RED II','Establiment','Pes','Barrils','Estat oli','Transportista','Data'];
 const cw=[28,48,16,18,24,18,30];let cx=16;
 cols.forEach((c,i)=>{doc.text(c,cx,yOff+5.5);cx+=cw[i];});
-const rows=document.getElementById('esp-tbody').querySelectorAll('tr');
+// PDF llegeix directament de _allRecs filtrat (no del DOM)
+const recsPerPDFData = _filterRecsByPeriod(who)
+  .filter(d => d && d.ref && !d._esCamio)
+  .sort((a,b) => (b.dataHora||'').localeCompare(a.dataHora||''));
 let y=yOff+8;
-rows.forEach((row,ri)=>{
-const cells=row.querySelectorAll('td');if(!cells.length)return;
+recsPerPDFData.forEach((d,ri)=>{
+const estatCurt = (d.estat||'Net').startsWith('Pendent') ? 'Pendent' : (d.estat||'Net').split(' ')[0];
+const fluxLabel = d.transportistaOk ? 'Transportista' : 'Operador';
 doc.setFillColor(ri%2===0?248:255,ri%2===0?250:255,ri%2===0?252:255);
 doc.rect(14,y,182,7,'F');
 doc.setFontSize(6.5);doc.setFont('helvetica','normal');doc.setTextColor(...NAVY);
 const vals=[
-cells[0]?.innerText?.trim()||'',
-cells[1]?.innerText?.replace(/\n/g,' ').trim().substring(0,26)||'',
-cells[2]?.innerText?.trim()||'',
-cells[3]?.innerText?.trim()||'',
-cells[4]?.innerText?.trim().substring(0,12)||'',
-cells[5]?.innerText?.trim().substring(0,12)||'',
-cells[6]?.innerText?.replace(/\n.*/,'').trim().substring(0,16)||'',
+(d.ref||'').substring(0,16),
+(d.nom||'').substring(0,26),
+d.pes > 0 ? d.pes+' kg' : '—',
+(d.plens||'0')+'P / '+(d.buits||'0')+'B',
+estatCurt.substring(0,12),
+fluxLabel.substring(0,12),
+(d.dataHora||'').replace(/ .*/,'').substring(0,16),
 ];
-cx=16;vals.forEach((v,i)=>{doc.text(v,cx,y+5);cx+=cw[i];});
+cx=16;vals.forEach((v,i)=>{doc.text(String(v),cx,y+5);cx+=cw[i];});
 y+=7;
 if(y>268){doc.addPage();y=20;}
 });
 doc.setFillColor(...NAVY);doc.rect(0,280,210,17,'F');
 doc.setFontSize(6.5);doc.setFont('helvetica','bold');doc.setTextColor(96,165,250);
 doc.setFontSize(6.5);doc.setFont('helvetica','bold');doc.setTextColor(96,165,250);
-var fPre='Logística';
+var fPre='Z-Ero CO';
 doc.text(fPre,14,288);
 doc.setFontSize(4);doc.text('2',14+doc.getTextWidth(fPre),289.2);
-doc.setFontSize(6.5);doc.text(' Z-Ero CO₂ Milla Verda, S.L. · Hub Calella · COLLABORADOR AUTORITZAT RED II - ISO 14001',14+doc.getTextWidth(fPre+'2'),288);
+doc.setFontSize(6.5);doc.text(' - Logistica Milla Verda, S.L. - Hub Calella (08370) - COLLABORADOR AUTORITZAT RED II - ISO 14001',14+doc.getTextWidth(fPre+'2'),288);
 doc.setTextColor(100,116,139);
 doc.text('F. Espinosa Gestores S.L. · Gestor E-1492.14 · Transportista T-902 · ISCC-EU-CERT-IT206-59',14,293);
 doc.text('Pàg. 1',192,288);
@@ -2218,7 +2342,7 @@ resum.innerHTML = '<div style="display:flex;flex-direction:column;gap:8px;">'
 }
 document.getElementById('t-modal-overlay').style.display = 'flex';
 }
-function tEnviarConfirmat() {
+async function tEnviarConfirmat() {
 const codi  = document.getElementById('t-codi-est')?.value || '';
 const nom   = DB[codi]?.nom || codi || 'Establiment';
 const plens = document.getElementById('t-plens')?.value || '0';
@@ -2226,14 +2350,15 @@ const buits = document.getElementById('t-buits')?.value || '0';
 const estat = document.getElementById('t-estat')?.value || 'Net / Filtrat';
 const prec  = (document.getElementById('t-precinte')?.value || '—').trim();
 const incid = (document.getElementById('t-incidencia')?.value || 'Cap incidencia').trim();
-const ref     = 'Z-08370-' + String(seq).padStart(3,'0');
 const now     = new Date();
 const dataHora= now.toLocaleDateString('ca-ES') + ' ' + now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
 const gpsEl   = document.getElementById('t-gps-coords');
 const gps     = gpsEl ? gpsEl.innerText : '41.6143, 2.6621';
 document.getElementById('t-modal-overlay').style.display = 'none';
+totalRec++; todayRec++;
+const nextSeq = await getNextSeq();
+const ref     = 'Z-08370-' + String(nextSeq).padStart(3,'0');
 const recData = { ref, id: codi || 'TRANSP', nom, pes: 0, plens, buits, estat, incidencia: incid, precinte: prec, dataHora, transportistaOk: true, operadorOk: false, gps };
-totalRec++; todayRec++; seq++;
 saveRecollida(ref, recData); // saveRecollida ja actualitza _pendingRecs
 saveState();
 const estatBadge = estat.startsWith('Net') ? 'bg-green' : estat.startsWith('Degradat') ? 'bg-red' : estat.startsWith('Pendent') ? 'bg-gray' : 'bg-yellow';
@@ -2242,7 +2367,7 @@ const opCountEl = document.getElementById('op-count');
 if(opCountEl) opCountEl.innerText = todayRec + ' recollides';
 const todayCountEl = document.getElementById('op-today-count');
 if(todayCountEl) todayCountEl.innerText = todayRec;
-document.getElementById('next-id').innerText = 'ID: Z-08370-' + String(seq).padStart(3,'0');
+document.getElementById('next-id').innerText = 'ID: Z-08370-' + String(seq+1).padStart(3,'0');
 const opTbody = document.getElementById('op-tbody');
 if(opTbody) {
 if(opTbody.querySelector('td[colspan]')) opTbody.innerHTML = '';
@@ -2285,7 +2410,7 @@ espTbody.insertAdjacentHTML('afterbegin', '<tr>'
 + '<td><span class="dot" style="background:#f59e0b;"></span></td>'
 + '</tr>');
 }
-updateHub(); recalcDiesel();
+updateHub(); recalcDieselDebounced();
 const listWrap  = document.getElementById('t-confirmed-list');
 const listItems = document.getElementById('t-confirmed-items');
 if(listWrap && listItems) {
@@ -2332,7 +2457,7 @@ if (fbReady && db) {
 }
 
 // Actualitza UI
-updateHub(); recalcDiesel();
+updateHub(); recalcDieselDebounced();
 const opTbody = document.getElementById('op-tbody');
 if (opTbody) opTbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#94a3b8;padding:20px;font-size:12px;">Sense recollides registrades avui</td></tr>';
 const espTbody = document.getElementById('esp-tbody');
