@@ -245,6 +245,56 @@
       </div>
     </div>
   </div>
+  <!-- FORMULARI REGISTRE MANUAL OPERADOR -->
+  <div class="card card-bt-blue" style="margin-bottom:16px;">
+    <div class="card-h">
+      <span class="card-label">⚖ Registrar recollida al hub</span>
+      <span style="font-size:10px;color:#94a3b8;font-weight:600;">Introdueix la ref. del transportista o registra manualment</span>
+    </div>
+    <div class="g4" style="margin-bottom:12px;">
+      <div>
+        <div class="lbl">Ref. transportista</div>
+        <input class="inp" type="text" id="inp-ref-transp" placeholder="Z-08370-001" style="font-family:monospace;font-weight:700;text-transform:uppercase;" oninput="autoFillFromRef()">
+        <div style="font-size:10px;color:#94a3b8;margin-top:4px;" id="inp-ref-status">Introdueix la ref. del transportista per autocompletar</div>
+      </div>
+      <div>
+        <div class="lbl">Codi establiment</div>
+        <input class="inp" type="text" id="inp-codi" placeholder="H-CALELLA" style="text-transform:uppercase;font-weight:700;" oninput="autoFill()">
+        <input class="inp" type="text" id="inp-nom-auto" placeholder="Nom (autocompletat)" readonly style="margin-top:6px;font-size:11px;">
+      </div>
+      <div>
+        <div class="lbl">Pes recollit (kg) <span style="color:#dc2626;">*</span></div>
+        <input class="inp" type="number" id="inp-pes" placeholder="0" min="0" style="font-size:18px;font-weight:900;color:#2563eb;" oninput="updatePesInRow()">
+      </div>
+      <div>
+        <div class="lbl">Barrils</div>
+        <div class="g2" style="gap:6px;">
+          <div><div style="font-size:9px;color:#94a3b8;font-weight:700;margin-bottom:3px;">Plens</div><input class="inp" type="number" id="inp-plens" placeholder="0" min="0"></div>
+          <div><div style="font-size:9px;color:#94a3b8;font-weight:700;margin-bottom:3px;">Buits</div><input class="inp" type="number" id="inp-buits" placeholder="0" min="0"></div>
+        </div>
+      </div>
+    </div>
+    <div class="g3" style="margin-bottom:12px;">
+      <div>
+        <div class="lbl">Estat oli</div>
+        <select class="inp" id="inp-estat">
+          <option value="Net / Filtrat">Net / Filtrat</option>
+          <option value="Brut / Amb residus">Brut / Amb residus</option>
+          <option value="Degradat">Degradat</option>
+          <option value="Pendent operador">Pendent operador</option>
+        </select>
+      </div>
+      <div>
+        <div class="lbl">Precinte/s</div>
+        <input class="inp" type="text" id="inp-precinte" placeholder="Ex: 101, 102" style="font-family:monospace;font-weight:700;letter-spacing:1px;">
+      </div>
+      <div>
+        <div class="lbl">Incidència (opcional)</div>
+        <input class="inp" type="text" id="inp-incidencia" placeholder="Cap incidència">
+      </div>
+    </div>
+    <button class="btn btn-blue btn-full" onclick="addRecollida()">✓ Confirmar recollida i enviar correu</button>
+  </div>
   <div class="table-wrap">
     <div class="table-bar">
       <span>Registre operatiu avui</span>
