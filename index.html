@@ -229,22 +229,22 @@
       <div><div class="lbl">Velocitat mitjana ruta (km/h)</div><input class="inp" type="number" id="avg-v" value="55" step="5" oninput="recalcDieselDebounced()"></div>
       <div class="info-pill" id="route-pill">Calculant ruta des de Maçanet de la Selva...</div>
     </div>
-    <div class="card" style="border-top:3px solid #16a34a;border-radius:0 0 20px 20px;">
-      <div class="card-h"><span class="card-label">Resum ambiental RED II</span></div>
-      <div class="g2">
-        <div>
-          <div class="lbl">CO₂ evitat (ruta)</div>
-          <div style="font-size:26px;font-weight:900;color:#16a34a;" id="op-co2-detail">— kg</div>
-          <div class="stat-note">2,64 kg CO₂ per litre dièsel</div>
-        </div>
-        <div>
-          <div class="lbl">Estalvi total projectat</div>
-          <div style="font-size:26px;font-weight:900;color:#2563eb;" id="op-estalvi-total-eur">—</div>
-          <div class="stat-note">Basat en kg acumulats al hub</div>
-        </div>
+    <div class="card card-dark" style="border-top:3px solid #1e40af;border-radius:0 0 20px 20px;">
+      <div class="card-h" style="border-bottom-color:#1e293b;"><span class="card-label" style="color:#60a5fa;">Estalvi total projectat</span></div>
+      <div>
+        <div class="lbl" style="color:#475569;">Valor UCO recollit (període)</div>
+        <div style="font-size:28px;font-weight:900;color:white;margin-top:4px;" id="op-total-estalvi">—</div>
+        <div style="font-size:10px;color:#475569;margin-top:4px;">Valor matèria primera RED II (2,97 €/kg)</div>
+      </div>
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid #1e293b;">
+        <div class="lbl" style="color:#475569;">Projecció hub acumulat</div>
+        <div style="font-size:24px;font-weight:900;color:#60a5fa;margin-top:4px;" id="op-estalvi-total-eur">—</div>
+        <div style="font-size:10px;color:#475569;margin-top:4px;">Basat en kg acumulats al hub</div>
       </div>
     </div>
   </div>
+  <!-- op-co2-detail: camp ocult per compatibilitat JS -->
+  <span id="op-co2-detail" style="display:none;"></span>
   <div class="table-wrap">
     <div class="table-bar">
       <span>Registre operatiu avui</span>
@@ -505,19 +505,23 @@
       <div id="esp-camio-historial" style="margin-top:16px;"></div>
     </div>
     <div class="card card-bt-green">
-      <div class="card-h"><span class="card-label">Resum ambiental RED II</span></div>
-      <div class="g2">
-        <div>
-          <div class="lbl">CO2 evitat estimat</div>
-          <div style="font-size:26px;font-weight:900;color:#16a34a;" id="esp-co2">— kg</div>
-          <div class="stat-note">2,64 kg CO2 per litre dièsel evitat</div>
-        </div>
-        <div>
-          <div class="lbl">Total recollides</div>
-          <div style="font-size:26px;font-weight:900;color:#0f172a;" id="esp-recollides">0</div>
-          <div class="stat-note">Punts actius: <span id="esp-punts">3</span></div>
-        </div>
+      <div class="card-h">
+        <span class="card-label">📝 Anotacions en recollides</span>
+        <span style="font-size:10px;color:#94a3b8;font-weight:700;">Visibles per l'operador</span>
       </div>
+      <div style="font-size:12px;color:#475569;margin-bottom:12px;line-height:1.5;">Selecciona una recollida i afegeix una anotació (incidències, qualitat de l'oli, observacions).</div>
+      <div style="margin-bottom:10px;">
+        <div class="lbl">Referència recollida</div>
+        <select class="inp" id="esp-annot-ref" style="font-weight:700;" onchange="espCarregaAnotacio()">
+          <option value="">— Selecciona referència —</option>
+        </select>
+      </div>
+      <div style="margin-bottom:10px;">
+        <div class="lbl">Anotació del gestor</div>
+        <textarea class="inp" id="esp-annot-text" rows="3" placeholder="Ex: Oli amb restes de fregit. Barril 3 amb fuita lleu. Qualitat acceptable RED II." style="resize:vertical;font-size:12px;line-height:1.5;"></textarea>
+      </div>
+      <button onclick="espGuardaAnotacio()" class="btn btn-green btn-full" style="margin-top:0;padding:10px;font-size:11px;">💾 Desar anotació</button>
+      <div id="esp-annot-confirm" style="display:none;background:#f0fdf4;border:1.5px solid #22c55e;border-radius:10px;padding:10px 14px;font-size:11px;color:#15803d;font-weight:700;margin-top:10px;text-align:center;">✓ Anotació desada correctament</div>
       <div class="divider"></div>
       <div style="font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;">Gestor autoritzat: F. Espinosa Gestores S.L. · RED II · ISO 14001</div>
     </div>
@@ -533,9 +537,9 @@
       </div>
     </div>
     <table>
-      <thead><tr><th>Codi RED II</th><th>Establiment</th><th>Pes real</th><th>Barrils</th><th>Estat oli</th><th>Transportista</th><th>Timestamp GPS</th><th>Segell</th></tr></thead>
+      <thead><tr><th>Codi RED II</th><th>Establiment</th><th>Pes real</th><th>Barrils</th><th>Estat oli</th><th>Transportista</th><th>Timestamp GPS</th><th>Anotació gestor</th><th>Segell</th></tr></thead>
       <tbody id="esp-tbody">
-        <tr><td colspan="8" style="text-align:center;color:#94a3b8;padding:20px;font-size:12px;">Sense recollides registrades</td></tr>
+        <tr><td colspan="9" style="text-align:center;color:#94a3b8;padding:20px;font-size:12px;">Sense recollides registrades</td></tr>
       </tbody>
     </table>
   </div>
@@ -882,7 +886,7 @@ opTbody.insertAdjacentHTML('beforeend', `<tr id="row-${refKey}" style="${rowStyl
 <td><span class="badge ${estatBadge}">${estatCurt}</span></td>
 <td style="color:#94a3b8;font-size:11px;">${d.incidencia||'—'}</td>
 <td>${fluxBadge}</td>
-<td><span style="font-size:10px;color:#94a3b8;">${d.dataHora||''}</span></td>
+<td><span style="font-size:10px;color:#94a3b8;">${d.dataHora||''}</span>${d.anotacioGestor ? '<br><span style="background:#fef9c3;border:1px solid #fde68a;border-radius:5px;padding:1px 6px;font-size:9px;color:#854d0e;font-weight:700;display:inline-block;margin-top:2px;">📝 Gestor: '+d.anotacioGestor+'</span>' : ''}</td>
 ${accioCell}
 </tr>
 ${!jaConfirmada && isTransp ? `<tr id="panel-${refKey}" style="display:none;background:#f0f9ff;">
@@ -935,6 +939,7 @@ espTbody.insertAdjacentHTML('beforeend', `<tr>
 <td><span class="badge ${estatBadge}">${estatCurt}</span></td>
 <td>${d.transportistaOk ? '<span class="badge bg-green">Confirmat</span>' : '<span class="badge bg-gray">Pendent</span>'}</td>
 <td style="font-family:monospace;font-size:10px;color:#94a3b8;">${d.dataHora||''}<br>GPS: ${d.gps||'validat'}</td>
+<td id="esp-annot-cell-${refKey}" style="font-size:11px;color:#475569;max-width:180px;">${d.anotacioGestor ? '<span style="background:#fef9c3;border:1px solid #fde68a;border-radius:6px;padding:2px 8px;font-size:10px;color:#854d0e;font-weight:600;">📝 '+d.anotacioGestor+'</span>' : '<span style="color:#e2e8f0;font-size:10px;">—</span>'}</td>
 <td><span class="dot" style="background:#22c55e;"></span></td>
 </tr>`);
 });
@@ -960,13 +965,15 @@ if (existEsp) existEsp.remove();
 if (hasMoreEsp) {
   const btnE = document.createElement('tr');
   btnE.id = 'esp-load-more';
-  btnE.innerHTML = '<td colspan="8" style="text-align:center;padding:14px;"><button onclick="_espPage++;renderRecollides(_allRecs,false)" style="background:#f1f5f9;border:1.5px solid #e2e8f0;border-radius:10px;padding:8px 24px;font-size:11px;font-weight:700;color:#334155;cursor:pointer;">Carregar més (' + (allEntries.length - _espPage*PAGE_SIZE) + ' restants)</button></td>';
+  btnE.innerHTML = '<td colspan="9" style="text-align:center;padding:14px;"><button onclick="_espPage++;renderRecollides(_allRecs,false)" style="background:#f1f5f9;border:1.5px solid #e2e8f0;border-radius:10px;padding:8px 24px;font-size:11px;font-weight:700;color:#334155;cursor:pointer;">Carregar més (' + (allEntries.length - _espPage*PAGE_SIZE) + ' restants)</button></td>';
   espTbody.appendChild(btnE);
 }
 // Hub automàtic: recalcula a partir de les recollides
 recalcHub();
 updateHub();
 saveHub();
+// Actualitza selector d'anotacions si cal
+if (currentRol === 'gestor') espPoblaSelectorRefs();
 }
 
 // ── CODA OFFLINE: evita pèrdua de dades si es perd connexió ──────────────────
@@ -1145,7 +1152,7 @@ const t = document.getElementById('tab-' + s);
 if (t) t.classList.toggle('on', s === v);
 });
 if (v === 'establiments') renderEstabliments();
-if (v === 'espinosa') recalcDieselDebounced();
+if (v === 'espinosa') { recalcDieselDebounced(); espPoblaSelectorRefs(); }
 }
 // ── DATE RANGE PICKER ────────────────────────────────────────────────────────
 let _allRecs = {};
@@ -2456,6 +2463,70 @@ const tEstat = document.getElementById('t-estat'); if(tEstat) tEstat.selectedInd
 const confirmBox = document.getElementById('t-confirm-box');
 if(confirmBox) { confirmBox.style.display='block'; setTimeout(()=>{ confirmBox.style.display='none'; }, 4000); }
 }
+// ── ANOTACIONS DEL GESTOR ──────────────────────────────────────────────────────
+function espPoblaSelectorRefs() {
+  const sel = document.getElementById('esp-annot-ref');
+  if (!sel) return;
+  const current = sel.value;
+  const recs = Object.values(_allRecs).filter(d => d && d.ref && !d._esCamio && d.operadorOk);
+  recs.sort((a,b) => (b.dataHora||'').localeCompare(a.dataHora||''));
+  sel.innerHTML = '<option value="">— Selecciona referència —</option>' +
+    recs.map(d => `<option value="${d.ref}" ${d.ref===current?'selected':''}>${d.ref} · ${d.nom} · ${d.dataHora||''}</option>`).join('');
+}
+function espCarregaAnotacio() {
+  const ref = document.getElementById('esp-annot-ref').value;
+  const ta = document.getElementById('esp-annot-text');
+  if (!ref || !ta) return;
+  const key = ref.replace(/\./g,'-').replace(/\s/g,'_');
+  const rec = _allRecs[key] || Object.values(_allRecs).find(d => d && d.ref === ref);
+  ta.value = rec ? (rec.anotacioGestor || '') : '';
+}
+function espGuardaAnotacio() {
+  const ref = document.getElementById('esp-annot-ref').value;
+  const text = (document.getElementById('esp-annot-text').value || '').trim();
+  if (!ref) { alert('Selecciona primer una referència de recollida.'); return; }
+  const key = ref.replace(/\./g,'-').replace(/\s/g,'_');
+  // Actualitza la cache local
+  if (_allRecs[key]) {
+    _allRecs[key].anotacioGestor = text;
+  } else {
+    // Cerca per ref
+    const found = Object.entries(_allRecs).find(([k,d]) => d && d.ref === ref);
+    if (found) { _allRecs[found[0]].anotacioGestor = text; }
+  }
+  // Desa a Firebase o localStorage
+  if (fbReady && db) {
+    db.ref('recollides/' + key + '/anotacioGestor').set(text || null);
+  } else {
+    try {
+      const recs = JSON.parse(localStorage.getItem('zeroc_recs') || '{}');
+      if (recs[key]) { recs[key].anotacioGestor = text; localStorage.setItem('zeroc_recs', JSON.stringify(recs)); }
+    } catch(e) {}
+  }
+  // Actualitza cel·la a la taula Espinosa
+  const espCell = document.getElementById('esp-annot-cell-' + key);
+  if (espCell) {
+    espCell.innerHTML = text
+      ? `<span style="background:#fef9c3;border:1px solid #fde68a;border-radius:6px;padding:2px 8px;font-size:10px;color:#854d0e;font-weight:600;">📝 ${text}</span>`
+      : '<span style="color:#e2e8f0;font-size:10px;">—</span>';
+  }
+  // Actualitza cel·la a la taula Operador (columna hora/data, darrer td visible)
+  const opRow = document.getElementById('row-' + key);
+  if (opRow) {
+    const cells = opRow.querySelectorAll('td');
+    const dataCell = cells[8]; // columna "Hora" (index 8)
+    if (dataCell) {
+      const existing = dataCell.querySelector('span:first-child');
+      const dataText = existing ? existing.outerHTML : '<span style="font-size:10px;color:#94a3b8;">' + (_allRecs[key]?.dataHora||'') + '</span>';
+      const annotHtml = text ? `<br><span style="background:#fef9c3;border:1px solid #fde68a;border-radius:5px;padding:1px 6px;font-size:9px;color:#854d0e;font-weight:700;display:inline-block;margin-top:2px;">📝 Gestor: ${text}</span>` : '';
+      dataCell.innerHTML = dataText + annotHtml;
+    }
+  }
+  // Mostra confirmació
+  const conf = document.getElementById('esp-annot-confirm');
+  if (conf) { conf.style.display='block'; setTimeout(() => conf.style.display='none', 3000); }
+}
+
 // ── RESET PER A PRESENTACIÓ ───────────────────────────────────────────────────
 async function resetPresentacio() {
 if (!confirm('🎯 RESET PRESENTACIÓ\n\nAixò esborrarà:\n• Totes les recollides (Firebase + local)\n• L\'historial del camió\n• El Hub → 0 Kg\n• Comptadors (seq, totalRec → 0)\n\n✅ Els establiments es MANTINDRAN intactes.\n\nContinuar?')) return;
@@ -2485,7 +2556,7 @@ updateHub(); recalcDieselDebounced();
 const opTbody = document.getElementById('op-tbody');
 if (opTbody) opTbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#94a3b8;padding:20px;font-size:12px;">Sense recollides registrades avui</td></tr>';
 const espTbody = document.getElementById('esp-tbody');
-if (espTbody) espTbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#94a3b8;padding:20px;font-size:12px;">Sense recollides registrades</td></tr>';
+if (espTbody) espTbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#94a3b8;padding:20px;font-size:12px;">Sense recollides registrades</td></tr>';
 const camioHist = document.getElementById('esp-camio-historial');
 if (camioHist) camioHist.innerHTML = '';
 const camioPill = document.getElementById('esp-camio-status-pill');
@@ -2522,4 +2593,4 @@ const tStat = document.getElementById('t-estat'); if(tStat) tStat.selectedIndex=
 alert('Nova sessió iniciada. Totes les dades segueixen guardades a Firebase.');
 }</script>
 </body>
-</html>>
+</html>
