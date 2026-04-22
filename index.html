@@ -553,7 +553,7 @@
     <div style="font-size:11px;color:#94a3b8;font-weight:700;margin-bottom:20px;">Ajusta la capacitat i els litres actuals del hub</div>
     <div class="g2" style="margin-bottom:12px;">
       <div><div class="lbl">Pes actual al hub (Kg)</div><input class="inp" type="number" id="hub-edit-liters" placeholder="1150" style="font-size:18px;font-weight:900;color:#2563eb;"></div>
-      <div><div class="lbl">Capacitat màxima (Kg)</div><input class="inp" type="number" id="hub-edit-cap" placeholder="2000"></div>
+      <div><div class="lbl">Capacitat màxima (Kg)</div><input class="inp" type="number" id="hub-edit-cap" placeholder="8000"></div>
     </div>
     <div style="margin-bottom:12px;"><div class="lbl">Bidons al hub (si el camió no s'ho ha emportat tot)</div><input class="inp" type="number" id="hub-edit-bidons" placeholder="0" oninput="calcHubBidons()"><div style="font-size:10px;color:#94a3b8;font-weight:700;margin-top:4px;" id="hub-bidons-calc"></div></div>
     <div style="display:flex;gap:8px;margin-top:4px;">
@@ -636,7 +636,7 @@ console.warn('Firebase no configurat, mode local actiu:', e.message);
 }
 const DB_DEFAULTS = {};
 let DB = {};
-let hubLiters = 0, hubCap = 2000, hubBidonsRestants = 0, totalRec = 0, seq = 1;
+let hubLiters = 0, hubCap = 8000, hubBidonsRestants = 0, totalRec = 0, seq = 1;
 let todayRec = 0, scannedEst = null;
 function doLogin() {
 const email = document.getElementById('login-email').value.trim();
@@ -756,7 +756,7 @@ db.ref('hub').on('value', snap => {
 const d = snap.val();
 if (d) {
 hubLiters = d.hubLiters != null ? d.hubLiters : 0;
-hubCap    = d.hubCap    || 2000;
+hubCap    = d.hubCap    || 8000;
 hubBidonsRestants = d.hubBidonsRestants || 0;
 totalRec  = d.totalRec  != null ? d.totalRec : 0;
 seq       = d.seq       != null ? d.seq : 1;
@@ -785,7 +785,7 @@ if (d) { renderCamioHistorial(d); showCamioAlertOp(d); }
 const saved = localStorage.getItem('zeroc_db');
 if(saved) Object.assign(DB, JSON.parse(saved)); // si no hi ha res guardat, DB queda buit
 const hub = localStorage.getItem('zeroc_hub');
-if (hub) { const h = JSON.parse(hub); hubLiters=h.hubLiters!=null?h.hubLiters:0; hubCap=h.hubCap||2000; hubBidonsRestants=h.hubBidonsRestants||0; totalRec=h.totalRec!=null?h.totalRec:0; seq=h.seq!=null?h.seq:1; }
+if (hub) { const h = JSON.parse(hub); hubLiters=h.hubLiters!=null?h.hubLiters:0; hubCap=h.hubCap||8000; hubBidonsRestants=h.hubBidonsRestants||0; totalRec=h.totalRec!=null?h.totalRec:0; seq=h.seq!=null?h.seq:1; }
 const camio = localStorage.getItem('zeroc_camio');
 if (camio) { const c = JSON.parse(camio); renderCamioHistorial(c); showCamioAlertOp(c); }
 const recs = localStorage.getItem('zeroc_recs');
@@ -1756,7 +1756,7 @@ if(s('esp-hub-note'))   s('esp-hub-note').innerText   = pctR + '% · Validat GPS
 if(s('esp-recollides')) s('esp-recollides').innerText = totalRec;
 if(s('esp-table-count'))s('esp-table-count').innerText= totalRec + ' registres';
 // Alerta pulsant taronja: activa quan hub >= 60% de capacitat (~700-800 kg)
-const HUB_ALERT_THRESHOLD = Math.max(700, hubCap * 0.6);
+const HUB_ALERT_THRESHOLD = 1200;
 const alertActive = hubLiters >= HUB_ALERT_THRESHOLD;
 const alertDot   = s('esp-hub-alert-dot');
 const alertLabel = s('esp-hub-alert-label');
