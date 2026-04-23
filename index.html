@@ -261,7 +261,7 @@
   <span id="op-co2-detail" style="display:none;"></span>
   <div class="table-wrap">
     <div class="table-bar">
-      <span>REGISTRE OPERATIU</span>
+      <span>Registre operatiu avui</span>
       <div style="display:flex;align-items:center;gap:16px;">
         <span class="mono" id="next-id" style="font-size:11px;color:#60a5fa;">ID: Z-08370-001</span>
         <span id="op-count" style="color:#60a5fa;font-weight:700;">0 recollides</span>
@@ -412,7 +412,7 @@
             <option value="Net / Filtrat">Net / Filtrat</option>
             <option value="Brut / Amb residus">Brut / Amb residus</option>
             <option value="Degradat">Degradat</option>
-            <option value="Pendent operador">Pendent GESTOR</option>
+            <option value="Pendent operador">No sé / Pendent GESTOR</option>
           </select>
         </div>
         <!-- Camp ocult pes (el mesura l'operador) -->
@@ -555,7 +555,7 @@
   </div>
   <div class="acc-header" onclick="toggleAccordion('acc-registre')">
     <div>
-      <div class="acc-header-title">📋 REGISTRE DE RECOLLIDES</div>
+      <div class="acc-header-title">📋 Registre complet de recollides</div>
       <div style="font-size:10px;color:#475569;margin-top:3px;font-weight:600;">Cerca, filtra per dates i consulta tot l'historial</div>
     </div>
     <div style="display:flex;align-items:center;gap:12px;">
@@ -1365,6 +1365,42 @@ function applyPicker(who) {
   const popup = document.getElementById('picker-popup-'+who);
   if (popup) popup.remove();
   recalcDieselDebounced();
+  // Sincronitza la taula de registre amb el mateix rang de dates
+  if (who === 'op') _syncOpTableWithPicker();
+}
+
+function _syncOpTableWithPicker() {
+  const p = _picker['op'];
+  if (!p || !p.from) return;
+  const isTotal = p.from.getFullYear() <= 2020 && (!p.to || p.to.getFullYear() >= 2099);
+  const tbody = document.getElementById('op-tbody');
+  if (!tbody) return;
+  const q = (document.getElementById('op-search') || {}).value || '';
+  const from = isTotal ? null : new Date(p.from); if (from) from.setHours(0,0,0,0);
+  const to   = isTotal ? null : (p.to ? new Date(p.to) : new Date(p.from)); if (to) to.setHours(23,59,59,999);
+  let shown = 0;
+  tbody.querySelectorAll('tr[id^="row-"]').forEach(row => {
+    const rowKey = row.id.replace('row-','');
+    const d = Object.values(_allRecs).find(r => r && (r.ref||'').replace(/\./g,'-').replace(/\s/g,'_') === rowKey);
+    if (!d) { row.style.display = ''; return; }
+    let inPeriod = true;
+    if (from || to) {
+      const parts = (d.dataHora||'').split(' ')[0].split('/');
+      if (parts.length >= 3) {
+        const rec = new Date(+parts[2], +parts[1]-1, +parts[0]);
+        inPeriod = (!from || rec >= from) && (!to || rec <= to);
+      } else { inPeriod = false; }
+    }
+    const hay = [(d.ref||''),(d.nom||''),(d.precinte||''),(d.incidencia||''),(d.estat||''),(d.id||''),(d.dataHora||'')].join(' ').toLowerCase();
+    const inSearch = !q || q.toLowerCase().split(' ').every(w => hay.includes(w));
+    const show = inPeriod && inSearch;
+    row.style.display = show ? '' : 'none';
+    const panel = document.getElementById('panel-'+rowKey);
+    if (panel) panel.style.display = 'none';
+    if (show) shown++;
+  });
+  const el = document.getElementById('op-count');
+  if (el) el.innerText = shown + ' registres visibles';
 }
 
 function sameDay(a,b) { return a&&b&&a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate(); }
