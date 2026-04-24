@@ -13,60 +13,169 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
+<!-- QRCode.js library for generating QR -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 <!-- ===== PANTALLA LOGIN ===== -->
-<div id="login-screen" style="display:flex;position:fixed;inset:0;z-index:9999;background:#0f172a;align-items:center;justify-content:center;flex-direction:column;">
-  <div style="width:100%;max-width:520px;padding:30px;">
-    <!-- Logo -->
-    <div style="text-align:center;margin-bottom:40px;">
-      <div style="display:inline-flex;align-items:center;gap:18px;">
-        <div style="background:#2563eb;padding:15px 20px;border-radius:16px;font-weight:900;font-style:italic;font-size:35px;color:white;line-height:1;">Z</div>
-        <div style="text-align:left;">
-          <div style="color:white;font-size:20px;font-weight:900;letter-spacing:0.5px;">LOGÍSTICA Z-Ero CO₂</div>
-          <div style="color:#60a5fa;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-top:4px;">MILLA VERDA S.L.</div>
-          <div style="color:#34d399;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-top:3px;">♻ RED II · HUB CALELLA</div>
-        </div>
+<div id="login-screen" style="display:flex;position:fixed;inset:0;z-index:9999;background:#0b1120;align-items:center;justify-content:center;flex-direction:column;overflow-y:auto;">
+  <style>
+    @keyframes fadeInUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes shimmer{0%,100%{opacity:0.7}50%{opacity:1}}
+    .login-fadein{animation:fadeInUp 0.55s cubic-bezier(0.22,1,0.36,1) both}
+    .login-fadein-2{animation:fadeInUp 0.55s 0.1s cubic-bezier(0.22,1,0.36,1) both}
+    .login-fadein-3{animation:fadeInUp 0.55s 0.2s cubic-bezier(0.22,1,0.36,1) both}
+    .espinosa-logo-ring{
+      width:110px;height:110px;border-radius:50%;
+      background:linear-gradient(135deg,#1e3a5f 0%,#0f172a 100%);
+      border:3px solid #1e40af;
+      display:flex;align-items:center;justify-content:center;
+      box-shadow:0 0 0 6px rgba(37,99,235,0.12),0 8px 32px rgba(0,0,0,0.5);
+      margin:0 auto 10px;
+      flex-shrink:0;
+    }
+    .espinosa-initials{
+      font-size:42px;font-weight:900;color:#e2e8f0;letter-spacing:-1px;
+      font-style:italic;line-height:1;
+    }
+    .qr-toggle-btn{
+      background:transparent;border:1px solid #334155;border-radius:10px;
+      color:#64748b;font-size:11px;font-weight:700;padding:7px 14px;
+      cursor:pointer;letter-spacing:0.5px;text-transform:uppercase;
+      transition:all 0.2s;display:flex;align-items:center;gap:6px;
+      font-family:inherit;margin:16px auto 0;
+    }
+    .qr-toggle-btn:hover{border-color:#60a5fa;color:#93c5fd;background:#1e293b;}
+    .qr-panel{
+      overflow:hidden;max-height:0;transition:max-height 0.4s cubic-bezier(0.4,0,0.2,1),opacity 0.3s;
+      opacity:0;
+    }
+    .qr-panel.open{max-height:320px;opacity:1;}
+    #qr-canvas-wrap canvas{border-radius:10px;}
+  </style>
+
+  <div style="width:100%;max-width:480px;padding:24px 24px 32px;" class="login-fadein">
+
+    <!-- ── LOGO ESPINOSA (protagonista) ── -->
+    <div style="text-align:center;margin-bottom:28px;">
+      <div class="espinosa-logo-ring">
+        <span class="espinosa-initials">FE</span>
       </div>
+      <div style="color:#e2e8f0;font-size:22px;font-weight:900;letter-spacing:0.3px;margin-top:2px;">Espinosa Olis</div>
+      <div style="color:#60a5fa;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;margin-top:5px;">Plataforma de gestió · UCO</div>
     </div>
-    <!-- Card login -->
-    <div style="background:#1e293b;border-radius:24px;padding:36px;border:1px solid #334155;">
-      <div style="font-size:18px;font-weight:900;color:white;margin-bottom:8px;">Accés al sistema</div>
-      <div style="font-size:14px;color:#64748b;font-weight:600;margin-bottom:30px;">Introdueix les teves credencials</div>
+
+    <!-- ── CARD LOGIN ── -->
+    <div style="background:#1e293b;border-radius:24px;padding:32px;border:1px solid #334155;box-shadow:0 8px 40px rgba(0,0,0,0.4);" class="login-fadein-2">
+      <div style="font-size:16px;font-weight:900;color:white;margin-bottom:4px;">Accés al sistema</div>
+      <div style="font-size:13px;color:#64748b;font-weight:600;margin-bottom:26px;">Introdueix les teves credencials</div>
+
       <div id="login-error" style="display:none;background:#fee2e2;border:1px solid #fca5a5;border-radius:10px;padding:13px 18px;font-size:14px;color:#991b1b;font-weight:700;margin-bottom:20px;"></div>
-      <div style="margin-bottom:18px;">
-        <div style="font-size:13px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;">Correu electrònic</div>
+
+      <div style="margin-bottom:16px;">
+        <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;">Correu electrònic</div>
         <input id="login-email" type="email" placeholder="nom@empresa.com"
-          style="width:100%;border:1.5px solid #334155;padding:14px 18px;border-radius:12px;font-size:16px;background:#0f172a;color:white;outline:none;font-family:inherit;box-sizing:border-box;"
+          style="width:100%;border:1.5px solid #334155;padding:13px 16px;border-radius:12px;font-size:15px;background:#0f172a;color:white;outline:none;font-family:inherit;box-sizing:border-box;"
           onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#334155'">
       </div>
-      <div style="margin-bottom:26px;">
-        <div style="font-size:13px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;">Contrasenya</div>
+      <div style="margin-bottom:22px;">
+        <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;">Contrasenya</div>
         <input id="login-pass" type="password" placeholder="••••••••"
-          style="width:100%;border:1.5px solid #334155;padding:14px 18px;border-radius:12px;font-size:16px;background:#0f172a;color:white;outline:none;font-family:inherit;box-sizing:border-box;"
+          style="width:100%;border:1.5px solid #334155;padding:13px 16px;border-radius:12px;font-size:15px;background:#0f172a;color:white;outline:none;font-family:inherit;box-sizing:border-box;"
           onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#334155'"
           onkeydown="if(event.key==='Enter')doLogin()">
       </div>
+
       <button id="login-btn" onclick="doLogin()"
-        style="width:100%;padding:17px;background:#2563eb;color:white;border:none;border-radius:14px;font-weight:900;font-size:16px;cursor:pointer;font-family:inherit;letter-spacing:0.5px;transition:background 0.2s;"
+        style="width:100%;padding:15px;background:#2563eb;color:white;border:none;border-radius:14px;font-weight:900;font-size:15px;cursor:pointer;font-family:inherit;letter-spacing:0.5px;transition:background 0.2s;"
         onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
         Entrar al sistema
       </button>
-      <div style="text-align:center;margin-top:20px;font-size:13px;color:#475569;font-weight:600;">
+
+      <div style="text-align:center;margin-top:16px;font-size:12px;color:#475569;font-weight:600;">
         Si has oblidat la contrasenya, contacta l'administrador
       </div>
+
       <div id="local-file-warning" style="display:none;background:#fef3c7;border:1px solid #f59e0b;border-radius:10px;padding:13px 18px;font-size:13px;color:#92400e;font-weight:700;margin-top:14px;line-height:1.6;">
         ⚠️ <strong>Mode local actiu</strong> · Arxiu obert des del teu ordinador.<br>
         Les dades <u>no es compartiran</u> entre dispositius.<br>
         <span style="color:#b45309;font-weight:600;">Per sincronitzar, puja l'arxiu a un servidor (ex: tiiny.host).</span>
       </div>
     </div>
-    <!-- Indicador rols -->
-    <div style="display:flex;gap:10px;margin-top:20px;justify-content:center;flex-wrap:wrap;">
-      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;padding:7px 16px;font-size:11px;font-weight:700;color:#60a5fa;text-transform:uppercase;letter-spacing:0.5px;">Operador</div>
-      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;padding:7px 16px;font-size:11px;font-weight:700;color:#fbbf24;text-transform:uppercase;letter-spacing:0.5px;">Transportista</div>
-      <div style="background:#1e293b;border:1px solid #334155;border-radius:10px;padding:7px 16px;font-size:11px;font-weight:700;color:#34d399;text-transform:uppercase;letter-spacing:0.5px;">Gestor Espinosa</div>
+
+    <!-- ── QR PRIMER ÚS ── -->
+    <div class="login-fadein-3">
+      <button class="qr-toggle-btn" onclick="toggleQR(this)" id="qr-toggle-btn" style="width:100%;justify-content:center;margin-top:14px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="4" height="4" rx="0.5"/><rect x="20" y="14" width="1" height="1"/><rect x="14" y="20" width="1" height="1"/><rect x="18" y="19" width="3" height="2" rx="0.5"/><rect x="20" y="17" width="1" height="1"/></svg>
+        Accedir des del mòbil · Escanejar QR
+      </button>
+
+      <div class="qr-panel" id="qr-panel">
+        <div style="background:#1e293b;border-radius:20px;border:1px solid #334155;padding:24px;margin-top:10px;text-align:center;">
+          <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;">Primer ús · Obre al mòbil</div>
+          <div id="qr-canvas-wrap" style="display:flex;justify-content:center;margin-bottom:14px;"></div>
+          <div style="font-size:12px;color:#64748b;font-weight:600;line-height:1.6;">
+            Escaneja amb la càmera del mòbil per<br>accedir a la plataforma des del teu telèfon.
+          </div>
+          <div style="margin-top:14px;background:#0f172a;border-radius:10px;padding:10px 14px;font-size:10px;color:#475569;font-weight:700;letter-spacing:0.3px;word-break:break-all;" id="qr-url-display"></div>
+        </div>
+      </div>
     </div>
+
+    <!-- ── Powered by Z-Ero (discret) ── -->
+    <div style="text-align:center;margin-top:20px;">
+      <div style="display:inline-flex;align-items:center;gap:8px;opacity:0.45;">
+        <div style="background:#2563eb;padding:4px 7px;border-radius:6px;font-weight:900;font-style:italic;font-size:13px;color:white;line-height:1;">Z</div>
+        <div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:1.5px;">Powered by Z-Ero CO₂ · Milla Verda S.L.</div>
+      </div>
+      <!-- Indicador rols -->
+      <div style="display:flex;gap:8px;margin-top:12px;justify-content:center;flex-wrap:wrap;">
+        <div style="background:#1e293b;border:1px solid #334155;border-radius:8px;padding:5px 12px;font-size:10px;font-weight:700;color:#60a5fa;text-transform:uppercase;letter-spacing:0.5px;">Operador</div>
+        <div style="background:#1e293b;border:1px solid #334155;border-radius:8px;padding:5px 12px;font-size:10px;font-weight:700;color:#fbbf24;text-transform:uppercase;letter-spacing:0.5px;">Transportista</div>
+        <div style="background:#1e293b;border:1px solid #334155;border-radius:8px;padding:5px 12px;font-size:10px;font-weight:700;color:#34d399;text-transform:uppercase;letter-spacing:0.5px;">Gestor Espinosa</div>
+      </div>
+    </div>
+
   </div>
 </div>
+
+<script>
+// ── QR: genera el codi amb la URL actual ──────────────────────────────────────
+(function initQR(){
+  const appUrl = window.location.href.split('?')[0].split('#')[0];
+  const displayEl = document.getElementById('qr-url-display');
+  if(displayEl) displayEl.textContent = appUrl;
+
+  // Genera el QR quan es desplega el panell (lazy)
+  window._qrGenerated = false;
+  window._qrAppUrl = appUrl;
+})();
+
+function toggleQR(btn){
+  const panel = document.getElementById('qr-panel');
+  const isOpen = panel.classList.toggle('open');
+  btn.style.borderColor = isOpen ? '#60a5fa' : '#334155';
+  btn.style.color = isOpen ? '#93c5fd' : '#64748b';
+  btn.style.background = isOpen ? '#1e293b' : 'transparent';
+
+  if(isOpen && !window._qrGenerated){
+    window._qrGenerated = true;
+    const wrap = document.getElementById('qr-canvas-wrap');
+    wrap.innerHTML = '';
+    try{
+      new QRCode(wrap, {
+        text: window._qrAppUrl,
+        width: 160,
+        height: 160,
+        colorDark: '#e2e8f0',
+        colorLight: '#1e293b',
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    } catch(e){
+      wrap.innerHTML = '<div style="color:#64748b;font-size:12px;padding:20px;">Error generant QR</div>';
+    }
+  }
+}
+</script>
 <!-- ===== APP (s'amaga fins login) ===== -->
 <div id="app-root" style="display:none;">
 <style>
@@ -75,20 +184,7 @@
 .hub-alert-active{animation:hub-pulse-card 1.8s ease-in-out infinite!important;}
 .hub-alert-dot-visible{display:block!important;}
 .hub-alert-label-visible{display:inline-block!important;}
-*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Outfit',sans-serif;background:#0b1120}@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap');.nav{background:#0f172a;color:white;padding:12px 24px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;gap:16px}.nav-left{display:flex;align-items:center;gap:14px;flex-shrink:0}.nav-right{display:flex;align-items:center;flex-shrink:0}.nav-brand-text{}.nav-z{background:#2563eb;padding:10px 14px;border-radius:12px;font-weight:900;font-style:italic;font-size:22px;line-height:1;flex-shrink:0}.nav-title{font-weight:900;font-size:14px;text-transform:uppercase;letter-spacing:1px;color:white}.nav-sub{font-size:10px;color:#60a5fa;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-top:3px}.nav-tabs{background:#1e293b;padding:4px;border-radius:14px;display:flex;gap:2px}.tab{padding:7px 14px;border-radius:10px;font-size:10px;font-weight:700;cursor:pointer;border:none;background:transparent;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;transition:all 0.2s}.tab:hover{background:#334155;color:white}.tab.on{background:#2563eb;color:white}.tab.transport-tab{color:#fbbf24}.tab.transport-tab.on{background:#d97706;color:white}.wrap{max-width:1080px;margin:0 auto;padding:24px 20px}.sec{display:none}.sec.on{display:block}.top-bar{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;flex-wrap:wrap;gap:12px}.page-title{font-size:22px;font-weight:900;color:#e2e8f0;text-transform:uppercase;letter-spacing:-0.5px}.page-sub{font-size:10px;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:1px;margin-top:4px}.top-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.btn{border:none;border-radius:12px;font-weight:700;cursor:pointer;font-size:11px;padding:10px 18px;transition:all 0.2s;letter-spacing:0.3px}.btn-blue{background:#2563eb;color:white}.btn-blue:hover{background:#1d4ed8}.btn-red{background:#dc2626;color:white}.btn-red:hover{background:#b91c1c}.btn-dark{background:#0f172a;color:white}.btn-dark:hover{background:#000}.btn-green{background:#16a34a;color:white}.btn-green:hover{background:#15803d}.btn-amber{background:#d97706;color:white}.btn-amber:hover{background:#b45309}.btn-ghost{background:#1e2d45;color:#94a3b8}.btn-ghost:hover{background:#263450}.btn-xs{font-size:10px;padding:5px 12px;border-radius:8px}.btn-full{width:100%;padding:14px;font-size:12px;letter-spacing:1px;text-transform:uppercase;border-radius:14px;margin-top:14px}.card{background:#131c2e;border-radius:20px;border:1px solid #1e2d45;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,0.3);margin-bottom:16px}.card-bt-blue{border-top:3px solid #2563eb;border-radius:0 0 20px 20px}.card-bt-green{border-top:3px solid #16a34a;border-radius:0 0 20px 20px}.card-bt-amber{border-top:3px solid #d97706;border-radius:0 0 20px 20px}.card-dark{background:#0f172a;color:white;border:none}.card-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #1e2d45}.card-label{font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px}.lbl{font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px}.inp{width:100%;border:1.5px solid #1e2d45;padding:9px 12px;border-radius:10px;font-size:12px;background:#0d1626;color:#cbd5e1;outline:none;transition:border-color 0.2s;font-family:inherit}.inp:focus{border-color:#2563eb;background:#0f172a}.inp[readonly]{cursor:default;color:#64748b}select.inp{cursor:pointer}.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}.g4{display:grid;grid-template-columns:1fr 1.4fr 1fr 1fr;gap:12px}.g-hub{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px}.g-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:16px}.hub-val{font-size:58px;font-weight:900;color:#e2e8f0;line-height:1}.hub-val span{font-size:22px;font-weight:600;color:#475569}.hub-pill{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:99px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px}.pill-green{background:#dcfce7;color:#166534}.pill-yellow{background:#fef9c3;color:#854d0e}.pill-red{background:#fee2e2;color:#991b1b}.prog-lg{background:#0d1626;height:38px;border-radius:14px;padding:5px;margin-top:14px}.prog-lg-inner{height:100%;border-radius:10px;display:flex;align-items:center;justify-content:flex-end;padding-right:12px;transition:width 0.8s cubic-bezier(0.4,0,0.2,1),background 0.3s}.prog-lg-inner span{color:white;font-weight:800;font-size:11px}.prog-sm{background:#1e293b;height:6px;border-radius:99px;margin-top:12px;overflow:hidden}.prog-sm-in{height:100%;border-radius:99px;background:#3b82f6}.prog-mini{background:#0d1626;height:8px;border-radius:99px;margin-top:8px;overflow:hidden}.prog-mini-in{height:100%;border-radius:99px;transition:width 0.6s}.stat-card{background:#131c2e;border-radius:20px;border:1px solid #1e2d45;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.3)}.stat-label{font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px}.stat-val{font-size:34px;font-weight:900;color:#e2e8f0;line-height:1}.stat-note{font-size:10px;color:#94a3b8;font-weight:600;margin-top:8px}.bb-blue{border-bottom:5px solid #2563eb}.bb-green{border-bottom:5px solid #22c55e}.bb-amber{border-bottom:5px solid #f97316}.bb-navy{border-bottom:5px solid #1e40af}.table-wrap{background:#131c2e;border-radius:20px;border:1px solid #1e2d45;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.3);margin-bottom:16px}.table-bar{background:#0f172a;color:white;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase}.table-sub-bar{background:#0f172a;padding:10px 20px;border-bottom:1px solid #1e2d45;display:flex;justify-content:space-between;align-items:center}table{width:100%;border-collapse:collapse}th{padding:10px 16px;text-align:left;font-size:10px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:1px;background:#0d1626}td{padding:10px 16px;border-top:1px solid #1a2540;font-size:12px;color:#cbd5e1;vertical-align:middle}tr:hover td{background:#1a2540}.mono{font-family:monospace;font-weight:800;color:#2563eb;font-size:11px}.badge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px;text-transform:uppercase;letter-spacing:0.3px}.bg-green{background:#dcfce7;color:#15803d}.bg-yellow{background:#fef9c3;color:#854d0e}.bg-red{background:#fee2e2;color:#991b1b}.bg-blue{background:#dbeafe;color:#1e40af}.bg-gray{background:#f1f5f9;color:#475569}.bg-navy{background:#e0e7ff;color:#3730a3}.dot{width:10px;height:10px;border-radius:50%;display:inline-block}.est-row{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid #1a2540;transition:background 0.15s}.est-row:hover{background:#1a2540}.est-row:last-child{border-bottom:none}.est-name{font-weight:700;font-size:13px;color:#e2e8f0}.est-meta{font-size:11px;color:#94a3b8;margin-top:2px}.est-vol{font-weight:800;font-size:13px;color:#2563eb;text-align:right}.est-vol-note{font-size:10px;color:#94a3b8;text-align:right;margin-top:2px}.transport-wrap{max-width:460px;margin:0 auto}.t-card{background:#131c2e;border-radius:24px;padding:32px;border:1px solid #1e2d45;box-shadow:0 4px 24px rgba(0,0,0,0.3);border-top:6px solid #d97706}.scan-box{background:#0d1626;padding:32px;border-radius:18px;border:3px dashed #1e2d45;text-align:center;margin-bottom:24px}.scan-icon{width:64px;height:64px;margin:0 auto 14px;background:#1e293b;border-radius:14px;display:flex;align-items:center;justify-content:center}.scan-lines{display:flex;flex-direction:column;gap:5px;align-items:center}.scan-line-w{background:white;border-radius:2px}.scan-status{font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;margin-top:12px;letter-spacing:1px}.scan-status.ok{color:#16a34a}.t-form{transition:opacity 0.4s}.t-form.locked{opacity:0.35;pointer-events:none}.gps-row{background:#f0fdf4;border:1px solid #dcfce7;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;margin-bottom:14px}.gps-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;flex-shrink:0}.gps-text{font-size:11px;color:#15803d;font-weight:700;line-height:1.5}.sign-btn{width:100%;padding:16px;background:#d97706;color:white;border:none;border-radius:14px;font-weight:900;font-size:13px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;margin-top:14px;transition:background 0.2s}.sign-btn:hover{background:#b45309}.confirm-box{background:#f0fdf4;border:1.5px solid #22c55e;border-radius:12px;padding:14px;text-align:center;color:#15803d;font-weight:700;font-size:12px;margin-top:12px;display:none}.t-confirmed-list{background:#131c2e;border-radius:16px;border:1px solid #1e2d45;padding:16px;margin-top:16px}.c-item{padding:10px 0;border-bottom:1px solid #1a2540;display:flex;gap:10px;align-items:flex-start}.c-item:last-child{border-bottom:none}.c-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;margin-top:4px;flex-shrink:0}.info-pill{background:#fef9c3;border:1px solid #fde68a;border-radius:10px;padding:10px 14px;font-size:11px;color:#854d0e;font-weight:700;margin-top:10px}.divider{height:1px;background:#1e2d45;margin:16px 0}.filter-bar{background:#0f172a;padding:10px 16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-bottom:1px solid #1e2d45;}
-.filter-inp{background:#131c2e;border:1.5px solid #1e2d45;color:#cbd5e1;border-radius:9px;padding:6px 11px;font-size:11px;font-family:inherit;outline:none;transition:border-color .2s;}
-.filter-inp:focus{border-color:#2563eb;}
-.filter-inp::placeholder{color:#475569;}
-.fpill{background:#1e2d45;color:#94a3b8;border:none;border-radius:8px;padding:5px 12px;font-size:10px;font-weight:700;cursor:pointer;letter-spacing:.3px;transition:all .15s;}
-.fpill:hover,.fpill.on{background:#2563eb;color:white;}
-.acc-header{background:#0d1626;border:1px solid #1e2d45;border-radius:14px;padding:13px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;transition:background .2s;user-select:none;}
-.acc-header:hover{background:#131c2e;}
-.acc-header-title{font-size:12px;font-weight:800;color:#e2e8f0;text-transform:uppercase;letter-spacing:.8px;}
-.acc-arrow{font-size:14px;color:#475569;transition:transform .25s;}
-.acc-arrow.open{transform:rotate(180deg);}
-.acc-body{display:none;margin-bottom:16px;}
-.acc-body.open{display:block;}
-.modal-overlay{display:none;position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,0.6);z-index:200;border-radius:20px;align-items:center;justify-content:center;min-height:300px}.modal-overlay.show{display:flex}.modal{background:#131c2e;border-radius:20px;padding:28px;width:90%;max-width:500px;border:1px solid #1e2d45}.modal-h{font-size:16px;font-weight:900;color:#e2e8f0;margin-bottom:20px}</style>
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Outfit',sans-serif;background:#0b1120}@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap');.nav{background:#0f172a;color:white;padding:12px 24px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;gap:16px}.nav-left{display:flex;align-items:center;gap:14px;flex-shrink:0}.nav-right{display:flex;align-items:center;flex-shrink:0}.nav-brand-text{}.nav-z{background:#2563eb;padding:10px 14px;border-radius:12px;font-weight:900;font-style:italic;font-size:22px;line-height:1;flex-shrink:0}.nav-title{font-weight:900;font-size:14px;text-transform:uppercase;letter-spacing:1px;color:white}.nav-sub{font-size:10px;color:#60a5fa;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-top:3px}.nav-tabs{background:#1e293b;padding:4px;border-radius:14px;display:flex;gap:2px}.tab{padding:7px 14px;border-radius:10px;font-size:10px;font-weight:700;cursor:pointer;border:none;background:transparent;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;transition:all 0.2s}.tab:hover{background:#334155;color:white}.tab.on{background:#2563eb;color:white}.tab.transport-tab{color:#fbbf24}.tab.transport-tab.on{background:#d97706;color:white}.wrap{max-width:1080px;margin:0 auto;padding:24px 20px}.sec{display:none}.sec.on{display:block}.top-bar{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;flex-wrap:wrap;gap:12px}.page-title{font-size:22px;font-weight:900;color:#e2e8f0;text-transform:uppercase;letter-spacing:-0.5px}.page-sub{font-size:10px;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:1px;margin-top:4px}.top-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.btn{border:none;border-radius:12px;font-weight:700;cursor:pointer;font-size:11px;padding:10px 18px;transition:all 0.2s;letter-spacing:0.3px}.btn-blue{background:#2563eb;color:white}.btn-blue:hover{background:#1d4ed8}.btn-red{background:#dc2626;color:white}.btn-red:hover{background:#b91c1c}.btn-dark{background:#0f172a;color:white}.btn-dark:hover{background:#000}.btn-green{background:#16a34a;color:white}.btn-green:hover{background:#15803d}.btn-amber{background:#d97706;color:white}.btn-amber:hover{background:#b45309}.btn-ghost{background:#1e2d45;color:#94a3b8}.btn-ghost:hover{background:#263450}.btn-xs{font-size:10px;padding:5px 12px;border-radius:8px}.btn-full{width:100%;padding:14px;font-size:12px;letter-spacing:1px;text-transform:uppercase;border-radius:14px;margin-top:14px}.card{background:#131c2e;border-radius:20px;border:1px solid #1e2d45;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,0.3);margin-bottom:16px}.card-bt-blue{border-top:3px solid #2563eb;border-radius:0 0 20px 20px}.card-bt-green{border-top:3px solid #16a34a;border-radius:0 0 20px 20px}.card-bt-amber{border-top:3px solid #d97706;border-radius:0 0 20px 20px}.card-dark{background:#0f172a;color:white;border:none}.card-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #1e2d45}.card-label{font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px}.lbl{font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px}.inp{width:100%;border:1.5px solid #1e2d45;padding:9px 12px;border-radius:10px;font-size:12px;background:#0d1626;color:#cbd5e1;outline:none;transition:border-color 0.2s;font-family:inherit}.inp:focus{border-color:#2563eb;background:#0f172a}.inp[readonly]{cursor:default;color:#64748b}select.inp{cursor:pointer}.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}.g4{display:grid;grid-template-columns:1fr 1.4fr 1fr 1fr;gap:12px}.g-hub{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px}.g-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:16px}.hub-val{font-size:58px;font-weight:900;color:#e2e8f0;line-height:1}.hub-val span{font-size:22px;font-weight:600;color:#475569}.hub-pill{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:99px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px}.pill-green{background:#dcfce7;color:#166534}.pill-yellow{background:#fef9c3;color:#854d0e}.pill-red{background:#fee2e2;color:#991b1b}.prog-lg{background:#0d1626;height:38px;border-radius:14px;padding:5px;margin-top:14px}.prog-lg-inner{height:100%;border-radius:10px;display:flex;align-items:center;justify-content:flex-end;padding-right:12px;transition:width 0.8s cubic-bezier(0.4,0,0.2,1),background 0.3s}.prog-lg-inner span{color:white;font-weight:800;font-size:11px}.prog-sm{background:#1e293b;height:6px;border-radius:99px;margin-top:12px;overflow:hidden}.prog-sm-in{height:100%;border-radius:99px;background:#3b82f6}.prog-mini{background:#0d1626;height:8px;border-radius:99px;margin-top:8px;overflow:hidden}.prog-mini-in{height:100%;border-radius:99px;transition:width 0.6s}.stat-card{background:#131c2e;border-radius:20px;border:1px solid #1e2d45;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.3)}.stat-label{font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px}.stat-val{font-size:34px;font-weight:900;color:#e2e8f0;line-height:1}.stat-note{font-size:10px;color:#94a3b8;font-weight:600;margin-top:8px}.bb-blue{border-bottom:5px solid #2563eb}.bb-green{border-bottom:5px solid #22c55e}.bb-amber{border-bottom:5px solid #f97316}.bb-navy{border-bottom:5px solid #1e40af}.table-wrap{background:#131c2e;border-radius:20px;border:1px solid #1e2d45;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.3);margin-bottom:16px}.table-bar{background:#0f172a;color:white;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase}.table-sub-bar{background:#0f172a;padding:10px 20px;border-bottom:1px solid #1e2d45;display:flex;justify-content:space-between;align-items:center}table{width:100%;border-collapse:collapse}th{padding:10px 16px;text-align:left;font-size:10px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:1px;background:#0d1626}td{padding:10px 16px;border-top:1px solid #1a2540;font-size:12px;color:#cbd5e1;vertical-align:middle}tr:hover td{background:#1a2540}.mono{font-family:monospace;font-weight:800;color:#2563eb;font-size:11px}.badge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px;text-transform:uppercase;letter-spacing:0.3px}.bg-green{background:#dcfce7;color:#15803d}.bg-yellow{background:#fef9c3;color:#854d0e}.bg-red{background:#fee2e2;color:#991b1b}.bg-blue{background:#dbeafe;color:#1e40af}.bg-gray{background:#f1f5f9;color:#475569}.bg-navy{background:#e0e7ff;color:#3730a3}.dot{width:10px;height:10px;border-radius:50%;display:inline-block}.est-row{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid #1a2540;transition:background 0.15s}.est-row:hover{background:#1a2540}.est-row:last-child{border-bottom:none}.est-name{font-weight:700;font-size:13px;color:#e2e8f0}.est-meta{font-size:11px;color:#94a3b8;margin-top:2px}.est-vol{font-weight:800;font-size:13px;color:#2563eb;text-align:right}.est-vol-note{font-size:10px;color:#94a3b8;text-align:right;margin-top:2px}.transport-wrap{max-width:460px;margin:0 auto}.t-card{background:#131c2e;border-radius:24px;padding:32px;border:1px solid #1e2d45;box-shadow:0 4px 24px rgba(0,0,0,0.3);border-top:6px solid #d97706}.scan-box{background:#0d1626;padding:32px;border-radius:18px;border:3px dashed #1e2d45;text-align:center;margin-bottom:24px}.scan-icon{width:64px;height:64px;margin:0 auto 14px;background:#1e293b;border-radius:14px;display:flex;align-items:center;justify-content:center}.scan-lines{display:flex;flex-direction:column;gap:5px;align-items:center}.scan-line-w{background:white;border-radius:2px}.scan-status{font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;margin-top:12px;letter-spacing:1px}.scan-status.ok{color:#16a34a}.t-form{transition:opacity 0.4s}.t-form.locked{opacity:0.35;pointer-events:none}.gps-row{background:#f0fdf4;border:1px solid #dcfce7;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;margin-bottom:14px}.gps-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;flex-shrink:0}.gps-text{font-size:11px;color:#15803d;font-weight:700;line-height:1.5}.sign-btn{width:100%;padding:16px;background:#d97706;color:white;border:none;border-radius:14px;font-weight:900;font-size:13px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;margin-top:14px;transition:background 0.2s}.sign-btn:hover{background:#b45309}.confirm-box{background:#f0fdf4;border:1.5px solid #22c55e;border-radius:12px;padding:14px;text-align:center;color:#15803d;font-weight:700;font-size:12px;margin-top:12px;display:none}.t-confirmed-list{background:#131c2e;border-radius:16px;border:1px solid #1e2d45;padding:16px;margin-top:16px}.c-item{padding:10px 0;border-bottom:1px solid #1a2540;display:flex;gap:10px;align-items:flex-start}.c-item:last-child{border-bottom:none}.c-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;margin-top:4px;flex-shrink:0}.info-pill{background:#fef9c3;border:1px solid #fde68a;border-radius:10px;padding:10px 14px;font-size:11px;color:#854d0e;font-weight:700;margin-top:10px}.divider{height:1px;background:#1e2d45;margin:16px 0}.modal-overlay{display:none;position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,0.6);z-index:200;border-radius:20px;align-items:center;justify-content:center;min-height:300px}.modal-overlay.show{display:flex}.modal{background:#131c2e;border-radius:20px;padding:28px;width:90%;max-width:500px;border:1px solid #1e2d45}.modal-h{font-size:16px;font-weight:900;color:#e2e8f0;margin-bottom:20px}</style>
 <nav class="nav">
   <div class="nav-left">
     <div class="nav-z">Z</div>
@@ -102,6 +198,7 @@
     <button class="tab" id="tab-establiments" onclick="switchView('establiments')">Establiments</button>
     <button class="tab transport-tab" id="tab-transport" onclick="switchView('transport')">Transportista</button>
     <button class="tab" id="tab-espinosa" onclick="switchView('espinosa')">Gestor Espinosa</button>
+    <button class="tab" id="tab-volums" onclick="switchView('volums')" style="color:#a78bfa;">📊 Volums</button>
   </div>
   <div class="nav-right">
     <div style="display:flex;align-items:center;gap:8px;">
@@ -266,15 +363,6 @@
         <span class="mono" id="next-id" style="font-size:11px;color:#60a5fa;">ID: Z-08370-001</span>
         <span id="op-count" style="color:#60a5fa;font-weight:700;">0 recollides</span>
       </div>
-    </div>
-    <div class="filter-bar">
-      <input class="filter-inp" id="op-search" placeholder="🔍 Cercar establiment, ref, precinte..." style="min-width:200px;flex:1;" oninput="applyFilters()">
-      <button class="fpill on" id="fpill-avui" onclick="setOpPeriod('avui')">Avui</button>
-      <button class="fpill" id="fpill-set" onclick="setOpPeriod('set')">7 dies</button>
-      <button class="fpill" id="fpill-mes" onclick="setOpPeriod('mes')">30 dies</button>
-      <button class="fpill" id="fpill-tot" onclick="setOpPeriod('tot')">Tot</button>
-      <input class="filter-inp" type="date" id="op-date-from" onchange="setOpPeriod('custom')" title="Des de">
-      <input class="filter-inp" type="date" id="op-date-to" onchange="setOpPeriod('custom')" title="Fins a">
     </div>
     <table>
       <thead><tr><th>Ref.</th><th>Establiment</th><th>Pes</th><th>Barrils</th><th>Precintes</th><th>Estat oli</th><th>Incidència</th><th>Origen</th><th>Hora</th><th>Acció</th></tr></thead>
@@ -553,45 +641,301 @@
       <div style="font-size:10px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;">Gestor autoritzat: F. Espinosa Gestores S.L. · RED II · ISO 14001</div>
     </div>
   </div>
-  <div class="acc-header" onclick="toggleAccordion('acc-registre')">
-    <div>
-      <div class="acc-header-title">📋 Registre complet de recollides</div>
-      <div style="font-size:10px;color:#475569;margin-top:3px;font-weight:600;">Cerca, filtra per dates i consulta tot l'historial</div>
+  <div class="table-wrap">
+    <div class="table-bar">
+      <span>Registre complet de recollides</span>
+      <div style="display:flex;gap:12px;align-items:center;font-size:10px;font-weight:700;">
+        <span><span class="dot" style="background:#22c55e;"></span> Certificat</span>
+        <span><span class="dot" style="background:#eab308;"></span> Manual</span>
+        <span><span class="dot" style="background:#ef4444;"></span> Incidència</span>
+        <span id="esp-table-count" style="color:#60a5fa;">44 registres</span>
+      </div>
     </div>
-    <div style="display:flex;align-items:center;gap:12px;">
-      <span id="esp-table-count" style="color:#60a5fa;font-size:11px;font-weight:800;">0 registres</span>
-      <span class="acc-arrow" id="arr-acc-registre">▼</span>
-    </div>
+    <table>
+      <thead><tr><th>Codi RED II</th><th>Establiment</th><th>Pes real</th><th>Barrils</th><th>Estat oli</th><th>Transportista</th><th>Timestamp GPS</th><th>Anotació gestor</th><th>Segell</th></tr></thead>
+      <tbody id="esp-tbody">
+        <tr><td colspan="9" style="text-align:center;color:#94a3b8;padding:20px;font-size:12px;">Sense recollides registrades</td></tr>
+      </tbody>
+    </table>
   </div>
-  <div class="acc-body" id="acc-registre">
-    <div class="table-wrap">
-      <div class="table-bar">
-        <div style="display:flex;gap:10px;align-items:center;font-size:10px;font-weight:700;">
-          <span><span class="dot" style="background:#22c55e;"></span> Certificat</span>
-          <span><span class="dot" style="background:#eab308;"></span> Manual</span>
-          <span><span class="dot" style="background:#ef4444;"></span> Incidència</span>
-        </div>
-        <span id="esp-filter-count" style="color:#60a5fa;font-size:10px;font-weight:700;"></span>
+</section>
+
+<!-- ===== SEC VOLUMS ===== -->
+<section id="sec-volums" class="sec">
+  <div class="wrap">
+    <div class="top-bar">
+      <div>
+        <div class="page-title" style="color:#a78bfa;">📊 Taula de Volums i Rendibilitat</div>
+        <div class="page-sub" style="color:#7c3aed;">Anàlisi de sensibilitat kg/mes · Espinosa Olis</div>
       </div>
-      <div class="filter-bar">
-        <input class="filter-inp" id="esp-search" placeholder="🔍 Cercar establiment, ref, precinte..." style="min-width:200px;flex:1;" oninput="applyEspFilters()">
-        <button class="fpill on" id="efpill-tot" onclick="setEspPeriod('tot')">Tot</button>
-        <button class="fpill" id="efpill-avui" onclick="setEspPeriod('avui')">Avui</button>
-        <button class="fpill" id="efpill-set" onclick="setEspPeriod('set')">7 dies</button>
-        <button class="fpill" id="efpill-mes" onclick="setEspPeriod('mes')">30 dies</button>
-        <input class="filter-inp" type="date" id="esp-date-from" onchange="setEspPeriod('custom')" title="Des de">
-        <input class="filter-inp" type="date" id="esp-date-to" onchange="setEspPeriod('custom')" title="Fins a">
+    </div>
+    <!-- Disclamer -->
+    <div style="background:#422006;border:1px solid #92400e;border-radius:14px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:flex-start;gap:12px;">
+      <span style="font-size:18px;flex-shrink:0;">⚠️</span>
+      <div style="font-size:12px;color:#fde68a;font-weight:600;line-height:1.6;">
+        <strong style="color:#fbbf24;">Dades estimades · Mercat abril 2025.</strong>
+        Els valors de preu UCO, prima ISCC, costos logístics i estalvis operatius són estimacions basades en valors de mercat.
+        <strong style="color:#fbbf24;">Pendents de validació i revisió amb dades reals per part del gestor F. Espinosa.</strong>
+        No constitueixen cap compromís econòmic fins a revisió confirmada.
       </div>
-      <table>
-        <thead><tr><th>Codi RED II</th><th>Establiment</th><th>Pes real</th><th>Barrils</th><th>Estat oli</th><th>Transportista</th><th>Timestamp GPS</th><th>Anotació gestor</th><th>Segell</th></tr></thead>
-        <tbody id="esp-tbody">
-          <tr><td colspan="9" style="text-align:center;color:#94a3b8;padding:20px;font-size:12px;">Sense recollides registrades</td></tr>
-        </tbody>
-      </table>
+    </div>
+
+    <!-- Controls slider -->
+    <div style="background:#131c2e;border-radius:16px;border:1px solid #1e2d45;padding:20px 24px;margin-bottom:16px;">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px;">
+        <label style="font-size:12px;color:#94a3b8;font-weight:700;min-width:110px;text-transform:uppercase;letter-spacing:0.5px;">Volum kg/mes</label>
+        <input type="range" min="500" max="8000" step="100" value="4500" id="vol-slider" style="flex:1;accent-color:#7c3aed;">
+        <div style="font-size:22px;font-weight:900;color:#e2e8f0;min-width:110px;text-align:right;"><span id="vol-label">4.500</span> kg</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+        <span style="font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-right:4px;">Escenaris:</span>
+        <button onclick="setVol(500)"  class="vbtn" id="pre-500">500 kg</button>
+        <button onclick="setVol(1200)" class="vbtn" id="pre-1200">1.200 kg</button>
+        <button onclick="setVol(2500)" class="vbtn" id="pre-2500">2.500 kg</button>
+        <button onclick="setVol(4500)" class="vbtn vbtn-on" id="pre-4500">4.500 kg</button>
+        <button onclick="setVol(6000)" class="vbtn" id="pre-6000">6.000 kg</button>
+        <button onclick="setVol(8000)" class="vbtn" id="pre-8000">8.000 kg</button>
+      </div>
+    </div>
+
+    <div id="vol-alert-box"></div>
+
+    <!-- KPIs -->
+    <div id="vol-kpi-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px;"></div>
+
+    <!-- Resultat gran -->
+    <div id="vol-result-bar" style="background:#131c2e;border-radius:16px;border:1px solid #1e2d45;padding:20px 24px;margin-bottom:16px;"></div>
+
+    <!-- Ingressos + Costos -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+      <div id="vol-ingresos-block" style="background:#131c2e;border-radius:16px;border:1px solid #1e2d45;padding:20px;"></div>
+      <div id="vol-costes-block"   style="background:#131c2e;border-radius:16px;border:1px solid #1e2d45;padding:20px;"></div>
+    </div>
+
+    <!-- Estalvis -->
+    <div id="vol-ahorros-block" style="background:#131c2e;border-radius:16px;border:1px solid #1e2d45;padding:20px;margin-bottom:16px;"></div>
+
+    <!-- Gràfic -->
+    <div style="background:#131c2e;border-radius:16px;border:1px solid #1e2d45;padding:20px;margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #1e2d45;">Resultat net per volum mensual (500 – 8.000 kg)</div>
+      <div style="position:relative;height:220px;"><canvas id="vol-curva"></canvas></div>
+      <div style="display:flex;gap:20px;margin-top:10px;flex-wrap:wrap;align-items:center;">
+        <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#94a3b8;"><span style="width:12px;height:3px;background:#7c3aed;display:inline-block;border-radius:2px;"></span>Resultat net €/mes</span>
+        <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#94a3b8;"><span style="width:12px;height:2px;background:#60a5fa;display:inline-block;border-radius:2px;border-top:2px dashed #60a5fa;height:0;"></span>Break-even</span>
+        <span id="vol-punto-eq" style="font-size:11px;color:#94a3b8;font-weight:700;"></span>
+      </div>
+    </div>
+
+    <!-- Viatges -->
+    <div style="background:#131c2e;border-radius:16px;border:1px solid #1e2d45;padding:20px;margin-bottom:24px;">
+      <div style="font-size:11px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #1e2d45;">Viatges del camió Espinosa al hub</div>
+      <div id="vol-viajes-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;"></div>
     </div>
   </div>
 </section>
-<!-- MODAL EDITAR HUB -->
+
+<style>
+.vbtn{font-size:11px;padding:5px 14px;border-radius:8px;border:1px solid #334155;background:#0f172a;color:#64748b;cursor:pointer;font-family:inherit;font-weight:700;transition:all 0.15s;}
+.vbtn:hover{border-color:#7c3aed;color:#a78bfa;}
+.vbtn.vbtn-on{background:#4c1d95;color:#c4b5fd;border-color:#7c3aed;}
+.vline{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;border-bottom:1px solid #1e2d45;font-size:12px;}
+.vline:last-child{border-bottom:none;}
+.vline-label{color:#94a3b8;}
+.vline-val{font-weight:700;color:#e2e8f0;}
+.vline-val.pos{color:#34d399;}
+.vline-val.neg{color:#f87171;}
+.vsubtotal{display:flex;justify-content:space-between;font-size:12px;font-weight:700;padding:8px 0 0;margin-top:6px;border-top:1px solid #334155;}
+.vsec-title{font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #1e2d45;}
+.vkpi{background:#0f172a;border-radius:12px;padding:14px 16px;border:1px solid #1e2d45;}
+.vkpi-label{font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;line-height:1.3;}
+.vkpi-val{font-size:20px;font-weight:900;color:#e2e8f0;}
+.vkpi-note{font-size:10px;color:#64748b;margin-top:3px;}
+.vkpi.vpos .vkpi-val{color:#34d399;}
+.vkpi.vneg .vkpi-val{color:#f87171;}
+.vcard{background:#0f172a;border-radius:12px;border:1px solid #1e2d45;padding:14px;text-align:center;}
+.vcard-n{font-size:26px;font-weight:900;color:#e2e8f0;}
+.vcard-label{font-size:10px;color:#64748b;font-weight:700;margin-top:4px;line-height:1.3;}
+</style>
+
+<script>
+// ── VOLUMS: constants ─────────────────────────────────────────────────────────
+const V_PRECIO_UCO=0.35,V_PRIMA_ISCC=0.05,V_COSTE_KG=0.22,V_TARA=0.04;
+const V_SUELDO_FIJO=1375,V_CHOFER_H=22,V_DIESEL_L=1.55,V_CO2_FACTOR=0.264;
+const V_BIODIESEL_REND=0.90,V_KM_PER_L=8.1,V_HUB_CAP=1200;
+
+function vHores(vol){return Math.round((vol/4500)*28*10)/10}
+function vParadesTrad(vol){return Math.round((vol/4500)*22.5)}
+function vParadesZero(vol){return Math.max(1,Math.round(vol/V_HUB_CAP))}
+function vDiesel(vol){return Math.round((vol/4500)*140*10)/10}
+function vDesgast(vol){return Math.round((vol/4500)*80)}
+function vCaptacio(vol){return vol>0?300:0}
+
+function vCalc(vol){
+  const ing_uco=Math.round(vol*V_PRECIO_UCO*100)/100;
+  const ing_iscc=Math.round(vol*V_PRIMA_ISCC*100)/100;
+  const ah_chofer=Math.round(vHores(vol)*V_CHOFER_H*100)/100;
+  const ah_diesel=Math.round(vDiesel(vol)*V_DIESEL_L*100)/100;
+  const ah_desgast=vDesgast(vol);
+  const ah_captacio=vCaptacio(vol);
+  const total_ingresos=ing_uco+ing_iscc;
+  const total_ahorros=ah_chofer+ah_diesel+ah_desgast+ah_captacio;
+  const cost_var=Math.round(vol*V_COSTE_KG*100)/100;
+  const cost_tara=Math.round(vol*V_TARA*V_COSTE_KG*100)/100;
+  const total_costes=Math.round((cost_var+cost_tara+V_SUELDO_FIJO)*100)/100;
+  const resultado=Math.round((total_ingresos+total_ahorros-total_costes)*100)/100;
+  const viajes_opt=vParadesZero(vol);
+  const carga_pct=Math.round((vol/viajes_opt)/V_HUB_CAP*100);
+  const co2=Math.round(vol*V_CO2_FACTOR);
+  const biodiesel=Math.round(vol*V_BIODIESEL_REND);
+  const km_bio=Math.round(biodiesel*V_KM_PER_L);
+  return{ing_uco,ing_iscc,ah_chofer,ah_diesel,ah_desgast,ah_captacio,
+    total_ingresos,total_ahorros,cost_var,cost_tara,total_costes,
+    resultado,viajes_opt,carga_pct,co2,biodiesel,km_bio};
+}
+
+function vFmt(n,sign=false){
+  const s=Math.abs(n).toLocaleString('ca-ES',{minimumFractionDigits:0,maximumFractionDigits:0});
+  if(sign)return(n>=0?'+':'-')+s+' €';
+  return(n<0?'-':'')+s+' €';
+}
+function vFmtN(n){return n.toLocaleString('ca-ES')}
+
+function setVol(v){
+  document.getElementById('vol-slider').value=v;
+  [500,1200,2500,4500,6000,8000].forEach(p=>{
+    const el=document.getElementById('pre-'+p);
+    if(el)el.className='vbtn'+(p===v?' vbtn-on':'');
+  });
+  vRender(v);
+}
+
+function vRender(vol){
+  const d=vCalc(vol);
+  document.getElementById('vol-label').textContent=vFmtN(vol);
+
+  // Alert
+  const alertEl=document.getElementById('vol-alert-box');
+  if(d.resultado>=500){
+    alertEl.innerHTML='<div style="background:#14532d;border:1px solid #16a34a;border-radius:12px;padding:12px 16px;font-size:12px;color:#86efac;font-weight:700;margin-bottom:14px;">✅ Escenari rendible — resultat net '+vFmt(d.resultado,true)+'/mes. El model funciona de forma òptima.</div>';
+  }else if(d.resultado>=0){
+    alertEl.innerHTML='<div style="background:#422006;border:1px solid #d97706;border-radius:12px;padding:12px 16px;font-size:12px;color:#fde68a;font-weight:700;margin-bottom:14px;">⚠️ Escenari marginal — resultat net '+vFmt(d.resultado,true)+'/mes. Rendible però ajustat. Revisar volum objectiu.</div>';
+  }else{
+    alertEl.innerHTML='<div style="background:#450a0a;border:1px solid #dc2626;border-radius:12px;padding:12px 16px;font-size:12px;color:#fca5a5;font-weight:700;margin-bottom:14px;">❌ Escenari no rendible — resultat net '+vFmt(d.resultado,true)+'/mes. Volum insuficient per cobrir el sou fix de Z-Ero.</div>';
+  }
+
+  // KPIs
+  document.getElementById('vol-kpi-grid').innerHTML=`
+    <div class="vkpi vpos"><div class="vkpi-label">Resultat net Espinosa</div><div class="vkpi-val">${vFmt(d.resultado,true)}</div><div class="vkpi-note">ingressos + estalvis − Z-Ero</div></div>
+    <div class="vkpi"><div class="vkpi-label">Ingressos venda UCO</div><div class="vkpi-val">${vFmt(d.ing_uco)}</div><div class="vkpi-note">${vol} kg × 0,35 €/kg</div></div>
+    <div class="vkpi"><div class="vkpi-label">Prima qualitat ISCC</div><div class="vkpi-val">${vFmt(d.ing_iscc)}</div><div class="vkpi-note">${vol} kg × 0,05 €/kg</div></div>
+    <div class="vkpi vpos"><div class="vkpi-label">Total estalvis operatius</div><div class="vkpi-val">${vFmt(d.total_ahorros)}</div><div class="vkpi-note">xofer + dièsel + desgast + captació</div></div>
+    <div class="vkpi vneg"><div class="vkpi-label">Cost total Z-Ero</div><div class="vkpi-val">${vFmt(d.total_costes)}</div><div class="vkpi-note">variable + tara + sou fix</div></div>
+    <div class="vkpi"><div class="vkpi-label">CO₂ evitat</div><div class="vkpi-val">${vFmtN(d.co2)} kg</div><div class="vkpi-note">factor ISCC 0,264 kg/kg</div></div>
+    <div class="vkpi"><div class="vkpi-label">Biodièsel produït</div><div class="vkpi-val">${vFmtN(d.biodiesel)} L</div><div class="vkpi-note">rendiment 90%</div></div>
+    <div class="vkpi"><div class="vkpi-label">Hores flota alliberades</div><div class="vkpi-val">${vFmtN(d.ah_chofer/V_CHOFER_H)} h</div><div class="vkpi-note">xofer a rutes rendibles</div></div>
+  `;
+
+  // Resultat gran
+  const resColor=d.resultado>=0?'#34d399':'#f87171';
+  document.getElementById('vol-result-bar').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+      <div>
+        <div style="font-size:13px;color:#e2e8f0;font-weight:700;">Resultat net mensual per a Espinosa</div>
+        <div style="font-size:11px;color:#64748b;font-weight:600;margin-top:4px;">amb ${vol} kg/mes · ${d.viajes_opt} viatge${d.viajes_opt>1?'s':''}/mes al hub · càrrega ${d.carga_pct}%</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:34px;font-weight:900;color:${resColor};">${vFmt(d.resultado,true)}</div>
+        <div style="font-size:11px;color:#64748b;font-weight:600;margin-top:2px;">≈ ${vFmt(d.resultado*12,true)} / any</div>
+      </div>
+    </div>`;
+
+  // Ingressos
+  document.getElementById('vol-ingresos-block').innerHTML=`
+    <div class="vsec-title">Ingressos directes</div>
+    <div class="vline"><span class="vline-label">Venda oli UCO (${vol} kg × 0,35 €)</span><span class="vline-val pos">${vFmt(d.ing_uco)}</span></div>
+    <div class="vline"><span class="vline-label">Prima qualitat ISCC (× 0,05 €)</span><span class="vline-val pos">${vFmt(d.ing_iscc)}</span></div>
+    <div class="vsubtotal"><span style="color:#94a3b8;">Total ingressos</span><span style="color:#34d399;">${vFmt(d.total_ingresos)}</span></div>`;
+
+  // Costos
+  document.getElementById('vol-costes-block').innerHTML=`
+    <div class="vsec-title">Costos del servei Z-Ero</div>
+    <div class="vline"><span class="vline-label">Cost variable (${vol} kg × 0,22 €)</span><span class="vline-val neg">${vFmt(d.cost_var)}</span></div>
+    <div class="vline"><span class="vline-label">Tara barrils (4% × ${vol} kg × 0,22 €)</span><span class="vline-val neg">${vFmt(d.cost_tara)}</span></div>
+    <div class="vline"><span class="vline-label">Sou fix mensual Z-Ero</span><span class="vline-val neg">${vFmt(V_SUELDO_FIJO)}</span></div>
+    <div class="vsubtotal"><span style="color:#94a3b8;">Total costos Z-Ero</span><span style="color:#f87171;">${vFmt(d.total_costes)}</span></div>`;
+
+  // Estalvis
+  document.getElementById('vol-ahorros-block').innerHTML=`
+    <div class="vsec-title">Estalvis operatius Espinosa (eliminació ruta tradicional)</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0;">
+      <div class="vline"><span class="vline-label">Xofer alliberat (${vFmtN(d.ah_chofer/V_CHOFER_H)} h × 22 €/h)</span><span class="vline-val pos">${vFmt(d.ah_chofer)}</span></div>
+      <div class="vline"><span class="vline-label">Dièsel eliminat (${vFmtN(vDiesel(vol))} L × 1,55 €/L)</span><span class="vline-val pos">${vFmt(d.ah_diesel)}</span></div>
+      <div class="vline"><span class="vline-label">Desgast vehicle (frens, caixa, pneum.)</span><span class="vline-val pos">${vFmt(d.ah_desgast)}</span></div>
+      <div class="vline"><span class="vline-label">Captació clients nous (cost zero)</span><span class="vline-val pos">${vFmt(d.ah_captacio)}</span></div>
+    </div>
+    <div class="vsubtotal"><span style="color:#94a3b8;">Total estalvis</span><span style="color:#34d399;">${vFmt(d.total_ahorros)}</span></div>`;
+
+  // Viatges
+  const trad=vParadesTrad(vol);
+  document.getElementById('vol-viajes-grid').innerHTML=`
+    <div class="vcard"><div class="vcard-n">${vFmtN(trad)}</div><div class="vcard-label">Parades model tradicional</div></div>
+    <div class="vcard"><div class="vcard-n" style="color:#34d399;">${d.viajes_opt}</div><div class="vcard-label">Viatges al hub Z-Ero</div></div>
+    <div class="vcard"><div class="vcard-n">${d.carga_pct}%</div><div class="vcard-label">Càrrega per viatge</div></div>
+    <div class="vcard"><div class="vcard-n">${vFmtN(Math.round(vol/d.viajes_opt))}</div><div class="vcard-label">kg per viatge al hub</div></div>
+    <div class="vcard"><div class="vcard-n">${Math.round(30/d.viajes_opt)}</div><div class="vcard-label">Dies entre viatges</div></div>
+    <div class="vcard"><div class="vcard-n" style="color:#a78bfa;">${vFmtN(d.km_bio)}</div><div class="vcard-label">km recorreguts amb biodièsel produït</div></div>`;
+
+  updateVolumsChart(vol);
+}
+
+let _volumsChart=null;
+function buildVolumsChart(){
+  const vols=[];
+  for(let v=500;v<=8000;v+=100)vols.push(v);
+  const results=vols.map(v=>vCalc(v).resultado);
+  const beIdx=results.findIndex(r=>r>=0);
+  const beVol=beIdx>=0?vols[beIdx]:null;
+  if(beVol) document.getElementById('vol-punto-eq').textContent='Break-even aprox. '+vFmtN(beVol)+' kg/mes';
+  const ctx=document.getElementById('vol-curva').getContext('2d');
+  _volumsChart=new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:vols.map(v=>v%1000===0?vFmtN(v):''),
+      datasets:[
+        {label:'Resultat net',data:results,borderColor:'#7c3aed',backgroundColor:'rgba(124,58,237,0.10)',borderWidth:2,pointRadius:0,tension:0.3,fill:true},
+        {label:'Break-even',data:vols.map(()=>0),borderColor:'#60a5fa',borderWidth:1,borderDash:[6,4],pointRadius:0}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{
+        label:c=>vFmt(Math.round(c.parsed.y),true),
+        title:c=>vFmtN(parseInt(c[0].label||0))+' kg/mes'
+      }}},
+      scales:{
+        x:{ticks:{font:{size:10},color:'#64748b',maxTicksLimit:12,autoSkip:true},grid:{color:'rgba(255,255,255,0.05)'}},
+        y:{ticks:{font:{size:10},color:'#64748b',callback:v=>(v>=0?'+':'')+Math.round(v)+'€'},grid:{color:'rgba(255,255,255,0.05)'}}
+      }
+    }
+  });
+}
+
+function updateVolumsChart(vol){
+  if(!_volumsChart)return;
+  // highlight current vol with annotation point — chart already reactive via render
+}
+
+document.getElementById('vol-slider').addEventListener('input',function(){
+  [500,1200,2500,4500,6000,8000].forEach(p=>{
+    const el=document.getElementById('pre-'+p);
+    if(el)el.className='vbtn';
+  });
+  vRender(parseInt(this.value));
+});
+
+// Init render
+vRender(4500);
+</script>
 <div id="hub-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.65);z-index:300;align-items:center;justify-content:center;" onclick="if(event.target===this)closeHubModal()">
   <div style="background:white;border-radius:20px;padding:28px;width:90%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
     <div style="font-size:16px;font-weight:900;color:#0f172a;margin-bottom:6px;">⚙ Editar Hub</div>
@@ -655,8 +999,8 @@ messagingSenderId: "1027500466158",
 appId:             "1:1027500466158:web:ae5298fbcf6fa9635b38ff"
 };
 const USER_ROLES = {
-"zerocarbonlogistic@gmail.com": { rol: "operador",     nom: "Z-Ero CO₂ · Logística Milla Verda, S.L. · Operador & Transportista", tabs: ["operador","establiments","transport"] },
-"fespinosaruiz@yahoo.es":      { rol: "gestor",        nom: "F. Espinosa Gestores",                    tabs: ["espinosa","establiments"] }
+"zerocarbonlogistic@gmail.com": { rol: "operador",     nom: "Z-Ero CO₂ · Logística Milla Verda, S.L. · Operador & Transportista", tabs: ["operador","establiments","transport","volums"] },
+"fespinosaruiz@yahoo.es":      { rol: "gestor",        nom: "F. Espinosa Gestores",                    tabs: ["espinosa","establiments","volums"] }
 };
 const EMAILJS_PUBLIC_KEY  = '-FHqxMOs0uW0675ql';
 const EMAILJS_SERVICE_ID  = 'service_5uf68zq';
@@ -767,7 +1111,7 @@ currentUser = userInfo;
 currentRol  = userInfo.rol;
 document.getElementById('nav-user-name').innerText = userInfo.nom;
 document.getElementById('nav-user-rol').innerText  = userInfo.rol.toUpperCase();
-const allTabs = ['operador','establiments','transport','espinosa'];
+const allTabs = ['operador','establiments','transport','espinosa','volums'];
 allTabs.forEach(t => {
 const tab = document.getElementById('tab-' + t);
 if (tab) tab.style.display = userInfo.tabs.includes(t) ? '' : 'none';
@@ -1193,13 +1537,14 @@ try { const d = JSON.parse(localStorage.getItem('zeroc_camio')||'null'); if(d){d
 }
 }
 function switchView(v) {
-['operador','establiments','transport','espinosa'].forEach(s => {
+['operador','establiments','transport','espinosa','volums'].forEach(s => {
 document.getElementById('sec-' + s).classList.toggle('on', s === v);
 const t = document.getElementById('tab-' + s);
 if (t) t.classList.toggle('on', s === v);
 });
 if (v === 'establiments') renderEstabliments();
 if (v === 'espinosa') { recalcDieselDebounced(); espPoblaSelectorRefs(); }
+if (v === 'volums' && !window._volumsChartBuilt) { window._volumsChartBuilt = true; buildVolumsChart(); }
 }
 // ── DATE RANGE PICKER ────────────────────────────────────────────────────────
 let _allRecs = {};
@@ -1365,42 +1710,6 @@ function applyPicker(who) {
   const popup = document.getElementById('picker-popup-'+who);
   if (popup) popup.remove();
   recalcDieselDebounced();
-  // Sincronitza la taula de registre amb el mateix rang de dates
-  if (who === 'op') _syncOpTableWithPicker();
-}
-
-function _syncOpTableWithPicker() {
-  const p = _picker['op'];
-  if (!p || !p.from) return;
-  const isTotal = p.from.getFullYear() <= 2020 && (!p.to || p.to.getFullYear() >= 2099);
-  const tbody = document.getElementById('op-tbody');
-  if (!tbody) return;
-  const q = (document.getElementById('op-search') || {}).value || '';
-  const from = isTotal ? null : new Date(p.from); if (from) from.setHours(0,0,0,0);
-  const to   = isTotal ? null : (p.to ? new Date(p.to) : new Date(p.from)); if (to) to.setHours(23,59,59,999);
-  let shown = 0;
-  tbody.querySelectorAll('tr[id^="row-"]').forEach(row => {
-    const rowKey = row.id.replace('row-','');
-    const d = Object.values(_allRecs).find(r => r && (r.ref||'').replace(/\./g,'-').replace(/\s/g,'_') === rowKey);
-    if (!d) { row.style.display = ''; return; }
-    let inPeriod = true;
-    if (from || to) {
-      const parts = (d.dataHora||'').split(' ')[0].split('/');
-      if (parts.length >= 3) {
-        const rec = new Date(+parts[2], +parts[1]-1, +parts[0]);
-        inPeriod = (!from || rec >= from) && (!to || rec <= to);
-      } else { inPeriod = false; }
-    }
-    const hay = [(d.ref||''),(d.nom||''),(d.precinte||''),(d.incidencia||''),(d.estat||''),(d.id||''),(d.dataHora||'')].join(' ').toLowerCase();
-    const inSearch = !q || q.toLowerCase().split(' ').every(w => hay.includes(w));
-    const show = inPeriod && inSearch;
-    row.style.display = show ? '' : 'none';
-    const panel = document.getElementById('panel-'+rowKey);
-    if (panel) panel.style.display = 'none';
-    if (show) shown++;
-  });
-  const el = document.getElementById('op-count');
-  if (el) el.innerText = shown + ' registres visibles';
 }
 
 function sameDay(a,b) { return a&&b&&a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate(); }
@@ -2719,141 +3028,6 @@ const el = document.getElementById(i); if(el) el.value='';
 });
 const tStat = document.getElementById('t-estat'); if(tStat) tStat.selectedIndex=0;
 alert('Nova sessió iniciada. Totes les dades segueixen guardades a Firebase.');
-}
-// ═══════════════════════════════════════════════════════
-// FILTRES DE CERCA — OPERADOR i ESPINOSA
-// ═══════════════════════════════════════════════════════
-let _opPeriod = 'avui';
-let _espPeriod = 'tot';
-
-function _parseDateFromRec(d) {
-  if (!d || !d.dataHora) return null;
-  const p = d.dataHora.split(' ')[0].split('/');
-  if (p.length < 3) return null;
-  return new Date(+p[2], +p[1]-1, +p[0]);
-}
-
-function _periodRange(period, prefix) {
-  const from = document.getElementById(prefix+'-date-from');
-  const to   = document.getElementById(prefix+'-date-to');
-  const now  = new Date(); now.setHours(23,59,59,999);
-  if (period === 'custom') {
-    const f = from && from.value ? new Date(from.value) : null;
-    const t = to   && to.value   ? new Date(to.value+'T23:59:59') : null;
-    return {f, t};
-  }
-  if (period === 'avui') {
-    const s = new Date(); s.setHours(0,0,0,0);
-    return {f: s, t: now};
-  }
-  if (period === 'set') {
-    const s = new Date(); s.setDate(s.getDate()-6); s.setHours(0,0,0,0);
-    return {f: s, t: now};
-  }
-  if (period === 'mes') {
-    const s = new Date(); s.setDate(s.getDate()-29); s.setHours(0,0,0,0);
-    return {f: s, t: now};
-  }
-  return {f: null, t: null};
-}
-
-function _matchSearch(d, q) {
-  if (!q) return true;
-  const hay = [(d.ref||''),(d.nom||''),(d.precinte||''),(d.incidencia||''),(d.estat||''),(d.id||''),(d.dataHora||'')].join(' ').toLowerCase();
-  return q.toLowerCase().split(' ').every(w => hay.includes(w));
-}
-
-function setOpPeriod(p) {
-  _opPeriod = p;
-  ['avui','set','mes','tot'].forEach(x => {
-    const el = document.getElementById('fpill-'+x);
-    if (el) el.classList.toggle('on', x === p);
-  });
-  if (p !== 'custom') {
-    const f = document.getElementById('op-date-from');
-    const t = document.getElementById('op-date-to');
-    if (f) f.value=''; if (t) t.value='';
-  }
-  applyFilters();
-}
-
-function setEspPeriod(p) {
-  _espPeriod = p;
-  ['tot','avui','set','mes'].forEach(x => {
-    const el = document.getElementById('efpill-'+x);
-    if (el) el.classList.toggle('on', x === p);
-  });
-  if (p !== 'custom') {
-    const f = document.getElementById('esp-date-from');
-    const t = document.getElementById('esp-date-to');
-    if (f) f.value=''; if (t) t.value='';
-  }
-  applyEspFilters();
-}
-
-function applyFilters() {
-  const tbody = document.getElementById('op-tbody');
-  if (!tbody) return;
-  const q = (document.getElementById('op-search')||{}).value || '';
-  const {f, t} = _periodRange(_opPeriod, 'op');
-  let shown = 0;
-  tbody.querySelectorAll('tr[id^="row-"]').forEach(row => {
-    const rowKey = row.id.replace('row-','');
-    const d = Object.values(_allRecs).find(r => r && (r.ref||'').replace(/\./g,'-').replace(/\s/g,'_') === rowKey);
-    if (!d) { row.style.display=''; return; }
-    const recDate = _parseDateFromRec(d);
-    const inPeriod = (!f && !t) || ((!f || recDate >= f) && (!t || recDate <= t));
-    const inSearch = _matchSearch(d, q);
-    const show = inPeriod && inSearch;
-    row.style.display = show ? '' : 'none';
-    const panel = document.getElementById('panel-'+rowKey);
-    if (panel) panel.style.display = 'none';
-    if (show) shown++;
-  });
-  const el = document.getElementById('op-count');
-  if (el) el.innerText = shown + ' registres visibles';
-}
-
-function applyEspFilters() {
-  const tbody = document.getElementById('esp-tbody');
-  if (!tbody) return;
-  const q = (document.getElementById('esp-search')||{}).value || '';
-  const {f, t} = _periodRange(_espPeriod, 'esp');
-  let shown = 0;
-  tbody.querySelectorAll('tr').forEach(row => {
-    if (row.id === 'esp-load-more') return;
-    const cells = row.querySelectorAll('td');
-    if (!cells.length) return;
-    const text = Array.from(cells).map(c => c.innerText).join(' ').toLowerCase();
-    let inPeriod = true;
-    if (f || t) {
-      const tsCell = cells[6] ? cells[6].innerText : '';
-      const m = tsCell.match(/(\d{2})\/(\d{2})\/(\d{4})/);
-      if (m) {
-        const recDate = new Date(+m[3], +m[2]-1, +m[1]);
-        inPeriod = (!f || recDate >= f) && (!t || recDate <= t);
-      } else { inPeriod = false; }
-    }
-    const inSearch = !q || q.toLowerCase().split(' ').every(w => text.includes(w));
-    const show = inPeriod && inSearch;
-    row.style.display = show ? '' : 'none';
-    if (show) shown++;
-  });
-  const fc = document.getElementById('esp-filter-count');
-  if (fc) fc.innerText = shown + ' registres';
-  const tc = document.getElementById('esp-table-count');
-  if (tc) tc.innerText = shown + ' registres';
-}
-
-function toggleAccordion(id) {
-  const body  = document.getElementById(id);
-  const arrow = document.getElementById('arr-'+id);
-  if (!body) return;
-  const isOpen = body.classList.contains('open');
-  body.classList.toggle('open', !isOpen);
-  if (arrow) arrow.classList.toggle('open', !isOpen);
-  if (!isOpen) applyEspFilters();
-}
-</script>
+}</script>
 </body>
 </html>
