@@ -57,10 +57,13 @@
 
     <!-- ── LOGO ESPINOSA (protagonista) ── -->
     <div style="text-align:center;margin-bottom:28px;">
-      <div class="espinosa-logo-ring">
-        <span class="espinosa-initials">FE</span>
+      <div style="background:white;border-radius:16px;padding:10px 18px;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 0 0 6px rgba(37,99,235,0.12),0 8px 32px rgba(0,0,0,0.5);margin-bottom:10px;min-width:120px;min-height:60px;">
+        <img src="https://fespinosa.eu/wp-content/uploads/2021/01/logo-fespinosa.jpg"
+             alt="F. Espinosa Gestores"
+             style="height:48px;object-fit:contain;max-width:160px;"
+             onerror="this.parentElement.innerHTML='<span style=\'color:#0f172a;font-weight:900;font-size:18px;font-style:italic;\'>F. ESPINOSA</span>'">
       </div>
-      <div style="color:#e2e8f0;font-size:22px;font-weight:900;letter-spacing:0.3px;margin-top:2px;">F.Espinosa</div>
+      <div style="color:#e2e8f0;font-size:22px;font-weight:900;letter-spacing:0.3px;margin-top:2px;">Espinosa Olis</div>
       <div style="color:#60a5fa;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;margin-top:5px;">Plataforma de gestió · UCO</div>
     </div>
 
@@ -460,7 +463,15 @@ function toggleQR(btn){
   <div class="transport-wrap">
     <div class="t-card">
       <div style="text-align:center;font-size:20px;font-weight:900;text-transform:uppercase;font-style:italic;margin-bottom:6px;color:#0f172a;letter-spacing:-0.5px;">Nova recollida</div>
-      <div style="text-align:center;font-size:11px;color:#94a3b8;font-weight:700;margin-bottom:24px;">Omple els camps i confirma · El pes és obligatori</div>
+      <div style="text-align:center;font-size:11px;color:#94a3b8;font-weight:700;margin-bottom:10px;">Omple els camps i confirma · El pes és obligatori</div>
+      <!-- Avís bàscula homologada -->
+      <div style="background:#f0f9ff;border:1.5px solid #bae6fd;border-radius:12px;padding:10px 14px;margin-bottom:18px;display:flex;align-items:flex-start;gap:10px;">
+        <span style="font-size:18px;flex-shrink:0;">⚖️</span>
+        <div style="font-size:11px;color:#0369a1;font-weight:700;line-height:1.5;">
+          <strong>Pesatge certificat al Hub Calella</strong><br>
+          <span style="font-weight:600;color:#0c4a6e;">El pes real dels bidons es determina a la bàscula homologada del hub (certificació metrològica ENAC/CEI). La lectura del transportista és orientativa. El pes oficial vinculant és el de la bàscula del hub.</span>
+        </div>
+      </div>
       <!-- FORMULARI PRINCIPAL -->
       <div id="t-form" class="t-form">
         <!-- Codi establiment — selector sincronitzat amb DB -->
@@ -510,25 +521,39 @@ function toggleQR(btn){
           <div class="gps-dot"></div>
           <div class="gps-text">GPS actiu · <span style="font-family:monospace;" id="t-gps-coords">obtenint posició...</span><br>Calella de la Costa — en temps real</div>
         </div>
+
+        <!-- DNI/NIF del responsable -->
+        <div style="margin-bottom:18px;">
+          <div class="lbl">DNI / NIF del responsable que entrega <span style="color:#dc2626;">*</span></div>
+          <input class="inp" type="text" id="t-dni" placeholder="Ex: 12345678A" maxlength="12"
+            style="font-family:monospace;font-weight:700;letter-spacing:2px;font-size:16px;text-transform:uppercase;"
+            oninput="this.value=this.value.toUpperCase()">
+          <div style="font-size:10px;color:#94a3b8;font-weight:600;margin-top:4px;">Responsable de l'establiment que entrega l'oli</div>
+        </div>
+
+        <!-- Signatura digital -->
+        <div style="margin-bottom:18px;">
+          <div class="lbl">Signatura del responsable <span style="color:#dc2626;">*</span></div>
+          <div style="background:#0d1626;border:1.5px solid #1e2d45;border-radius:12px;overflow:hidden;position:relative;">
+            <canvas id="t-sign-canvas" width="400" height="140"
+              style="width:100%;height:140px;display:block;cursor:crosshair;touch-action:none;"
+              onmousedown="signStart(event,'t-sign-canvas')" onmousemove="signDraw(event,'t-sign-canvas')" onmouseup="signEnd('t-sign-canvas')" onmouseleave="signEnd('t-sign-canvas')"
+              ontouchstart="signStart(event,'t-sign-canvas')" ontouchmove="signDraw(event,'t-sign-canvas')" ontouchend="signEnd('t-sign-canvas')">
+            </canvas>
+            <div id="t-sign-placeholder" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;">
+              <div style="text-align:center;">
+                <div style="font-size:28px;opacity:0.2;">✍</div>
+                <div style="font-size:11px;color:#475569;font-weight:700;margin-top:4px;">Signa aquí amb el dit</div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;margin-top:6px;">
+            <button type="button" onclick="signClear('t-sign-canvas')" style="background:transparent;border:1px solid #334155;border-radius:8px;color:#64748b;font-size:10px;font-weight:700;padding:4px 12px;cursor:pointer;font-family:inherit;">Esborrar signatura</button>
+          </div>
+          <div id="t-sign-warn" style="display:none;color:#dc2626;font-size:10px;font-weight:700;margin-top:4px;">⚠ Cal una signatura per confirmar la recollida</div>
+        </div>
+
         <!-- Botó confirmar -->
-        <div class="mt-6 mb-6">
-    <label class="block text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest">
-        ✍️ Conformitat de l'establiment (Recollida de Bidons)
-    </label>
-    <div style="position: relative; background: #ffffff; border: 2px solid #e2e8f0; border-radius: 16px; overflow: hidden;">
-        <canvas id="canvas-firma" width="450" height="180" 
-            style="width: 100%; height: 180px; cursor: crosshair; touch-action: none;">
-        </canvas>
-        <button type="button" onclick="netejarFirma()" 
-            style="position: absolute; top: 10px; right: 10px; background: #f1f5f9; color: #64748b; font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 6px; border: none; cursor: pointer; z-index: 10;">
-            NETEJAR
-        </button>
-    </div>
-    <p class="text-[9px] text-slate-400 mt-2 italic text-center">
-        L'establiment confirma el recompte. El pes final es validarà al Hub.
-    </p>
-</div>
-<button onclick="registrarRecollida()" class="w-full bg-blue-600 ...">REGISTRAR RECOLLIDA</button>
         <button class="sign-btn" id="t-confirm-btn" onclick="tConfirmarRecollida()">
           Confirmar recollida i enviar a operador
         </button>
@@ -670,7 +695,7 @@ function toggleQR(btn){
       </div>
     </div>
     <table>
-      <thead><tr><th>Codi RED II</th><th>Establiment</th><th>Pes real</th><th>Barrils</th><th>Estat oli</th><th>Transportista</th><th>Timestamp GPS</th><th>Anotació gestor</th><th>Segell</th></tr></thead>
+      <thead><tr><th>Codi RED II</th><th>Establiment</th><th>Pes real ⚖️ Hub</th><th>Barrils</th><th>Estat oli</th><th>Transportista</th><th>Timestamp GPS</th><th>Anotació gestor</th><th>Segell</th></tr></thead>
       <tbody id="esp-tbody">
         <tr><td colspan="9" style="text-align:center;color:#94a3b8;padding:20px;font-size:12px;">Sense recollides registrades</td></tr>
       </tbody>
@@ -780,6 +805,8 @@ function toggleQR(btn){
 const V_PRECIO_UCO=0.35,V_PRIMA_ISCC=0.05,V_COSTE_KG=0.22,V_TARA=0.04;
 const V_SUELDO_FIJO=1375,V_CHOFER_H=22,V_DIESEL_L=1.55,V_CO2_FACTOR=0.264;
 const V_BIODIESEL_REND=0.90,V_KM_PER_L=8.1,V_HUB_CAP=1200;
+// Espinosa paga 20€ per bidó de 60L/58kg als establiments (incentiu captació UCO)
+const V_PREU_BIDO=20, V_KG_BIDO=58;
 
 function vHores(vol){return Math.round((vol/4500)*28*10)/10}
 function vParadesTrad(vol){return Math.round((vol/4500)*22.5)}
@@ -799,7 +826,11 @@ function vCalc(vol){
   const total_ahorros=ah_chofer+ah_diesel+ah_desgast+ah_captacio;
   const cost_var=Math.round(vol*V_COSTE_KG*100)/100;
   const cost_tara=Math.round(vol*V_TARA*V_COSTE_KG*100)/100;
-  const total_costes=Math.round((cost_var+cost_tara+V_SUELDO_FIJO)*100)/100;
+  // Cost bidons: Espinosa paga 20€/bidó de 58kg als establiments
+  const num_bidons=Math.ceil(vol/V_KG_BIDO);
+  const cost_bidons=Math.round(num_bidons*V_PREU_BIDO*100)/100;
+  const preu_kg_bido=Math.round((V_PREU_BIDO/V_KG_BIDO)*100)/100; // ≈0,345 €/kg
+  const total_costes=Math.round((cost_var+cost_tara+cost_bidons+V_SUELDO_FIJO)*100)/100;
   const resultado=Math.round((total_ingresos+total_ahorros-total_costes)*100)/100;
   const viajes_opt=vParadesZero(vol);
   const carga_pct=Math.round((vol/viajes_opt)/V_HUB_CAP*100);
@@ -807,7 +838,7 @@ function vCalc(vol){
   const biodiesel=Math.round(vol*V_BIODIESEL_REND);
   const km_bio=Math.round(biodiesel*V_KM_PER_L);
   return{ing_uco,ing_iscc,ah_chofer,ah_diesel,ah_desgast,ah_captacio,
-    total_ingresos,total_ahorros,cost_var,cost_tara,total_costes,
+    total_ingresos,total_ahorros,cost_var,cost_tara,cost_bidons,num_bidons,preu_kg_bido,total_costes,
     resultado,viajes_opt,carga_pct,co2,biodiesel,km_bio};
 }
 
@@ -879,6 +910,8 @@ function vRender(vol){
     <div class="vsec-title">Costos del servei Z-Ero</div>
     <div class="vline"><span class="vline-label">Cost variable (${vol} kg × 0,22 €)</span><span class="vline-val neg">${vFmt(d.cost_var)}</span></div>
     <div class="vline"><span class="vline-label">Tara barrils (4% × ${vol} kg × 0,22 €)</span><span class="vline-val neg">${vFmt(d.cost_tara)}</span></div>
+    <div class="vline" style="background:rgba(251,146,60,0.07);border-radius:6px;padding:7px 8px;"><span class="vline-label" style="color:#fb923c;font-weight:700;">🛢 Incentiu establiments (${d.num_bidons} bidons × 20 €/bidó de 58 kg)</span><span class="vline-val neg" style="color:#fb923c;">${vFmt(d.cost_bidons)}</span></div>
+    <div style="font-size:10px;color:#64748b;padding:3px 8px 4px;margin-top:-4px;">≈ ${d.preu_kg_bido.toFixed(3).replace('.',',')} €/kg · Espinosa paga 20 €/bidó (60L/58kg) als establiments per incentiu UCO</div>
     <div class="vline"><span class="vline-label">Sou fix mensual Z-Ero</span><span class="vline-val neg">${vFmt(V_SUELDO_FIJO)}</span></div>
     <div class="vsubtotal"><span style="color:#94a3b8;">Total costos Z-Ero</span><span style="color:#f87171;">${vFmt(d.total_costes)}</span></div>`;
 
@@ -2807,13 +2840,32 @@ const buits = document.getElementById('t-buits')?.value || '0';
 const estat = document.getElementById('t-estat')?.value || 'Net / Filtrat';
 const prec  = (document.getElementById('t-precinte')?.value || '—').trim();
 const incid = (document.getElementById('t-incidencia')?.value || 'Cap incidencia').trim();
+const dni   = (document.getElementById('t-dni')?.value || '').trim().toUpperCase();
 if (!codi) {
 const w = document.getElementById('t-nom-warn');
 if(w) w.style.display = 'block';
 document.getElementById('t-codi-est')?.focus();
 return;
 }
+// Validació DNI/NIF
+if (!dni) {
+alert('⚠️ El DNI/NIF del responsable és obligatori per continuar.');
+document.getElementById('t-dni')?.focus();
+return;
+}
+if (!validarDNI(dni)) {
+alert('⚠️ El DNI/NIF "' + dni + '" no té un format vàlid. Comprova les dades i torna-ho a intentar.');
+document.getElementById('t-dni')?.focus();
+return;
+}
+// Validació signatura
+if (!signHasData('t-sign-canvas')) {
+const w = document.getElementById('t-sign-warn');
+if(w) w.style.display = 'block';
+return;
+}
 const nom = DB[codi]?.nom || codi;
+const signDataUrl = signGetDataURL('t-sign-canvas');
 const resum = document.getElementById('t-modal-resum');
 if(resum) {
 resum.innerHTML = '<div style="display:flex;flex-direction:column;gap:8px;">'
@@ -2822,9 +2874,14 @@ resum.innerHTML = '<div style="display:flex;flex-direction:column;gap:8px;">'
 + '<div style="display:flex;justify-content:space-between;"><span style="color:#94a3b8;">Barrils</span><strong>' + plens + 'P / ' + buits + 'B</strong></div>'
 + '<div style="display:flex;justify-content:space-between;"><span style="color:#94a3b8;">Estat oli</span><strong>' + estat + '</strong></div>'
 + '<div style="display:flex;justify-content:space-between;"><span style="color:#94a3b8;">Precinte</span><strong style="font-family:monospace;">' + prec + '</strong></div>'
++ '<div style="display:flex;justify-content:space-between;"><span style="color:#94a3b8;">DNI/NIF responsable</span><strong style="font-family:monospace;color:#15803d;">✓ ' + dni + '</strong></div>'
 + (incid && incid !== 'Cap incidencia' ? '<div style="display:flex;justify-content:space-between;"><span style="color:#94a3b8;">Incidència</span><strong style="color:#dc2626;">⚠ ' + incid + '</strong></div>' : '')
-+ '<div style="margin-top:8px;padding:10px;background:#fef3c7;border-radius:8px;font-size:11px;color:#92400e;font-weight:700;">ℹ El pes es registrarà a l\'operador quan arribi al hub</div>'
++ (signDataUrl ? '<div style="background:#f8fafc;border-radius:8px;padding:8px;margin-top:4px;"><div style="font-size:10px;color:#94a3b8;font-weight:700;margin-bottom:4px;">SIGNATURA DEL RESPONSABLE</div><img src="'+signDataUrl+'" style="width:100%;max-height:70px;object-fit:contain;border-radius:6px;background:#0d1626;"></div>' : '')
++ '<div style="margin-top:8px;padding:10px;background:#fef3c7;border-radius:8px;font-size:11px;color:#92400e;font-weight:700;">ℹ El pes es determina a la bàscula homologada del hub</div>'
 + '</div>';
+// Guarda signatura per a l'enviament
+document.getElementById('t-modal-overlay')._signDataUrl = signDataUrl;
+document.getElementById('t-modal-overlay')._dni = dni;
 }
 document.getElementById('t-modal-overlay').style.display = 'flex';
 }
@@ -2836,6 +2893,9 @@ const buits = document.getElementById('t-buits')?.value || '0';
 const estat = document.getElementById('t-estat')?.value || 'Net / Filtrat';
 const prec  = (document.getElementById('t-precinte')?.value || '—').trim();
 const incid = (document.getElementById('t-incidencia')?.value || 'Cap incidencia').trim();
+const modal = document.getElementById('t-modal-overlay');
+const signDataUrl = modal?._signDataUrl || null;
+const dni = modal?._dni || (document.getElementById('t-dni')?.value || '').trim().toUpperCase();
 const now     = new Date();
 const dataHora= now.toLocaleDateString('ca-ES') + ' ' + now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
 const gpsEl   = document.getElementById('t-gps-coords');
@@ -2844,7 +2904,7 @@ document.getElementById('t-modal-overlay').style.display = 'none';
 totalRec++; todayRec++;
 const nextSeq = await getNextSeq();
 const ref     = 'Z-08370-' + String(nextSeq).padStart(3,'0');
-const recData = { ref, id: codi || 'TRANSP', nom, pes: 0, plens, buits, estat, incidencia: incid, precinte: prec, dataHora, transportistaOk: true, operadorOk: false, gps };
+const recData = { ref, id: codi || 'TRANSP', nom, pes: 0, plens, buits, estat, incidencia: incid, precinte: prec, dataHora, transportistaOk: true, operadorOk: false, gps, dni: dni || '', signatura: signDataUrl ? '[signatura digital]' : '' };
 saveRecollida(ref, recData); // saveRecollida ja actualitza _pendingRecs
 saveState();
 const estatBadge = estat.startsWith('Net') ? 'bg-green' : estat.startsWith('Degradat') ? 'bg-red' : estat.startsWith('Pendent') ? 'bg-gray' : 'bg-yellow';
@@ -2911,14 +2971,93 @@ listItems.insertAdjacentHTML('afterbegin',
 }
 const codiSel = document.getElementById('t-codi-est'); if(codiSel) codiSel.value = '';
 const infoEl = document.getElementById('t-est-info'); if(infoEl) infoEl.style.display = 'none';
-['t-plens','t-buits','t-precinte','t-incidencia'].forEach(i => {
+['t-plens','t-buits','t-precinte','t-incidencia','t-dni'].forEach(i => {
 const el = document.getElementById(i); if(el) el.value = '';
 });
 const tEstat = document.getElementById('t-estat'); if(tEstat) tEstat.selectedIndex = 0;
+// Neteja signatura
+signClear('t-sign-canvas');
 const confirmBox = document.getElementById('t-confirm-box');
 if(confirmBox) { confirmBox.style.display='block'; setTimeout(()=>{ confirmBox.style.display='none'; }, 4000); }
 }
-// ── ANOTACIONS DEL GESTOR ──────────────────────────────────────────────────────
+// ── SIGNATURA DIGITAL AMB EL DIT ──────────────────────────────────────────────
+const _signState={};
+function _signGetCtx(id){
+  const c=document.getElementById(id);
+  if(!c)return null;
+  const ctx=c.getContext('2d');
+  ctx.strokeStyle='#e2e8f0';
+  ctx.lineWidth=2.5;
+  ctx.lineCap='round';
+  ctx.lineJoin='round';
+  return{ctx,c};
+}
+function _signCoords(e,c){
+  const r=c.getBoundingClientRect();
+  const scaleX=c.width/r.width, scaleY=c.height/r.height;
+  if(e.touches){
+    return{x:(e.touches[0].clientX-r.left)*scaleX,y:(e.touches[0].clientY-r.top)*scaleY};
+  }
+  return{x:(e.clientX-r.left)*scaleX,y:(e.clientY-r.top)*scaleY};
+}
+function signStart(e,id){
+  e.preventDefault();
+  const o=_signGetCtx(id); if(!o)return;
+  const{ctx,c}=o;
+  const{x,y}=_signCoords(e,c);
+  _signState[id]={drawing:true,lastX:x,lastY:y,hasData:true};
+  ctx.beginPath(); ctx.moveTo(x,y);
+  const ph=document.getElementById(id.replace('canvas','placeholder'));
+  if(ph)ph.style.display='none';
+}
+function signDraw(e,id){
+  e.preventDefault();
+  const st=_signState[id]; if(!st||!st.drawing)return;
+  const o=_signGetCtx(id); if(!o)return;
+  const{ctx,c}=o;
+  const{x,y}=_signCoords(e,c);
+  ctx.lineTo(x,y); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x,y);
+  _signState[id].lastX=x; _signState[id].lastY=y;
+}
+function signEnd(id){
+  if(_signState[id])_signState[id].drawing=false;
+}
+function signClear(id){
+  const o=_signGetCtx(id); if(!o)return;
+  const{ctx,c}=o;
+  ctx.clearRect(0,0,c.width,c.height);
+  if(_signState[id])_signState[id].hasData=false;
+  const ph=document.getElementById(id.replace('canvas','placeholder'));
+  if(ph)ph.style.display='flex';
+  const warn=document.getElementById(id.replace('sign-canvas','sign-warn'));
+  if(warn)warn.style.display='none';
+}
+function signGetDataURL(id){
+  const c=document.getElementById(id);
+  if(!c)return null;
+  return(_signState[id]&&_signState[id].hasData)?c.toDataURL('image/png'):null;
+}
+function signHasData(id){return !!(_signState[id]&&_signState[id].hasData);}
+
+// ── VALIDACIÓ DNI/NIF ESPANYA ─────────────────────────────────────────────────
+function validarDNI(dni){
+  const d=dni.trim().toUpperCase();
+  if(/^[0-9]{8}[A-Z]$/.test(d)){
+    const ll='TRWAGMYFPDXBNJZSQVHLCKE';
+    return ll[parseInt(d.substring(0,8))%23]===d[8];
+  }
+  if(/^[XYZ][0-9]{7}[A-Z]$/.test(d)){
+    const ll='TRWAGMYFPDXBNJZSQVHLCKE';
+    const n=d.replace('X','0').replace('Y','1').replace('Z','2');
+    return ll[parseInt(n.substring(0,8))%23]===d[8];
+  }
+  if(/^[A-H,J,N,P,Q,R,S,U,V,W][0-9]{7}[0-9A-Z]$/.test(d))return true; // CIF simplificat
+  return false;
+}
+
+// ── FI SIGNATURA ──────────────────────────────────────────────────────────────
+
 function espPoblaSelectorRefs() {
   const sel = document.getElementById('esp-annot-ref');
   if (!sel) return;
@@ -3046,76 +3185,6 @@ const el = document.getElementById(i); if(el) el.value='';
 });
 const tStat = document.getElementById('t-estat'); if(tStat) tStat.selectedIndex=0;
 alert('Nova sessió iniciada. Totes les dades segueixen guardades a Firebase.');
-// === CODI PER LA FIRMA: ENGANXAR AL FINAL DE L'ETIQUETA SCRIPT ===
-// === JAVASCRIPT BLINDAT PER A FIRMA TÀCTIL ===
-const canvas = document.getElementById('canvas-firma');
-if (canvas) {
-    const ctx = canvas.getContext('2d');
-    let dibuixant = false;
-
-    // Configuració del traç
-    ctx.strokeStyle = "#000000"; 
-    ctx.lineWidth = 3;
-    ctx.lineJoin = "round";
-    ctx.lineCap = "round";
-
-    function obtenirPosicio(e) {
-        const rect = canvas.getBoundingClientRect();
-        // Capturem tant ratolí com tàctil
-        let clientX, clientY;
-        if (e.touches && e.touches.length > 0) {
-            clientX = e.touches[0].clientX;
-            clientY = e.touches[0].clientY;
-        } else {
-            clientX = e.clientX;
-            clientY = e.clientY;
-        }
-        
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
-        return {
-            x: (clientX - rect.left) * scaleX,
-            y: (clientY - rect.top) * scaleY
-        };
-    }
-
-    function iniciarDibuix(e) {
-        dibuixant = true;
-        const pos = obtenirPosicio(e);
-        ctx.beginPath();
-        ctx.moveTo(pos.x, pos.y);
-        // Evitem que la pantalla faci scroll
-        if (e.cancelable) e.preventDefault();
-    }
-
-    function dibuixar(e) {
-        if (!dibuixant) return;
-        const pos = obtenirPosicio(e);
-        ctx.lineTo(pos.x, pos.y);
-        ctx.stroke();
-        if (e.cancelable) e.preventDefault();
-    }
-
-    function aturarDibuix() {
-        dibuixant = false;
-        ctx.closePath();
-    }
-
-    function netejarFirma() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-
-    // EVENTS PER A RATOLÍ
-    canvas.addEventListener('mousedown', iniciarDibuix);
-    canvas.addEventListener('mousemove', dibuixar);
-    window.addEventListener('mouseup', aturarDibuix);
-
-    // EVENTS PER A MÒBIL (TÀCTIL) - IMPORTANT: { passive: false }
-    canvas.addEventListener('touchstart', iniciarDibuix, { passive: false });
-    canvas.addEventListener('touchmove', dibuixar, { passive: false });
-    canvas.addEventListener('touchend', aturarDibuix, { passive: false });
-}
-// === FI DEL BLOC JAVASCRIPT ===
 }</script>
 </body>
 </html>
