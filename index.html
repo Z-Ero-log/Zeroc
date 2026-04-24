@@ -63,7 +63,7 @@
              style="height:48px;object-fit:contain;max-width:160px;"
              onerror="this.parentElement.innerHTML='<span style=\'color:#0f172a;font-weight:900;font-size:18px;font-style:italic;\'>F. ESPINOSA</span>'">
       </div>
-      <div style="color:#e2e8f0;font-size:22px;font-weight:900;letter-spacing:0.3px;margin-top:2px;">Espinosa Olis</div>
+      <div style="color:#e2e8f0;font-size:22px;font-weight:900;letter-spacing:0.3px;margin-top:2px;">FESPINOSA Gestor</div>
       <div style="color:#60a5fa;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;margin-top:5px;">Plataforma de gestió · UCO</div>
     </div>
 
@@ -128,7 +128,7 @@
     <div style="text-align:center;margin-top:20px;">
       <div style="display:inline-flex;align-items:center;gap:8px;opacity:0.45;">
         <div style="background:#2563eb;padding:4px 7px;border-radius:6px;font-weight:900;font-style:italic;font-size:13px;color:white;line-height:1;">Z</div>
-        <div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:1.5px;">Powered by Z-Ero CO₂ · Milla Verda S.L.</div>
+        <div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:1.5px;">Powered by Logística Z-Ero CO₂ · Milla Verda S.L.</div>
       </div>
       <!-- Indicador rols -->
       <div style="display:flex;gap:8px;margin-top:12px;justify-content:center;flex-wrap:wrap;">
@@ -511,7 +511,7 @@ function toggleQR(btn){
             <option value="Net / Filtrat">Net / Filtrat</option>
             <option value="Brut / Amb residus">Brut / Amb residus</option>
             <option value="Degradat">Degradat</option>
-            <option value="Pendent operador">No sé / Pendent GESTOR</option>
+            <option value="Pendent operador">Pendent GESTOR</option>
           </select>
         </div>
         <!-- Camp ocult pes (el mesura l'operador) -->
@@ -524,7 +524,7 @@ function toggleQR(btn){
 
         <!-- DNI/NIF del responsable -->
         <div style="margin-bottom:18px;">
-          <div class="lbl">DNI / NIF del responsable que entrega <span style="color:#dc2626;">*</span></div>
+          <div class="lbl">DNI / NIE / NIF Responsable que entrega <span style="color:#dc2626;">*</span></div>
           <input class="inp" type="text" id="t-dni" placeholder="Ex: 12345678A" maxlength="12"
             style="font-family:monospace;font-weight:700;letter-spacing:2px;font-size:16px;text-transform:uppercase;"
             oninput="this.value=this.value.toUpperCase()">
@@ -533,7 +533,7 @@ function toggleQR(btn){
 
         <!-- Signatura digital -->
         <div style="margin-bottom:18px;">
-          <div class="lbl">Signatura del responsable <span style="color:#dc2626;">*</span></div>
+          <div class="lbl">Signatura responsable <span style="color:#dc2626;">*</span></div>
           <div style="background:#0d1626;border:1.5px solid #1e2d45;border-radius:12px;overflow:hidden;position:relative;">
             <canvas id="t-sign-canvas" width="400" height="140"
               style="width:100%;height:140px;display:block;cursor:crosshair;touch-action:none;"
@@ -1533,9 +1533,88 @@ if (cells[8]) cells[8].innerHTML = '<span style="font-size:10px;color:#94a3b8;">
 if (cells[9]) cells[9].innerHTML = '<span style="color:#22c55e;font-size:16px;">✓</span>';
 }
 tancarPanel(ref);
-const emailParams = { nom_establiment:nom, ref_id:ref, data_hora:dataHora, pes:pes+' kg', barrils_plens:plens, barrils_buits:buits, estat_oli:estat, incidencia, numero_precinte:precinte, operador:'Z-Ero CO₂ · Logística Milla Verda, S.L. · Hub Calella (08370)', qr_code:'REC-'+id };
+const dniOriginal  = rec?.dni || '';
+const signOriginal = rec?.signatura || ''; // data:image/png;base64,...
+
+const signHtmlBlock = signOriginal
+  ? `<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-top:12px;">
+       <div style="font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Signatura del responsable de l'entrega</div>
+       <img src="${signOriginal}" style="max-width:280px;background:#1e293b;border-radius:6px;display:block;">
+     </div>`
+  : '';
+
+const dataRecollida = rec?.dataHora || dataHora;
+const gpsRecollida  = rec?.gps || '—';
+
+const htmlBody = `
+<div style="font-family:Arial,sans-serif;max-width:580px;margin:0 auto;">
+  <div style="background:#0f172a;padding:18px 24px;border-radius:12px 12px 0 0;">
+    <table style="width:100%;border-collapse:collapse;"><tr>
+      <td><div style="background:#2563eb;display:inline-block;padding:6px 11px;border-radius:8px;font-weight:900;font-style:italic;font-size:18px;color:white;line-height:1;">Z</div></td>
+      <td style="padding-left:12px;"><div style="color:white;font-weight:700;font-size:15px;line-height:1.2;">Z-Ero CO₂ · Albarà de recollida UCO</div><div style="color:#60a5fa;font-size:11px;margin-top:3px;">Col·laborador autoritzat F. Espinosa Gestores S.L. · ♻ RED II</div></td>
+    </tr></table>
+  </div>
+  <div style="border:1px solid #e2e8f0;border-top:none;border-radius:0 0 12px 12px;padding:24px;background:#ffffff;">
+
+    <p style="color:#0f172a;font-size:15px;font-weight:700;margin:0 0 4px;">Benvolgut/da responsable de <strong>${nom}</strong>,</p>
+    <p style="color:#64748b;font-size:13px;margin:0 0 20px;line-height:1.6;">La recollida d'oli de cuina usat (UCO) ha estat <strong style="color:#15803d;">confirmada i pesada</strong> al Hub Z-Ero de Calella. A continuació trobareu el document complet.</p>
+
+    <!-- Referència i pes destacats -->
+    <table style="width:100%;border-collapse:collapse;background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;margin-bottom:20px;overflow:hidden;">
+      <tr>
+        <td style="padding:14px 18px;width:50%;border-right:1px solid #bbf7d0;">
+          <div style="font-size:10px;font-weight:700;color:#15803d;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Referència RED II</div>
+          <div style="font-size:20px;font-weight:900;font-family:monospace;color:#2563eb;">${ref}</div>
+        </td>
+        <td style="padding:14px 18px;">
+          <div style="font-size:10px;font-weight:700;color:#15803d;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Pes certificat ⚖️ Hub Calella</div>
+          <div style="font-size:20px;font-weight:900;color:#0f172a;">${pes} kg</div>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Taula de dades -->
+    <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:20px;">
+      <tr style="background:#f8fafc;"><td style="padding:9px 14px;font-weight:700;color:#64748b;width:42%;border-bottom:1px solid #f1f5f9;">Data recollida</td><td style="padding:9px 14px;color:#0f172a;border-bottom:1px solid #f1f5f9;">${dataRecollida}</td></tr>
+      <tr><td style="padding:9px 14px;font-weight:700;color:#64748b;border-bottom:1px solid #f1f5f9;">Data confirmació hub</td><td style="padding:9px 14px;color:#0f172a;border-bottom:1px solid #f1f5f9;">${dataHora}</td></tr>
+      <tr style="background:#f8fafc;"><td style="padding:9px 14px;font-weight:700;color:#64748b;border-bottom:1px solid #f1f5f9;">Barrils recollits</td><td style="padding:9px 14px;color:#0f172a;border-bottom:1px solid #f1f5f9;">${plens} plens / ${buits} buits</td></tr>
+      <tr><td style="padding:9px 14px;font-weight:700;color:#64748b;border-bottom:1px solid #f1f5f9;">Estat de l'oli</td><td style="padding:9px 14px;color:#0f172a;border-bottom:1px solid #f1f5f9;">${estat}</td></tr>
+      <tr style="background:#f8fafc;"><td style="padding:9px 14px;font-weight:700;color:#64748b;border-bottom:1px solid #f1f5f9;">Precinte/s</td><td style="padding:9px 14px;font-family:monospace;font-weight:700;color:#1e40af;border-bottom:1px solid #f1f5f9;">${precinte}</td></tr>
+      <tr><td style="padding:9px 14px;font-weight:700;color:#64748b;border-bottom:1px solid #f1f5f9;">GPS recollida</td><td style="padding:9px 14px;font-size:11px;color:#64748b;border-bottom:1px solid #f1f5f9;">${gpsRecollida}</td></tr>
+      ${incidencia && incidencia !== 'Cap incidència' ? `<tr style="background:#fef2f2;"><td style="padding:9px 14px;font-weight:700;color:#dc2626;border-bottom:1px solid #fee2e2;">Incidència</td><td style="padding:9px 14px;color:#dc2626;font-weight:700;border-bottom:1px solid #fee2e2;">⚠ ${incidencia}</td></tr>` : ''}
+      <tr style="background:#f8fafc;"><td style="padding:9px 14px;font-weight:700;color:#64748b;">Operador</td><td style="padding:9px 14px;font-size:11px;color:#0f172a;">Z-Ero CO₂ · Milla Verda S.L. · Hub Calella (08370)</td></tr>
+    </table>
+
+    <!-- DNI responsable -->
+    ${dniOriginal ? `
+    <div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:8px;padding:14px 18px;margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:700;color:#15803d;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">✅ Responsable de l'entrega — identificat i verificat</div>
+      <div style="font-size:16px;font-family:monospace;font-weight:800;color:#0f172a;letter-spacing:2px;">${dniOriginal}</div>
+    </div>` : ''}
+
+    <!-- Signatura -->
+    ${signHtmlBlock}
+
+    <!-- Peu -->
+    <div style="margin-top:24px;padding-top:16px;border-top:1px solid #f1f5f9;font-size:10px;color:#94a3b8;line-height:1.7;">
+      <strong style="color:#64748b;">Z-Ero CO₂ · Logística Milla Verda S.L.</strong><br>
+      Hub Calella · C.P. 08370 · Col·laborador autoritzat F. Espinosa Gestores S.L.<br>
+      Certificació ♻ RED II · ISCC · Bàscula homologada ENAC/CEI<br>
+      Aquest document és l'albarà oficial de recollida UCO. Conserveu-lo per a la vostra traçabilitat.
+    </div>
+  </div>
+</div>`;
+
+const emailParams = {
+  nom_establiment: nom, ref_id: ref, data_hora: dataHora, pes: pes + ' kg (certificat hub)',
+  barrils_plens: plens, barrils_buits: buits, estat_oli: estat, incidencia,
+  numero_precinte: precinte, operador: 'Z-Ero CO₂ · Milla Verda S.L. · Hub Calella (08370)',
+  qr_code: 'REC-' + ref, dni_responsable: dniOriginal,
+  signatura_html: signHtmlBlock,
+  html_body: htmlBody
+};
 const result = await sendEmailJS(emailDest, nom, emailParams);
-if (result.ok) alert('✓ Recollida ' + ref + ' confirmada.\nCorreu enviat a ' + (emailDest || nom) + '.');
+if (result.ok) alert('✓ Recollida ' + ref + ' confirmada.\nAlbarà complet enviat a ' + (emailDest || nom) + '.');
 else if (result.sim) alert('✓ Recollida ' + ref + ' confirmada.\nATENCIÓ: Correu no enviat — configura EmailJS.');
 else alert('✓ Recollida ' + ref + ' confirmada.\nError correu: ' + (result.err || 'desconegut'));
 }
@@ -2440,7 +2519,7 @@ const el=document.getElementById(i); if(el) el.value='';
 const statusEl = document.getElementById('inp-ref-status');
 if (statusEl) { statusEl.style.color='#94a3b8'; statusEl.innerHTML='Introdueix la ref. del transportista per autocompletar'; }
 recalcDieselDebounced();
-const emailParams = { nom_establiment:nom, ref_id:ref, data_hora:dataHora, pes:pes+' kg', barrils_plens:plens, barrils_buits:buits, estat_oli:estat, incidencia, numero_precinte:precinte, operador:'Z-Ero CO₂ · Logística Milla Verda, S.L. · Hub Calella (08370)', qr_code:'REC-'+(seq-1)+'-'+(id||'TRANSP') };
+const emailParams = { nom_establiment:nom, ref_id:ref, data_hora:dataHora, pes:pes+' kg', barrils_plens:plens, barrils_buits:buits, estat_oli:estat, incidencia, numero_precinte:precinte, operador:'Z-Ero CO₂ · Logística Milla Verda, S.L. · Hub Calella (08370)', qr_code:'REC-'+(seq-1)+'-'+(id||'TRANSP'), dni_responsable: '', signatura_html: '' };
 const result = await sendEmailJS(emailDest, nom, emailParams);
 if(btn){ btn.disabled=false; btn.innerText='Confirmar recollida i enviar correu'; }
 if(result.ok) alert('Recollida '+ref+(isUpdate?' actualitzada':' registrada')+'.\nCorreu enviat a '+(emailDest||nom)+'.');
@@ -2904,7 +2983,7 @@ document.getElementById('t-modal-overlay').style.display = 'none';
 totalRec++; todayRec++;
 const nextSeq = await getNextSeq();
 const ref     = 'Z-08370-' + String(nextSeq).padStart(3,'0');
-const recData = { ref, id: codi || 'TRANSP', nom, pes: 0, plens, buits, estat, incidencia: incid, precinte: prec, dataHora, transportistaOk: true, operadorOk: false, gps, dni: dni || '', signatura: signDataUrl ? '[signatura digital]' : '' };
+const recData = { ref, id: codi || 'TRANSP', nom, pes: 0, plens, buits, estat, incidencia: incid, precinte: prec, dataHora, transportistaOk: true, operadorOk: false, gps, dni: dni || '', signatura: signDataUrl || '' };
 saveRecollida(ref, recData); // saveRecollida ja actualitza _pendingRecs
 saveState();
 const estatBadge = estat.startsWith('Net') ? 'bg-green' : estat.startsWith('Degradat') ? 'bg-red' : estat.startsWith('Pendent') ? 'bg-gray' : 'bg-yellow';
@@ -2979,6 +3058,7 @@ const tEstat = document.getElementById('t-estat'); if(tEstat) tEstat.selectedInd
 signClear('t-sign-canvas');
 const confirmBox = document.getElementById('t-confirm-box');
 if(confirmBox) { confirmBox.style.display='block'; setTimeout(()=>{ confirmBox.style.display='none'; }, 4000); }
+// El correu definitiu a l'establiment s'envia quan l'operador confirma el pes al hub
 }
 // ── SIGNATURA DIGITAL AMB EL DIT ──────────────────────────────────────────────
 const _signState={};
