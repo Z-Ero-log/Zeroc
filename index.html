@@ -3047,23 +3047,36 @@ const el = document.getElementById(i); if(el) el.value='';
 const tStat = document.getElementById('t-estat'); if(tStat) tStat.selectedIndex=0;
 alert('Nova sessió iniciada. Totes les dades segueixen guardades a Firebase.');
 // === CODI PER LA FIRMA: ENGANXAR AL FINAL DE L'ETIQUETA SCRIPT ===
+// === JAVASCRIPT BLINDAT PER A FIRMA TÀCTIL ===
 const canvas = document.getElementById('canvas-firma');
 if (canvas) {
     const ctx = canvas.getContext('2d');
     let dibuixant = false;
 
-    ctx.strokeStyle = "#0f172a"; 
+    // Configuració del traç
+    ctx.strokeStyle = "#000000"; 
     ctx.lineWidth = 3;
     ctx.lineJoin = "round";
     ctx.lineCap = "round";
 
     function obtenirPosicio(e) {
         const rect = canvas.getBoundingClientRect();
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        // Capturem tant ratolí com tàctil
+        let clientX, clientY;
+        if (e.touches && e.touches.length > 0) {
+            clientX = e.touches[0].clientX;
+            clientY = e.touches[0].clientY;
+        } else {
+            clientX = e.clientX;
+            clientY = e.clientY;
+        }
+        
         const scaleX = canvas.width / rect.width;
         const scaleY = canvas.height / rect.height;
-        return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+        return {
+            x: (clientX - rect.left) * scaleX,
+            y: (clientY - rect.top) * scaleY
+        };
     }
 
     function iniciarDibuix(e) {
@@ -3071,25 +3084,36 @@ if (canvas) {
         const pos = obtenirPosicio(e);
         ctx.beginPath();
         ctx.moveTo(pos.x, pos.y);
+        // Evitem que la pantalla faci scroll
+        if (e.cancelable) e.preventDefault();
     }
 
     function dibuixar(e) {
         if (!dibuixant) return;
-        e.preventDefault();
         const pos = obtenirPosicio(e);
         ctx.lineTo(pos.x, pos.y);
         ctx.stroke();
+        if (e.cancelable) e.preventDefault();
     }
 
-    function aturarDibuix() { dibuixant = false; }
-    function netejarFirma() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+    function aturarDibuix() {
+        dibuixant = false;
+        ctx.closePath();
+    }
 
+    function netejarFirma() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    // EVENTS PER A RATOLÍ
     canvas.addEventListener('mousedown', iniciarDibuix);
     canvas.addEventListener('mousemove', dibuixar);
     window.addEventListener('mouseup', aturarDibuix);
+
+    // EVENTS PER A MÒBIL (TÀCTIL) - IMPORTANT: { passive: false }
     canvas.addEventListener('touchstart', iniciarDibuix, { passive: false });
     canvas.addEventListener('touchmove', dibuixar, { passive: false });
-    canvas.addEventListener('touchend', aturarDibuix);
+    canvas.addEventListener('touchend', aturarDibuix, { passive: false });
 }
 // === FI DEL BLOC JAVASCRIPT ===
 }</script>
