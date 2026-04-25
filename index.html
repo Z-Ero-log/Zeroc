@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Logística Z-Ero CO₂ · Milla Verda S.L. · Hub Calella · ♻ RED II · v39</title>
+  <title>Logística Z-Ero CO₂ · Milla Verda S.L. · Hub Calella · ♻ RED II · v40</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
   <!-- Firebase v9 compat -->
@@ -33,6 +33,10 @@
       margin:0 auto 10px;
       flex-shrink:0;
     }
+    .espinosa-initials{
+      font-size:42px;font-weight:900;color:#e2e8f0;letter-spacing:-1px;
+      font-style:italic;line-height:1;
+    }
     .qr-toggle-btn{
       background:transparent;border:1px solid #334155;border-radius:10px;
       color:#64748b;font-size:11px;font-weight:700;padding:7px 14px;
@@ -59,8 +63,8 @@
              style="height:48px;object-fit:contain;max-width:160px;"
              onerror="this.parentElement.innerHTML='<span style=\'color:#0f172a;font-weight:900;font-size:18px;font-style:italic;\'>F. ESPINOSA</span>'">
       </div>
-      <div style="color:#e2e8f0;font-size:22px;font-weight:900;letter-spacing:0.3px;margin-top:2px;">Plataforma de gestió · UCO</div>
-      </div>
+      <div style="color:#60a5fa;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;margin-top:5px;">Plataforma de gestió · UCO</div>
+    </div>
 
     <!-- ── CARD LOGIN ── -->
     <div style="background:#1e293b;border-radius:24px;padding:32px;border:1px solid #334155;box-shadow:0 8px 40px rgba(0,0,0,0.4);" class="login-fadein-2">
@@ -99,24 +103,60 @@
         <span style="color:#b45309;font-weight:600;">Per sincronitzar, puja l'arxiu a un servidor (ex: tiiny.host).</span>
       </div>
     </div>
-
     <!-- ── Powered by Z-Ero (discret) ── -->
     <div style="text-align:center;margin-top:20px;">
       <div style="display:inline-flex;align-items:center;gap:8px;opacity:0.45;">
         <div style="background:#2563eb;padding:4px 7px;border-radius:6px;font-weight:900;font-style:italic;font-size:13px;color:white;line-height:1;">Z</div>
-        <div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:1.5px;">Powered by Logistística Z-Ero CO₂ · Milla Verda S.L.</div>
+        <div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:1.5px;">Powered by Z-Ero CO₂ · Milla Verda S.L.</div>
       </div>
       <!-- Indicador rols -->
       <div style="display:flex;gap:8px;margin-top:12px;justify-content:center;flex-wrap:wrap;">
-        <div style="background:#1e293b;border:1px solid #334155;border-radius:8px;padding:5px 12px;font-size:10px;font-weight:700;color:#60a5fa;text-transform:uppercase;letter-spacing:0.5px;">Gestor Espinosa</div>
-        <div style="background:#1e293b;border:1px solid #334155;border-radius:8px;padding:5px 12px;font-size:10px;font-weight:700;color:#fbbf24;text-transform:uppercase;letter-spacing:0.5px;">Operador</div>
-        <div style="background:#1e293b;border:1px solid #334155;border-radius:8px;padding:5px 12px;font-size:10px;font-weight:700;color:#34d399;text-transform:uppercase;letter-spacing:0.5px;">Transportista</div>
+        <div style="background:#1e293b;border:1px solid #334155;border-radius:8px;padding:5px 12px;font-size:10px;font-weight:700;color:#60a5fa;text-transform:uppercase;letter-spacing:0.5px;">Operador</div>
+        <div style="background:#1e293b;border:1px solid #334155;border-radius:8px;padding:5px 12px;font-size:10px;font-weight:700;color:#fbbf24;text-transform:uppercase;letter-spacing:0.5px;">Transportista</div>
+        <div style="background:#1e293b;border:1px solid #334155;border-radius:8px;padding:5px 12px;font-size:10px;font-weight:700;color:#34d399;text-transform:uppercase;letter-spacing:0.5px;">Gestor Espinosa</div>
       </div>
     </div>
 
   </div>
 </div>
 
+<script>
+// ── QR: genera el codi amb la URL actual ──────────────────────────────────────
+(function initQR(){
+  const appUrl = window.location.href.split('?')[0].split('#')[0];
+  const displayEl = document.getElementById('qr-url-display');
+  if(displayEl) displayEl.textContent = appUrl;
+
+  // Genera el QR quan es desplega el panell (lazy)
+  window._qrGenerated = false;
+  window._qrAppUrl = appUrl;
+})();
+
+function toggleQR(btn){
+  const panel = document.getElementById('qr-panel');
+  const isOpen = panel.classList.toggle('open');
+  btn.style.borderColor = isOpen ? '#60a5fa' : '#334155';
+  btn.style.color = isOpen ? '#93c5fd' : '#64748b';
+  btn.style.background = isOpen ? '#1e293b' : 'transparent';
+
+  if(isOpen && !window._qrGenerated){
+    window._qrGenerated = true;
+    const wrap = document.getElementById('qr-canvas-wrap');
+    wrap.innerHTML = '';
+    try{
+      new QRCode(wrap, {
+        text: window._qrAppUrl,
+        width: 160,
+        height: 160,
+        colorDark: '#e2e8f0',
+        colorLight: '#1e293b',
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    } catch(e){
+      wrap.innerHTML = '<div style="color:#64748b;font-size:12px;padding:20px;">Error generant QR</div>';
+    }
+  }
+}
 </script>
 <!-- ===== APP (s'amaga fins login) ===== -->
 <div id="app-root" style="display:none;">
@@ -301,7 +341,7 @@
   <span id="op-co2-detail" style="display:none;"></span>
   <div class="table-wrap">
     <div class="table-bar">
-      <span>Registre operatiu</span>
+      <span>Registre operatiu avui</span>
       <div style="display:flex;align-items:center;gap:16px;">
         <span class="mono" id="next-id" style="font-size:11px;color:#60a5fa;">ID: Z-08370-001</span>
         <span id="op-count" style="color:#60a5fa;font-weight:700;">0 recollides</span>
@@ -700,7 +740,7 @@
 
     <!-- Gràfic -->
     <div style="background:#131c2e;border-radius:16px;border:1px solid #1e2d45;padding:20px;margin-bottom:16px;">
-      <div style="font-size:11px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #1e2d45;">Resultat net per volum mensual (500 – 8.000 kg)</div>
+      <div style="font-size:11px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #1e2d45;">Resultat net TOTAL per volum mensual (500 – 8.000 kg) · inclou flota alliberada +8.000€ i bidons −25%</div>
       <div style="position:relative;height:220px;"><canvas id="vol-curva"></canvas></div>
       <div style="display:flex;gap:20px;margin-top:10px;flex-wrap:wrap;align-items:center;">
         <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#94a3b8;"><span style="width:12px;height:3px;background:#7c3aed;display:inline-block;border-radius:2px;"></span>Resultat net €/mes</span>
@@ -745,8 +785,13 @@
 const V_PRECIO_UCO=0.35,V_PRIMA_ISCC=0.05,V_COSTE_KG=0.22,V_TARA=0.04;
 const V_SUELDO_FIJO=1375,V_CHOFER_H=22,V_DIESEL_L=1.55,V_CO2_FACTOR=0.264;
 const V_BIODIESEL_REND=0.90,V_KM_PER_L=8.1,V_HUB_CAP=1200;
-// Espinosa paga 20€ per bidó de 60L/58kg als establiments (incentiu captació UCO)
-const V_PREU_BIDO=20, V_KG_BIDO=58;
+// Espinosa paga 15€/bidó (−25% per encariment diesel + obligació normativa RED II)
+// Preu anterior: 20€/bidó · Reducció justificada: diesel sostingut + RED II obliga establiments a gestionar UCO
+const V_PREU_BIDO=15, V_KG_BIDO=58;
+const V_PREU_BIDO_ANT=20; // preu anterior (referència visual)
+// Guany net flota alliberada: camió+xofer redirigits a nova ruta equivalent
+// Ja nets de TOTS els costos ocults (xofer, combustible, desgast, captació, imprevistos)
+const V_FLOTA_NOVA=8000;
 
 function vHores(vol){return Math.round((vol/4500)*28*10)/10}
 function vParadesTrad(vol){return Math.round((vol/4500)*22.5)}
@@ -766,20 +811,24 @@ function vCalc(vol){
   const total_ahorros=ah_chofer+ah_diesel+ah_desgast+ah_captacio;
   const cost_var=Math.round(vol*V_COSTE_KG*100)/100;
   const cost_tara=Math.round(vol*V_TARA*V_COSTE_KG*100)/100;
-  // Cost bidons: Espinosa paga 20€/bidó de 58kg als establiments
+  // Cost bidons: −25% vs preu anterior (15€ vs 20€/bidó) per encariment diesel + RED II normatiu
   const num_bidons=Math.ceil(vol/V_KG_BIDO);
   const cost_bidons=Math.round(num_bidons*V_PREU_BIDO*100)/100;
-  const preu_kg_bido=Math.round((V_PREU_BIDO/V_KG_BIDO)*100)/100; // ≈0,345 €/kg
+  const cost_bidons_ant=Math.round(num_bidons*V_PREU_BIDO_ANT*100)/100; // preu anterior (referència)
+  const estalvi_bidons=Math.round((cost_bidons_ant-cost_bidons)*100)/100; // estalvi mensual
+  const preu_kg_bido=Math.round((V_PREU_BIDO/V_KG_BIDO)*100)/100; // ≈0,259 €/kg
   const total_costes=Math.round((cost_var+cost_tara+cost_bidons+V_SUELDO_FIJO)*100)/100;
-  const resultado=Math.round((total_ingresos+total_ahorros-total_costes)*100)/100;
+  // Resultat zona Calella + guany net flota alliberada (ja nets de tots costos ocults)
+  const resultado_calella=Math.round((total_ingresos+total_ahorros-total_costes)*100)/100;
+  const resultado=Math.round((resultado_calella+V_FLOTA_NOVA)*100)/100;
   const viajes_opt=vParadesZero(vol);
   const carga_pct=Math.round((vol/viajes_opt)/V_HUB_CAP*100);
   const co2=Math.round(vol*V_CO2_FACTOR);
   const biodiesel=Math.round(vol*V_BIODIESEL_REND);
   const km_bio=Math.round(biodiesel*V_KM_PER_L);
   return{ing_uco,ing_iscc,ah_chofer,ah_diesel,ah_desgast,ah_captacio,
-    total_ingresos,total_ahorros,cost_var,cost_tara,cost_bidons,num_bidons,preu_kg_bido,total_costes,
-    resultado,viajes_opt,carga_pct,co2,biodiesel,km_bio};
+    total_ingresos,total_ahorros,cost_var,cost_tara,cost_bidons,cost_bidons_ant,estalvi_bidons,
+    num_bidons,preu_kg_bido,total_costes,resultado_calella,resultado,viajes_opt,carga_pct,co2,biodiesel,km_bio};
 }
 
 function vFmt(n,sign=false){
@@ -814,14 +863,15 @@ function vRender(vol){
 
   // KPIs
   document.getElementById('vol-kpi-grid').innerHTML=`
-    <div class="vkpi vpos"><div class="vkpi-label">Resultat net Espinosa</div><div class="vkpi-val">${vFmt(d.resultado,true)}</div><div class="vkpi-note">ingressos + estalvis − Z-Ero</div></div>
+    <div class="vkpi vpos"><div class="vkpi-label">Resultat net TOTAL Espinosa</div><div class="vkpi-val">${vFmt(d.resultado,true)}</div><div class="vkpi-note">Calella + flota alliberada</div></div>
+    <div class="vkpi vpos"><div class="vkpi-label">Subtotal zona Calella</div><div class="vkpi-val">${vFmt(d.resultado_calella,true)}</div><div class="vkpi-note">ingressos + estalvis − Z-Ero</div></div>
+    <div class="vkpi vpos" style="border-color:#7c3aed;"><div class="vkpi-label" style="color:#a78bfa;">Flota alliberada · nova ruta</div><div class="vkpi-val" style="color:#a78bfa;">+${vFmt(V_FLOTA_NOVA)}</div><div class="vkpi-note">nets/mes · ja descomptats tots costos</div></div>
     <div class="vkpi"><div class="vkpi-label">Ingressos venda UCO</div><div class="vkpi-val">${vFmt(d.ing_uco)}</div><div class="vkpi-note">${vol} kg × 0,35 €/kg</div></div>
     <div class="vkpi"><div class="vkpi-label">Prima qualitat ISCC</div><div class="vkpi-val">${vFmt(d.ing_iscc)}</div><div class="vkpi-note">${vol} kg × 0,05 €/kg</div></div>
     <div class="vkpi vpos"><div class="vkpi-label">Total estalvis operatius</div><div class="vkpi-val">${vFmt(d.total_ahorros)}</div><div class="vkpi-note">xofer + dièsel + desgast + captació</div></div>
     <div class="vkpi vneg"><div class="vkpi-label">Cost total Z-Ero</div><div class="vkpi-val">${vFmt(d.total_costes)}</div><div class="vkpi-note">variable + tara + sou fix</div></div>
+    <div class="vkpi vpos" style="border-color:#f59e0b;"><div class="vkpi-label" style="color:#fbbf24;">Estalvi bidons −25%</div><div class="vkpi-val" style="color:#fbbf24;">+${vFmt(d.estalvi_bidons)}</div><div class="vkpi-note">vs preu anterior 20€/bidó · RED II</div></div>
     <div class="vkpi"><div class="vkpi-label">CO₂ evitat</div><div class="vkpi-val">${vFmtN(d.co2)} kg</div><div class="vkpi-note">factor ISCC 0,264 kg/kg</div></div>
-    <div class="vkpi"><div class="vkpi-label">Biodièsel produït</div><div class="vkpi-val">${vFmtN(d.biodiesel)} L</div><div class="vkpi-note">rendiment 90%</div></div>
-    <div class="vkpi"><div class="vkpi-label">Hores flota alliberades</div><div class="vkpi-val">${vFmtN(d.ah_chofer/V_CHOFER_H)} h</div><div class="vkpi-note">xofer a rutes rendibles</div></div>
   `;
 
   // Resultat gran
@@ -829,8 +879,19 @@ function vRender(vol){
   document.getElementById('vol-result-bar').innerHTML=`
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
       <div>
-        <div style="font-size:13px;color:#e2e8f0;font-weight:700;">Resultat net mensual per a Espinosa</div>
+        <div style="font-size:13px;color:#e2e8f0;font-weight:700;">Resultat net TOTAL mensual per a Espinosa</div>
         <div style="font-size:11px;color:#64748b;font-weight:600;margin-top:4px;">amb ${vol} kg/mes · ${d.viajes_opt} viatge${d.viajes_opt>1?'s':''}/mes al hub · càrrega ${d.carga_pct}%</div>
+        <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;">
+          <div style="font-size:11px;background:#1e2d45;border-radius:8px;padding:4px 10px;">
+            <span style="color:#94a3b8;">Subtotal Calella: </span><span style="color:#34d399;font-weight:700;">${vFmt(d.resultado_calella,true)}</span>
+          </div>
+          <div style="font-size:11px;background:#2d1f4e;border-radius:8px;padding:4px 10px;border:1px solid #4c1d7a;">
+            <span style="color:#94a3b8;">Flota nova ruta: </span><span style="color:#a78bfa;font-weight:700;">+${vFmt(V_FLOTA_NOVA)}</span>
+          </div>
+          <div style="font-size:11px;background:#1f2d1f;border-radius:8px;padding:4px 10px;border:1px solid #1a5c3a;">
+            <span style="color:#94a3b8;">Estalvi bidons −25%: </span><span style="color:#fbbf24;font-weight:700;">+${vFmt(d.estalvi_bidons)}</span>
+          </div>
+        </div>
       </div>
       <div style="text-align:right;">
         <div style="font-size:34px;font-weight:900;color:${resColor};">${vFmt(d.resultado,true)}</div>
@@ -850,8 +911,17 @@ function vRender(vol){
     <div class="vsec-title">Costos del servei Z-Ero</div>
     <div class="vline"><span class="vline-label">Cost variable (${vol} kg × 0,22 €)</span><span class="vline-val neg">${vFmt(d.cost_var)}</span></div>
     <div class="vline"><span class="vline-label">Tara barrils (4% × ${vol} kg × 0,22 €)</span><span class="vline-val neg">${vFmt(d.cost_tara)}</span></div>
-    <div class="vline" style="background:rgba(251,146,60,0.07);border-radius:6px;padding:7px 8px;"><span class="vline-label" style="color:#fb923c;font-weight:700;">🛢 Incentiu establiments (${d.num_bidons} bidons × 20 €/bidó de 58 kg)</span><span class="vline-val neg" style="color:#fb923c;">${vFmt(d.cost_bidons)}</span></div>
-    <div style="font-size:10px;color:#64748b;padding:3px 8px 4px;margin-top:-4px;">≈ ${d.preu_kg_bido.toFixed(3).replace('.',',')} €/kg · Espinosa paga 20 €/bidó (60L/58kg) als establiments per incentiu UCO</div>
+    <div class="vline" style="background:rgba(251,191,36,0.07);border-radius:6px;padding:7px 8px;flex-direction:column;align-items:flex-start;gap:4px;">
+      <div style="display:flex;justify-content:space-between;width:100%;align-items:center;">
+        <span class="vline-label" style="color:#fbbf24;font-weight:700;">🛢 Incentiu establiments (${d.num_bidons} bidons × <span style="text-decoration:line-through;opacity:0.5;font-size:10px;">20€</span> <strong>15 €/bidó</strong> −25%)</span>
+        <span class="vline-val neg" style="color:#fbbf24;">${vFmt(d.cost_bidons)}</span>
+      </div>
+      <div style="display:flex;gap:12px;font-size:10px;color:#64748b;padding:0 0 2px;">
+        <span>⛽ Encariment diesel sostingut</span>
+        <span>📋 Obligació normativa RED II</span>
+        <span style="color:#34d399;font-weight:700;">Estalvi vs anterior: +${vFmt(d.estalvi_bidons)}</span>
+      </div>
+    </div>
     <div class="vline"><span class="vline-label">Sou fix mensual Z-Ero</span><span class="vline-val neg">${vFmt(V_SUELDO_FIJO)}</span></div>
     <div class="vsubtotal"><span style="color:#94a3b8;">Total costos Z-Ero</span><span style="color:#f87171;">${vFmt(d.total_costes)}</span></div>`;
 
@@ -864,7 +934,19 @@ function vRender(vol){
       <div class="vline"><span class="vline-label">Desgast vehicle (frens, caixa, pneum.)</span><span class="vline-val pos">${vFmt(d.ah_desgast)}</span></div>
       <div class="vline"><span class="vline-label">Captació clients nous (cost zero)</span><span class="vline-val pos">${vFmt(d.ah_captacio)}</span></div>
     </div>
-    <div class="vsubtotal"><span style="color:#94a3b8;">Total estalvis</span><span style="color:#34d399;">${vFmt(d.total_ahorros)}</span></div>`;
+    <div class="vsubtotal"><span style="color:#94a3b8;">Total estalvis</span><span style="color:#34d399;">${vFmt(d.total_ahorros)}</span></div>
+    <div style="margin-top:14px;background:#1a0e38;border-radius:10px;border:1px solid #4c1d7a;padding:14px 16px;">
+      <div style="font-size:10px;font-weight:800;color:#a78bfa;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px;">🚛 Guany net flota alliberada · nova ruta equivalent</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+        <div style="font-size:11px;color:#7c6aad;max-width:420px;line-height:1.5;">
+          Camió + xofer alliberats de Calella → redirigits a nova zona. Valor mínim calculat conservadorament: <strong style="color:#c4b5fd;">+${vFmt(V_FLOTA_NOVA)}/mes</strong> ja nets de <em>tots</em> els costos ocults (xofer, combustible, desgast, captació, imprevistos).
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:28px;font-weight:900;color:#a78bfa;">+${vFmt(V_FLOTA_NOVA)}</div>
+          <div style="font-size:10px;color:#64748b;">nets / mes</div>
+        </div>
+      </div>
+    </div>`;
 
   // Viatges
   const trad=vParadesTrad(vol);
