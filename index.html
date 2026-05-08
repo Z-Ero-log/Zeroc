@@ -349,12 +349,10 @@ function toggleQR(btn){
       <div>
         <div class="lbl" style="color:#475569;">Valor UCO recollit (període)</div>
         <div style="font-size:28px;font-weight:900;color:white;margin-top:4px;" id="op-total-estalvi">—</div>
-        <div style="font-size:10px;color:#475569;margin-top:4px;">Valor matèria primera RED II (2,97 €/kg)</div>
-      </div>
-      <div style="margin-top:14px;padding-top:12px;border-top:1px solid #1e293b;">
+        <div style="font-size:10px;color:#475569;margin-top:4px;">Ingrés brut UCO · preu i paràmetres taula viabilitat v23</div>
         <div class="lbl" style="color:#475569;">Projecció hub acumulat</div>
         <div style="font-size:24px;font-weight:900;color:#60a5fa;margin-top:4px;" id="op-estalvi-total-eur">—</div>
-        <div style="font-size:10px;color:#475569;margin-top:4px;">Basat en kg acumulats al hub</div>
+        <div style="font-size:10px;color:#475569;margin-top:4px;" id="op-estalvi-note">Resultat net model Z-Ero v23</div>
       </div>
     </div>
   </div>
@@ -637,7 +635,7 @@ function toggleQR(btn){
     <div class="stat-card bb-navy" style="background:#0f172a;">
       <div class="stat-label" style="color:#60a5fa;">Valor UCO recollit</div>
       <div class="stat-val" style="color:white;" id="esp-total">—</div>
-      <div class="stat-note" style="color:#475569;">Valor matèria primera RED II (2,97 €/kg)</div>
+      <div class="stat-note" style="color:#475569;">Ingrés brut UCO · preu taula viabilitat v23</div>
     </div>
   </div>
   <div class="g2" style="margin-bottom:16px;">
@@ -2623,6 +2621,133 @@ async function recalcDiesel() {
     }
   }
   if(s('esp-recollides'))  s('esp-recollides').innerText  = countEsp;
+
+  // ── Càlculs econòmics V23 ─────────────────────────────────────────────────
+  // Usa exactament la mateixa lògica que la Taula de Volums i Viabilitat
+  // alimentada amb els kg reals de les recollides confirmades del període
+  vInjectEconomics('op',  pesOp,  countOp);
+  vInjectEconomics('esp', pesEsp, countEsp);
+}
+
+/**
+ * Injecta els KPIs econòmics v23 al panell indicat (operador o espinosa).
+ * @param {string} who  - 'op' o 'esp'
+ * @param {number} vol  - kg reals del període (de recollides confirmades)
+ * @param {number} nRec - nombre de recollides del període
+ */
+function vInjectEconomics(who, vol, nRec) {
+  const s = id => document.getElementById(id);
+  if (typeof vCalc !== 'function') return; // la taula de viabilitat no s'ha carregat encara
+
+  // Injecta el volum als paràmetres de vCalc per reflectir el número real d'establiments
+  // (mantenim els paràmetres editables de la taula intactes; només calculem el resultat per 'vol')
+  const d = vCalc(vol);
+  const p = d.p;
+  const bp = d.bp;
+
+  const fmtE = (n, sign=false) => {
+    if (typeof n !== 'number' || isNaN(n)) return '—';
+    return (sign && n > 0 ? '+' : '') + n.toLocaleString('ca-ES', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' €';
+  };
+  const fmtN = n => typeof n === 'number' && !isNaN(n) ? n.toLocaleString('ca-ES') : '—';
+
+  // Contenidor de KPIs econòmics v23 (creat sota les stats existents)
+  const containerId = who + '-v23-economics';
+  let el = document.getElementById(containerId);
+  if (!el) {
+    el = document.createElement('div');
+    el.id = containerId;
+    el.style.cssText = 'margin:0 0 16px 0;';
+    // Inserir just després del bloc de stats del panell
+    const statsGrid = s(who === 'op' ? 'op-hub-val' : 'esp-liters')?.closest('.g-stats') ||
+                      s(who === 'op' ? 'op-hub-val' : 'esp-liters')?.closest('.card');
+    const ref = statsGrid?.parentElement || s('sec-' + (who === 'op' ? 'operador' : 'espinosa'))?.querySelector('.g-stats');
+    if (ref) ref.insertAdjacentElement('afterend', el);
+  }
+
+  if (vol <= 0 || nRec === 0) {
+    el.innerHTML = `<div style="background:#131c2e;border:1px solid #1e2d45;border-radius:14px;padding:14px 18px;font-size:11px;color:#475569;font-weight:600;">
+      📊 <strong style="color:#64748b;">Resultats econòmics v23</strong> — Sense recollides al període seleccionat · Els càlculs apareixeran amb kg confirmats.</div>`;
+    return;
+  }
+
+  const netPeriode  = d.res_cal;
+  const ingUCO      = d.ing;
+  const costBidons  = d.cb;
+  const primaC02    = d.prima;
+  const costZero    = d.cz;
+  const costXofer   = d.cx_hub;
+  const costIncid   = d.incid;
+  const co2Evitat   = d.co2;
+  const biodiesel   = d.biodiesel;
+  const netColor    = netPeriode >= 0 ? '#34d399' : '#f87171';
+  const netBg       = netPeriode >= 0 ? 'rgba(52,211,153,0.06)' : 'rgba(248,113,113,0.06)';
+  const netBorder   = netPeriode >= 0 ? 'rgba(52,211,153,0.3)' : 'rgba(248,113,113,0.3)';
+
+  el.innerHTML = `
+  <div style="background:#0c1220;border:1px solid rgba(147,197,253,0.18);border-radius:14px;padding:18px 20px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(147,197,253,0.1);flex-wrap:wrap;gap:8px;">
+      <div style="font-size:10px;font-weight:800;color:#93c5fd;text-transform:uppercase;letter-spacing:2px;">📊 Resultats econòmics · model v23</div>
+      <div style="font-size:10px;color:#475569;font-weight:600;">${fmtN(vol)} kg reals · ${nRec} recollides · preu UCO ${p.PRECIO_UCO.toFixed(2)} €/kg · bidó ${bp} €</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:14px;">
+      <div style="background:#0f172a;border-radius:10px;padding:12px 14px;border:1px solid #1e2d45;">
+        <div style="font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;">Ingrés UCO</div>
+        <div style="font-size:17px;font-weight:900;color:#34d399;">${fmtE(ingUCO)}</div>
+        <div style="font-size:9px;color:#475569;margin-top:3px;">${fmtN(vol)} kg × ${p.PRECIO_UCO.toFixed(2)} €/kg</div>
+      </div>
+      <div style="background:#0f172a;border-radius:10px;padding:12px 14px;border:1px solid #1e2d45;">
+        <div style="font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;">− Bidons pagats</div>
+        <div style="font-size:17px;font-weight:900;color:#f87171;">${fmtE(costBidons)}</div>
+        <div style="font-size:9px;color:#475569;margin-top:3px;">${fmtN(d.b)} bidons × ${bp} €</div>
+      </div>
+      <div style="background:#0f172a;border-radius:10px;padding:12px 14px;border:1px solid rgba(134,239,172,0.15);">
+        <div style="font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;">+ Prima 0CO₂</div>
+        <div style="font-size:17px;font-weight:900;color:#86efac;">${fmtE(primaC02)}</div>
+        <div style="font-size:9px;color:#475569;margin-top:3px;">${fmtN(vol)} kg × ${p.PRIMA_CO2.toFixed(3)} €/kg</div>
+      </div>
+      <div style="background:#0f172a;border-radius:10px;padding:12px 14px;border:1px solid #1e2d45;">
+        <div style="font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;">− Servei Z-Ero</div>
+        <div style="font-size:17px;font-weight:900;color:#f87171;">${fmtE(costZero)}</div>
+        <div style="font-size:9px;color:#475569;margin-top:3px;">${p.FIX_ZERO} € fix + var.</div>
+      </div>
+      <div style="background:#0f172a;border-radius:10px;padding:12px 14px;border:1px solid #1e2d45;">
+        <div style="font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;">− Xofer hub</div>
+        <div style="font-size:17px;font-weight:900;color:#f87171;">${fmtE(costXofer)}</div>
+        <div style="font-size:9px;color:#475569;margin-top:3px;">${fmtN(d.viat)} viatges · ${p.MIN_TRAJECTE_HUB+p.MIN_DESC_HUB} min/viat.</div>
+      </div>
+      <div style="background:#0f172a;border-radius:10px;padding:12px 14px;border:1px solid #1e2d45;">
+        <div style="font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;">− Incidències</div>
+        <div style="font-size:17px;font-weight:900;color:#f87171;">${fmtE(costIncid)}</div>
+        <div style="font-size:9px;color:#475569;margin-top:3px;">${fmtN(vol)} kg × 0,012 €/kg</div>
+      </div>
+    </div>
+    <div style="background:${netBg};border:1px solid ${netBorder};border-radius:10px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+      <div>
+        <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;">Resultat net Z-Ero · Calella</div>
+        <div style="font-size:10px;color:#475569;margin-top:3px;">
+          CO₂ evitat: <strong style="color:#fbbf24;">${fmtN(co2Evitat)} kg</strong> · Biodièsel: <strong style="color:#fbbf24;">${fmtN(biodiesel)} L</strong>
+        </div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:26px;font-weight:900;color:${netColor};">${fmtE(netPeriode, true)}</div>
+        <div style="font-size:10px;color:#64748b;margin-top:2px;">≈ ${fmtE(netPeriode * 12)} / any · paràmetres taula viabilitat</div>
+      </div>
+    </div>
+    <div style="margin-top:10px;font-size:10px;color:#334155;text-align:right;">
+      ⚙ Paràmetres editables a la pestanya <strong style="color:#93c5fd;cursor:pointer;" onclick="switchView('volums')">Taula de Volums i Viabilitat →</strong>
+    </div>
+  </div>`;
+
+  // Actualitza també els camps originals amb els valors v23 (coherència)
+  const fmtOld = n => n.toFixed(2).replace('.', ',') + ' €';
+  if (s(who + '-total-estalvi')) s(who + '-total-estalvi').innerText = fmtOld(ingUCO);
+  if (s(who + '-total') && who === 'esp') s('esp-total').innerText = fmtOld(ingUCO);
+  if (who === 'op') {
+    if (s('op-estalvi-total-eur')) s('op-estalvi-total-eur').innerText = fmtOld(netPeriode);
+    const noteEl = s('op-estalvi-total-eur')?.nextElementSibling;
+    if (noteEl) noteEl.innerText = 'Resultat net model Z-Ero v23 (mateixos paràmetres que la taula de viabilitat)';
+  }
 }
 
 // Mostra avís d'establiments sense GPS sota les stats
