@@ -63,6 +63,7 @@
              style="height:48px;object-fit:contain;max-width:160px;"
              onerror="this.parentElement.innerHTML='<span style=\'color:#0f172a;font-weight:900;font-size:18px;font-style:italic;\'>F. ESPINOSA</span>'">
       </div>
+      <div style="color:#e2e8f0;font-size:22px;font-weight:900;letter-spacing:0.3px;margin-top:2px;">Espinosa Olis</div>
       <div style="color:#60a5fa;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;margin-top:5px;">Plataforma de gestió · UCO</div>
     </div>
 
@@ -103,6 +104,26 @@
         <span style="color:#b45309;font-weight:600;">Per sincronitzar, puja l'arxiu a un servidor (ex: tiiny.host).</span>
       </div>
     </div>
+
+    <!-- ── QR PRIMER ÚS ── -->
+    <div class="login-fadein-3">
+      <button class="qr-toggle-btn" onclick="toggleQR(this)" id="qr-toggle-btn" style="width:100%;justify-content:center;margin-top:14px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="4" height="4" rx="0.5"/><rect x="20" y="14" width="1" height="1"/><rect x="14" y="20" width="1" height="1"/><rect x="18" y="19" width="3" height="2" rx="0.5"/><rect x="20" y="17" width="1" height="1"/></svg>
+        Accedir des del mòbil · Escanejar QR
+      </button>
+
+      <div class="qr-panel" id="qr-panel">
+        <div style="background:#1e293b;border-radius:20px;border:1px solid #334155;padding:24px;margin-top:10px;text-align:center;">
+          <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;">Primer ús · Obre al mòbil</div>
+          <div id="qr-canvas-wrap" style="display:flex;justify-content:center;margin-bottom:14px;"></div>
+          <div style="font-size:12px;color:#64748b;font-weight:600;line-height:1.6;">
+            Escaneja amb la càmera del mòbil per<br>accedir a la plataforma des del teu telèfon.
+          </div>
+          <div style="margin-top:14px;background:#0f172a;border-radius:10px;padding:10px 14px;font-size:10px;color:#475569;font-weight:700;letter-spacing:0.3px;word-break:break-all;" id="qr-url-display"></div>
+        </div>
+      </div>
+    </div>
+
     <!-- ── Powered by Z-Ero (discret) ── -->
     <div style="text-align:center;margin-top:20px;">
       <div style="display:inline-flex;align-items:center;gap:8px;opacity:0.45;">
@@ -688,36 +709,167 @@ function toggleQR(btn){
   <div class="wrap">
     <div class="top-bar">
       <div>
-        <div class="page-title" style="color:#a78bfa;">📊 Taula de Volums i Rendibilitat</div>
-        <div class="page-sub" style="color:#7c3aed;">Anàlisi de sensibilitat kg/mes · Espinosa Olis</div>
+        <div class="page-title" style="color:#a78bfa;">📊 Taula de Volums i Viabilitat</div>
+        <div class="page-sub" style="color:#7c3aed;">Model econòmic Z-Ero CO₂ · Tots els paràmetres editables · Calella + Nova zona</div>
       </div>
     </div>
-    <!-- Disclamer -->
+
+    <!-- Disclaimer -->
     <div style="background:#422006;border:1px solid #92400e;border-radius:14px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:flex-start;gap:12px;">
       <span style="font-size:18px;flex-shrink:0;">⚠️</span>
       <div style="font-size:12px;color:#fde68a;font-weight:600;line-height:1.6;">
-        <strong style="color:#fbbf24;">Dades estimades · Mercat abril 2025.</strong>
-        Els valors de preu UCO, prima ISCC, costos logístics i estalvis operatius són estimacions basades en valors de mercat.
+        <strong style="color:#fbbf24;">Dades estimades · Mercat abril 2026. Versió auditada v23.</strong>
+        Els valors de preu UCO, prima 0CO₂, costos logístics i tarifes Z-Ero són estimacions basades en valors de mercat.
         <strong style="color:#fbbf24;">Pendents de validació i revisió amb dades reals per part del gestor F. Espinosa.</strong>
         No constitueixen cap compromís econòmic fins a revisió confirmada.
       </div>
     </div>
 
-    <!-- Controls slider -->
-    <div style="background:#131c2e;border-radius:16px;border:1px solid #1e2d45;padding:20px 24px;margin-bottom:16px;">
-      <div style="display:flex;align-items:center;gap:16px;margin-bottom:14px;">
-        <label style="font-size:12px;color:#94a3b8;font-weight:700;min-width:110px;text-transform:uppercase;letter-spacing:0.5px;">Volum kg/mes</label>
-        <input type="range" min="500" max="8000" step="100" value="4500" id="vol-slider" style="flex:1;accent-color:#7c3aed;">
-        <div style="font-size:22px;font-weight:900;color:#e2e8f0;min-width:110px;text-align:right;"><span id="vol-label">4.500</span> kg</div>
+    <!-- PARÀMETRES EDITABLES -->
+    <div style="background:#0c1220;border:1px solid rgba(147,197,253,0.2);border-radius:14px;padding:20px 24px;margin-bottom:18px;">
+      <div style="font-size:10px;font-weight:800;color:#93c5fd;text-transform:uppercase;letter-spacing:2px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(147,197,253,0.12);display:flex;align-items:center;gap:10px;">
+        Edita qualsevol paràmetre · tot recalcula automàticament
+        <span style="display:inline-flex;align-items:center;gap:4px;font-size:9px;color:#4ade80;background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.2);border-radius:3px;padding:2px 7px;font-weight:700;letter-spacing:0.5px;animation:vPulse 2s infinite;">⟳ LIVE</span>
       </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-        <span style="font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-right:4px;">Escenaris:</span>
-        <button onclick="setVol(500)"  class="vbtn" id="pre-500">500 kg</button>
-        <button onclick="setVol(1200)" class="vbtn" id="pre-1200">1.200 kg</button>
-        <button onclick="setVol(2500)" class="vbtn" id="pre-2500">2.500 kg</button>
-        <button onclick="setVol(4500)" class="vbtn vbtn-on" id="pre-4500">4.500 kg</button>
-        <button onclick="setVol(6000)" class="vbtn" id="pre-6000">6.000 kg</button>
-        <button onclick="setVol(8000)" class="vbtn" id="pre-8000">8.000 kg</button>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:9px 14px;" id="vpgrid">
+        <div style="grid-column:1/-1;font-size:8.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(226,232,240,0.18);padding-top:0;">Tarifa Z-Ero CO₂</div>
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <span style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Fix mensual <em style="font-size:8.5px;color:rgba(147,197,253,0.4);font-style:italic;">€/mes</em></span>
+          <input class="vpinput vpgn" id="vp-fix-zero" type="number" min="0" step="50" value="1500" oninput="vOnParamChange()">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <span style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Variable <em style="font-size:8.5px;color:rgba(147,197,253,0.4);font-style:italic;">€/kg</em></span>
+          <input class="vpinput vpgn" id="vp-var-zero" type="number" min="0" step="0.01" value="0.28" oninput="vOnParamChange()">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <span style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Prima qualitat 0CO₂ <em style="font-size:8.5px;color:rgba(147,197,253,0.4);font-style:italic;">€/kg extra</em></span>
+          <input class="vpinput vpgn" id="vp-prima-co2" type="number" min="0" max="0.20" step="0.005" value="0.03" oninput="vOnParamChange()">
+        </div>
+        <div style="grid-column:1/-1;font-size:8.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(226,232,240,0.18);padding-top:8px;border-top:1px solid rgba(226,232,240,0.06);">UCO i bidons</div>
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <span style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Preu UCO <em style="font-size:8.5px;color:rgba(147,197,253,0.4);font-style:italic;">€/kg</em></span>
+          <input class="vpinput" id="vp-precio-uco" type="number" min="0.50" max="2.00" step="0.01" value="1.00" oninput="vOnParamChange()">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <span style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Preu bidó actiu <em style="font-size:8.5px;color:rgba(147,197,253,0.4);font-style:italic;">€/bidó</em></span>
+          <input class="vpinput vpam" id="vp-bidon-preu" type="number" min="0" step="1" value="20" oninput="vOnParamChange()">
+        </div>
+        <div style="grid-column:1/-1;font-size:8.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(226,232,240,0.18);padding-top:8px;border-top:1px solid rgba(226,232,240,0.06);">Xofer Espinosa</div>
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <span style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Cost xofer <em style="font-size:8.5px;color:rgba(147,197,253,0.4);font-style:italic;">€/mes sou+SS</em></span>
+          <input class="vpinput vpam" id="vp-saldo-xofer" type="number" min="1500" max="5000" step="50" value="2800" oninput="vOnParamChange()">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <span style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Jornada xofer <em style="font-size:8.5px;color:rgba(147,197,253,0.4);font-style:italic;">h/mes</em></span>
+          <input class="vpinput vpam" id="vp-hores-mes-xofer" type="number" min="100" max="220" step="1" value="160" oninput="vOnParamChange()">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <span style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Diesel <em style="font-size:8.5px;color:rgba(147,197,253,0.4);font-style:italic;">€/litre</em></span>
+          <input class="vpinput vpam" id="vp-diesel-l" type="number" min="1" max="3" step="0.01" value="1.55" oninput="vOnParamChange()">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <span style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Admin RED II <em style="font-size:8.5px;color:rgba(147,197,253,0.4);font-style:italic;">€/mes estalvi</em></span>
+          <input class="vpinput vpam" id="vp-ah-admin" type="number" min="0" max="500" step="10" value="160" oninput="vOnParamChange()">
+        </div>
+        <div style="grid-column:1/-1;font-size:8.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(226,232,240,0.18);padding-top:8px;border-top:1px solid rgba(226,232,240,0.06);">Ruta i logística</div>
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <span style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Establiments actius <em style="font-size:8.5px;color:rgba(147,197,253,0.4);font-style:italic;">clients</em></span>
+          <input class="vpinput vpgn" id="vp-num-estab" type="number" min="1" max="500" step="1" value="94" oninput="vOnParamChange()">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <span style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Temps/parada <em style="font-size:8.5px;color:rgba(147,197,253,0.4);font-style:italic;">min/estab.</em></span>
+          <input class="vpinput" id="vp-min-parada" type="number" min="5" max="30" step="1" value="15" oninput="vOnParamChange()">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <span style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Temps entre parades <em style="font-size:8.5px;color:rgba(147,197,253,0.4);font-style:italic;">min</em></span>
+          <input class="vpinput" id="vp-min-entre" type="number" min="2" max="20" step="1" value="8" oninput="vOnParamChange()">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <span style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Km entre parades <em style="font-size:8.5px;color:rgba(147,197,253,0.4);font-style:italic;">km</em></span>
+          <input class="vpinput" id="vp-km-entre" type="text" inputmode="decimal" value="1.2" oninput="vOnParamChange()">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <span style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Km sortida/tornada <em style="font-size:8.5px;color:rgba(147,197,253,0.4);font-style:italic;">km/jornada</em></span>
+          <input class="vpinput" id="vp-km-base-jornada" type="number" min="0" max="200" step="1" value="25" oninput="vOnParamChange()">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <span style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Jornades/mes <em style="font-size:8.5px;color:rgba(147,197,253,0.4);font-style:italic;">dies</em></span>
+          <input class="vpinput" id="vp-jornades-mes" type="number" min="1" max="31" step="1" value="22" oninput="vOnParamChange()">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <span style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Càrrega útil camió <em style="font-size:8.5px;color:rgba(147,197,253,0.4);font-style:italic;">kg/viatge</em></span>
+          <input class="vpinput" id="vp-hub-cap" type="number" min="500" max="5000" step="100" value="1200" oninput="vOnParamChange()">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <span style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Trajecte hub a+r <em style="font-size:8.5px;color:rgba(147,197,253,0.4);font-style:italic;">min/viatge</em></span>
+          <input class="vpinput" id="vp-min-trajecte-hub" type="number" min="10" max="120" step="5" value="45" oninput="vOnParamChange()">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <span style="font-size:9.5px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Descàrrega hub <em style="font-size:8.5px;color:rgba(147,197,253,0.4);font-style:italic;">min/viatge</em></span>
+          <input class="vpinput" id="vp-min-desc-hub" type="number" min="10" max="90" step="5" value="35" oninput="vOnParamChange()">
+        </div>
+      </div>
+      <button onclick="vResetParams()" style="margin-top:14px;padding:6px 16px;background:transparent;border:1px solid rgba(226,232,240,0.1);border-radius:5px;color:#64748b;font-family:inherit;font-size:10.5px;font-weight:600;cursor:pointer;">↺ Restaurar valors originals</button>
+    </div>
+
+    <!-- MIX D'ESTABLIMENTS -->
+    <div style="background:#0c1220;border:1px solid rgba(147,197,253,0.2);border-radius:14px;padding:20px 24px;margin-bottom:16px;">
+      <div style="font-size:10px;font-weight:800;color:#93c5fd;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;">Calculador per tipus d'establiment</div>
+      <div style="font-size:11px;color:#64748b;margin-bottom:14px;line-height:1.5;">Introdueix el nombre d'establiments de cada tipus · el volum total es calcula automàticament</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px 14px;margin-bottom:14px;">
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <span style="font-size:9.5px;color:#e2e8f0;font-weight:600;text-transform:uppercase;">Hotels <em style="font-size:8.5px;color:rgba(147,197,253,0.4);font-style:italic;">390 kg/mes</em></span>
+          <div style="display:flex;align-items:center;gap:6px;"><input class="vmix-input" id="vmix-hotels" type="number" min="0" step="1" value="0" oninput="vOnMixChange()"><span style="font-size:10px;color:#64748b;">estab.</span></div>
+          <span style="font-size:11px;color:#4ade80;font-weight:600;" id="vmix-kg-hotels">0 kg</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <span style="font-size:9.5px;color:#e2e8f0;font-weight:600;text-transform:uppercase;">Grans restaurants <em style="font-size:8.5px;color:rgba(147,197,253,0.4);font-style:italic;">250 kg/mes</em></span>
+          <div style="display:flex;align-items:center;gap:6px;"><input class="vmix-input" id="vmix-grans" type="number" min="0" step="1" value="0" oninput="vOnMixChange()"><span style="font-size:10px;color:#64748b;">estab.</span></div>
+          <span style="font-size:11px;color:#4ade80;font-weight:600;" id="vmix-kg-grans">0 kg</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <span style="font-size:9.5px;color:#e2e8f0;font-weight:600;text-transform:uppercase;">Rostisseries <em style="font-size:8.5px;color:rgba(147,197,253,0.4);font-style:italic;">100 kg/mes</em></span>
+          <div style="display:flex;align-items:center;gap:6px;"><input class="vmix-input" id="vmix-rostisseries" type="number" min="0" step="1" value="0" oninput="vOnMixChange()"><span style="font-size:10px;color:#64748b;">estab.</span></div>
+          <span style="font-size:11px;color:#4ade80;font-weight:600;" id="vmix-kg-rostisseries">0 kg</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <span style="font-size:9.5px;color:#e2e8f0;font-weight:600;text-transform:uppercase;">Rest. Càmpings <em style="font-size:8.5px;color:rgba(147,197,253,0.4);font-style:italic;">200 kg/mes</em></span>
+          <div style="display:flex;align-items:center;gap:6px;"><input class="vmix-input" id="vmix-campings" type="number" min="0" step="1" value="0" oninput="vOnMixChange()"><span style="font-size:10px;color:#64748b;">estab.</span></div>
+          <span style="font-size:11px;color:#4ade80;font-weight:600;" id="vmix-kg-campings">0 kg</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <span style="font-size:9.5px;color:#e2e8f0;font-weight:600;text-transform:uppercase;">Altres <em style="font-size:8.5px;color:rgba(147,197,253,0.4);font-style:italic;">50 kg/mes</em></span>
+          <div style="display:flex;align-items:center;gap:6px;"><input class="vmix-input" id="vmix-altres" type="number" min="0" step="1" value="0" oninput="vOnMixChange()"><span style="font-size:10px;color:#64748b;">estab.</span></div>
+          <span style="font-size:11px;color:#4ade80;font-weight:600;" id="vmix-kg-altres">0 kg</span>
+        </div>
+      </div>
+      <div style="background:#131c2e;border:1px solid rgba(74,222,128,0.25);border-radius:10px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+        <div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#94a3b8;">Volum total previst</div>
+          <div style="font-size:10px;color:#64748b;margin-top:2px;" id="vmix-total-detail">0 establiments · 0 kg/estab. mig</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:22px;font-weight:900;color:#4ade80;"><span id="vmix-total-kg">—</span> kg/mes</div>
+          <div style="font-size:9.5px;color:#64748b;margin-top:2px;" id="vmix-total-note"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls slider i bidó -->
+    <div style="background:#131c2e;border-radius:16px;border:1px solid #1e2d45;padding:20px 24px;margin-bottom:16px;">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:10px;">
+        <label style="font-size:12px;color:#94a3b8;font-weight:700;min-width:110px;text-transform:uppercase;letter-spacing:0.5px;">Volum del mix</label>
+        <div style="flex:1;font-size:13px;color:#64748b;font-weight:500;">Calculat automàticament dels establiments introduïts</div>
+        <div style="font-size:22px;font-weight:900;color:#e2e8f0;min-width:110px;text-align:right;"><span id="vol-label">0</span> kg</div>
+      </div>
+      <input type="hidden" id="vol-slider" value="0">
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#0c1220;border-radius:10px;border:1px solid #1e2d45;margin-top:8px;flex-wrap:wrap;">
+        <span style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#64748b;flex-shrink:0;">Preu bidó</span>
+        <div style="display:flex;border-radius:6px;overflow:hidden;border:1px solid #1e2d45;">
+          <button class="vtbtn vtab" id="vbtn-20" onclick="vSetBidon(20)">20 € · Base</button>
+          <button class="vtbtn" id="vbtn-15" onclick="vSetBidon(15)">15 € · Estratègic</button>
+        </div>
+        <span style="font-size:11px;color:#64748b;margin-left:auto;" id="vbidon-note">Escenari conservador</span>
       </div>
     </div>
 
@@ -735,32 +887,58 @@ function toggleQR(btn){
       <div id="vol-costes-block"   style="background:#131c2e;border-radius:16px;border:1px solid #1e2d45;padding:20px;"></div>
     </div>
 
-    <!-- Estalvis -->
+    <!-- Comparativa / Estalvis -->
     <div id="vol-ahorros-block" style="background:#131c2e;border-radius:16px;border:1px solid #1e2d45;padding:20px;margin-bottom:16px;"></div>
 
-    <!-- Gràfic -->
+    <!-- Logística i viatges -->
     <div style="background:#131c2e;border-radius:16px;border:1px solid #1e2d45;padding:20px;margin-bottom:16px;">
-      <div style="font-size:11px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #1e2d45;">Resultat net TOTAL per volum mensual (500 – 8.000 kg) · inclou flota alliberada +8.000€ i bidons −25%</div>
-      <div style="position:relative;height:220px;"><canvas id="vol-curva"></canvas></div>
-      <div style="display:flex;gap:20px;margin-top:10px;flex-wrap:wrap;align-items:center;">
-        <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#94a3b8;"><span style="width:12px;height:3px;background:#7c3aed;display:inline-block;border-radius:2px;"></span>Resultat net €/mes</span>
-        <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#94a3b8;"><span style="width:12px;height:2px;background:#60a5fa;display:inline-block;border-radius:2px;border-top:2px dashed #60a5fa;height:0;"></span>Break-even</span>
-        <span id="vol-punto-eq" style="font-size:11px;color:#94a3b8;font-weight:700;"></span>
-      </div>
+      <div style="font-size:11px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #1e2d45;">Logística · temps ruta tradicional vs Z-Ero · viatges al hub</div>
+      <div id="vol-viajes-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;"></div>
     </div>
 
-    <!-- Viatges -->
+    <!-- Nova zona UCO -->
+    <div style="background:#131c2e;border-radius:16px;border:1px solid #1e2d45;padding:20px;margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #1e2d45;">Nova zona UCO · hores alliberades · mes d'arrencada</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;">
+        <button class="vrbtn" onclick="vSetMesRampa(1)">Mes 1 · 30%</button>
+        <button class="vrbtn" onclick="vSetMesRampa(2)">Mes 2 · 45%</button>
+        <button class="vrbtn" onclick="vSetMesRampa(3)">Mes 3 · 60%</button>
+        <button class="vrbtn" onclick="vSetMesRampa(4)">Mes 4 · 75%</button>
+        <button class="vrbtn" onclick="vSetMesRampa(5)">Mes 5 · 88%</button>
+        <button class="vrbtn vrbtn-on" onclick="vSetMesRampa(6)">Mes 6 · 100% ✓</button>
+      </div>
+      <div id="vol-nova-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:12px;"></div>
+      <div id="vol-nova-detall" style="background:#0c1220;border-radius:10px;border:1px solid #1e2d45;padding:16px;"></div>
+    </div>
+
+    <!-- Gràfic -->
     <div style="background:#131c2e;border-radius:16px;border:1px solid #1e2d45;padding:20px;margin-bottom:24px;">
-      <div style="font-size:11px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #1e2d45;">Viatges del camió Espinosa al hub</div>
-      <div id="vol-viajes-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;"></div>
+      <div style="font-size:11px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #1e2d45;">Corba de viabilitat per volum · 500–10.000 kg/mes</div>
+      <div style="position:relative;height:220px;"><canvas id="vol-curva"></canvas></div>
+      <div style="display:flex;gap:16px;margin-top:10px;flex-wrap:wrap;align-items:center;">
+        <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#94a3b8;"><span style="width:12px;height:3px;background:#4ade80;display:inline-block;border-radius:2px;"></span>Total (Calella+Nova zona) · bidó 15€</span>
+        <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#94a3b8;"><span style="width:12px;height:3px;background:#60a5fa;display:inline-block;border-radius:2px;"></span>Total · bidó 20€</span>
+        <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#94a3b8;"><span style="width:12px;height:2px;background:#60a5fa;display:inline-block;border-top:2px dashed #60a5fa;height:0;"></span>Break-even</span>
+        <span id="vol-punto-eq" style="font-size:11px;color:#94a3b8;font-weight:700;margin-left:auto;"></span>
+      </div>
     </div>
   </div>
 </section>
 
 <style>
-.vbtn{font-size:11px;padding:5px 14px;border-radius:8px;border:1px solid #334155;background:#0f172a;color:#64748b;cursor:pointer;font-family:inherit;font-weight:700;transition:all 0.15s;}
-.vbtn:hover{border-color:#7c3aed;color:#a78bfa;}
-.vbtn.vbtn-on{background:#4c1d95;color:#c4b5fd;border-color:#7c3aed;}
+.vpinput{background:#141927;border:1px solid rgba(147,197,253,0.2);border-radius:5px;color:#93c5fd;font-family:inherit;font-size:13px;font-weight:600;padding:6px 9px;width:100%;outline:none;transition:border-color 0.15s;}
+.vpinput:focus{border-color:rgba(147,197,253,0.6);background:#1a2540;}
+.vpam{color:#fbbf24;border-color:rgba(251,191,36,0.2);}
+.vpam:focus{border-color:rgba(251,191,36,0.6)!important;background:#1a1a08!important;}
+.vpgn{color:#4ade80;border-color:rgba(74,222,128,0.2);}
+.vpgn:focus{border-color:rgba(74,222,128,0.6)!important;background:#0d1f10!important;}
+.vmix-input{background:#141927;border:1px solid rgba(147,197,253,0.2);border-radius:5px;color:#93c5fd;font-family:inherit;font-size:13px;font-weight:600;padding:6px 9px;width:70px;outline:none;text-align:center;}
+.vtbtn{font-family:inherit;font-size:12px;font-weight:500;padding:7px 16px;border:none;cursor:pointer;transition:all 0.15s;background:transparent;color:#64748b;}
+.vtab{background:#1e3a8a;color:#93c5fd;font-weight:600;}
+.vtao{background:#14532d;color:#86efac;font-weight:600;}
+.vrbtn{font-size:11px;font-family:inherit;padding:5px 13px;border-radius:20px;border:1px solid #1e2d45;background:transparent;color:#64748b;cursor:pointer;transition:all 0.15s;font-weight:500;}
+.vrbtn:hover{border-color:rgba(74,222,128,0.3);color:#e2e8f0;}
+.vrbtn.vrbtn-on{background:#4ade80;color:#0d1f0d;border-color:#4ade80;font-weight:600;}
 .vline{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;border-bottom:1px solid #1e2d45;font-size:12px;}
 .vline:last-child{border-bottom:none;}
 .vline-label{color:#94a3b8;}
@@ -775,240 +953,409 @@ function toggleQR(btn){
 .vkpi-note{font-size:10px;color:#64748b;margin-top:3px;}
 .vkpi.vpos .vkpi-val{color:#34d399;}
 .vkpi.vneg .vkpi-val{color:#f87171;}
+.vkpi.vblu .vkpi-val{color:#93c5fd;}
+.vkpi.vamb .vkpi-val{color:#fbbf24;}
 .vcard{background:#0f172a;border-radius:12px;border:1px solid #1e2d45;padding:14px;text-align:center;}
 .vcard-n{font-size:26px;font-weight:900;color:#e2e8f0;}
 .vcard-label{font-size:10px;color:#64748b;font-weight:700;margin-top:4px;line-height:1.3;}
+.vcard-note{font-size:9px;color:#334155;margin-top:3px;line-height:1.3;}
+@keyframes vPulse{0%,100%{opacity:1}50%{opacity:0.5}}
 </style>
 
 <script>
-// ── VOLUMS: constants ─────────────────────────────────────────────────────────
-const V_PRECIO_UCO=0.35,V_PRIMA_ISCC=0.05,V_COSTE_KG=0.22,V_TARA=0.04;
-const V_SUELDO_FIJO=1375,V_CHOFER_H=22,V_DIESEL_L=1.55,V_CO2_FACTOR=0.264;
-const V_BIODIESEL_REND=0.90,V_KM_PER_L=8.1,V_HUB_CAP=1200;
-// Espinosa paga 15€/bidó (−25% per encariment diesel + obligació normativa RED II)
-// Preu anterior: 20€/bidó · Reducció justificada: diesel sostingut + RED II obliga establiments a gestionar UCO
-const V_PREU_BIDO=15, V_KG_BIDO=58;
-const V_PREU_BIDO_ANT=20; // preu anterior (referència visual)
-// Guany net flota alliberada: camió+xofer redirigits a nova ruta equivalent
-// Ja nets de TOTS els costos ocults (xofer, combustible, desgast, captació, imprevistos)
-const V_FLOTA_NOVA=8000;
+// ── V23 CONSTANTS ────────────────────────────────────────────
+const VKG_PER_BIDON=57, VBIODIESEL_REND=0.84, VCO2_FACTOR=0.264;
+const VKM_PER_L_URB=8.5, VKM_PER_L_CAR=10.0;
+const VCOSTOS_ARRENCADA_FIX=[200,100,0,0,0,0];
+const VCOSTOS_ARRENCADA_VAR=[150,75,0,0,0,0];
+const VRAMPA=[0.30,0.45,0.60,0.75,0.88,1.00];
+const VMIX_TIPUS=[
+  {id:'hotels',kgMes:390},{id:'grans',kgMes:250},
+  {id:'rostisseries',kgMes:100},{id:'campings',kgMes:200},{id:'altres',kgMes:50}
+];
+const VDP={FIX_ZERO:1500,VAR_ZERO:0.28,PRECIO_UCO:1.00,PRIMA_CO2:0.03,BIDON:20,
+  SALDO_XOFER:2800,HORES_MES_XOFER:160,DIESEL_L:1.55,AH_ADMIN:160,
+  NUM_ESTAB:94,MIN_PARADA:15,MIN_ENTRE:8,KM_ENTRE:1.2,
+  KM_BASE_JORNADA:25,JORNADES_MES:22,HUB_CAP:1200,MIN_DESC_HUB:35,MIN_TRAJECTE_HUB:45};
 
-function vHores(vol){return Math.round((vol/4500)*28*10)/10}
-function vParadesTrad(vol){return Math.round((vol/4500)*22.5)}
-function vParadesZero(vol){return Math.max(1,Math.round(vol/V_HUB_CAP))}
-function vDiesel(vol){return Math.round((vol/4500)*140*10)/10}
-function vDesgast(vol){return Math.round((vol/4500)*80)}
-function vCaptacio(vol){return vol>0?300:0}
+let V_BIDON_PREU=20, V_MES_RAMPA=6, _vChart=null;
 
-function vCalc(vol){
-  const ing_uco=Math.round(vol*V_PRECIO_UCO*100)/100;
-  const ing_iscc=Math.round(vol*V_PRIMA_ISCC*100)/100;
-  const ah_chofer=Math.round(vHores(vol)*V_CHOFER_H*100)/100;
-  const ah_diesel=Math.round(vDiesel(vol)*V_DIESEL_L*100)/100;
-  const ah_desgast=vDesgast(vol);
-  const ah_captacio=vCaptacio(vol);
-  const total_ingresos=ing_uco+ing_iscc;
-  const total_ahorros=ah_chofer+ah_diesel+ah_desgast+ah_captacio;
-  const cost_var=Math.round(vol*V_COSTE_KG*100)/100;
-  const cost_tara=Math.round(vol*V_TARA*V_COSTE_KG*100)/100;
-  // Cost bidons: −25% vs preu anterior (15€ vs 20€/bidó) per encariment diesel + RED II normatiu
-  const num_bidons=Math.ceil(vol/V_KG_BIDO);
-  const cost_bidons=Math.round(num_bidons*V_PREU_BIDO*100)/100;
-  const cost_bidons_ant=Math.round(num_bidons*V_PREU_BIDO_ANT*100)/100; // preu anterior (referència)
-  const estalvi_bidons=Math.round((cost_bidons_ant-cost_bidons)*100)/100; // estalvi mensual
-  const preu_kg_bido=Math.round((V_PREU_BIDO/V_KG_BIDO)*100)/100; // ≈0,259 €/kg
-  const total_costes=Math.round((cost_var+cost_tara+cost_bidons+V_SUELDO_FIJO)*100)/100;
-  // Resultat zona Calella + guany net flota alliberada (ja nets de tots costos ocults)
-  const resultado_calella=Math.round((total_ingresos+total_ahorros-total_costes)*100)/100;
-  const resultado=Math.round((resultado_calella+V_FLOTA_NOVA)*100)/100;
-  const viajes_opt=vParadesZero(vol);
-  const carga_pct=Math.round((vol/viajes_opt)/V_HUB_CAP*100);
-  const co2=Math.round(vol*V_CO2_FACTOR);
-  const biodiesel=Math.round(vol*V_BIODIESEL_REND);
-  const km_bio=Math.round(biodiesel*V_KM_PER_L);
-  return{ing_uco,ing_iscc,ah_chofer,ah_diesel,ah_desgast,ah_captacio,
-    total_ingresos,total_ahorros,cost_var,cost_tara,cost_bidons,cost_bidons_ant,estalvi_bidons,
-    num_bidons,preu_kg_bido,total_costes,resultado_calella,resultado,viajes_opt,carga_pct,co2,biodiesel,km_bio};
+function vGetP(){
+  const gF=id=>{const r=document.getElementById(id).value.trim().replace(',','.');return parseFloat(r)||0;};
+  const gI=id=>parseInt(document.getElementById(id).value)||0;
+  return{
+    FIX_ZERO:gF('vp-fix-zero'),VAR_ZERO:gF('vp-var-zero'),PRECIO_UCO:gF('vp-precio-uco'),
+    PRIMA_CO2:Math.max(0,gF('vp-prima-co2')),SALDO_XOFER:Math.max(1,gF('vp-saldo-xofer')),
+    HORES_MES_XOFER:Math.max(1,gF('vp-hores-mes-xofer')),DIESEL_L:gF('vp-diesel-l'),
+    AH_ADMIN:gF('vp-ah-admin'),NUM_ESTAB:Math.max(1,gI('vp-num-estab')),
+    MIN_PARADA:gF('vp-min-parada'),MIN_ENTRE:gF('vp-min-entre'),
+    KM_ENTRE:Math.min(15,Math.max(0.1,gF('vp-km-entre'))),
+    KM_BASE_JORNADA:Math.min(200,Math.max(0,gF('vp-km-base-jornada'))),
+    JORNADES_MES:Math.min(31,Math.max(1,gI('vp-jornades-mes'))),
+    HUB_CAP:Math.max(100,gF('vp-hub-cap')),
+    MIN_DESC_HUB:gF('vp-min-desc-hub'),MIN_TRAJECTE_HUB:Math.max(0,gF('vp-min-trajecte-hub'))
+  };
 }
 
-function vFmt(n,sign=false){
-  const s=Math.abs(n).toLocaleString('ca-ES',{minimumFractionDigits:0,maximumFractionDigits:0});
-  if(sign)return(n>=0?'+':'-')+s+' €';
-  return(n<0?'-':'')+s+' €';
+function vResetParams(){
+  const s=(id,v)=>document.getElementById(id).value=v;
+  s('vp-fix-zero',VDP.FIX_ZERO);s('vp-var-zero',VDP.VAR_ZERO);s('vp-precio-uco',VDP.PRECIO_UCO);
+  s('vp-prima-co2',VDP.PRIMA_CO2);s('vp-bidon-preu',VDP.BIDON);s('vp-saldo-xofer',VDP.SALDO_XOFER);
+  s('vp-hores-mes-xofer',VDP.HORES_MES_XOFER);s('vp-diesel-l',VDP.DIESEL_L);s('vp-ah-admin',VDP.AH_ADMIN);
+  s('vp-num-estab',VDP.NUM_ESTAB);s('vp-min-parada',VDP.MIN_PARADA);s('vp-min-entre',VDP.MIN_ENTRE);
+  s('vp-km-entre',VDP.KM_ENTRE);s('vp-km-base-jornada',VDP.KM_BASE_JORNADA);s('vp-jornades-mes',VDP.JORNADES_MES);
+  s('vp-hub-cap',VDP.HUB_CAP);s('vp-min-desc-hub',VDP.MIN_DESC_HUB);s('vp-min-trajecte-hub',VDP.MIN_TRAJECTE_HUB);
+  VMIX_TIPUS.forEach(t=>{const el=document.getElementById('vmix-'+t.id);if(el)el.value=0;});
+  V_BIDON_PREU=VDP.BIDON;
+  vOnMixChange();
 }
-function vFmtN(n){return n.toLocaleString('ca-ES')}
 
-function setVol(v){
-  document.getElementById('vol-slider').value=v;
-  [500,1200,2500,4500,6000,8000].forEach(p=>{
-    const el=document.getElementById('pre-'+p);
-    if(el)el.className='vbtn'+(p===v?' vbtn-on':'');
+function vGetMixData(){
+  let totalKg=0,totalEstab=0;
+  VMIX_TIPUS.forEach(t=>{
+    const n=parseInt(document.getElementById('vmix-'+t.id).value)||0;
+    const kg=n*t.kgMes; totalKg+=kg; totalEstab+=n;
+    document.getElementById('vmix-kg-'+t.id).textContent=kg>0?(kg.toLocaleString('ca-ES')+' kg'):'0 kg';
   });
-  vRender(v);
+  const kgMig=totalEstab>0?Math.round(totalKg/totalEstab):0;
+  document.getElementById('vmix-total-kg').textContent=totalKg>0?totalKg.toLocaleString('ca-ES'):'—';
+  document.getElementById('vmix-total-detail').textContent=`${totalEstab} establiments · ${kgMig} kg/estab. mig`;
+  document.getElementById('vmix-total-note').textContent=totalKg>0?`Volum actiu → ${totalKg.toLocaleString('ca-ES')} kg/mes`:'Sense establiments: volum = 0 kg';
+  return{totalKg,totalEstab,kgMig};
 }
+
+function vOnMixChange(){
+  const{totalKg,totalEstab,kgMig}=vGetMixData();
+  document.getElementById('vp-num-estab').value=totalEstab>0?totalEstab:0;
+  const vol=totalKg;
+  document.getElementById('vol-slider').value=vol;
+  const volLbl=document.getElementById('vol-label');
+  volLbl.textContent=vol>0?vol.toLocaleString('ca-ES'):'0';
+  volLbl.style.color=vol>0?'#4ade80':'#f87171';
+  vRender(vol);
+  vRebuildChart();
+}
+
+function vOnParamChange(){
+  V_BIDON_PREU=parseFloat(document.getElementById('vp-bidon-preu').value)||20;
+  document.getElementById('vbtn-20').className='vtbtn'+(V_BIDON_PREU===20?' vtab':'');
+  document.getElementById('vbtn-15').className='vtbtn'+(V_BIDON_PREU===15?' vtao':'');
+  const vol=parseInt(document.getElementById('vol-slider').value)||0;
+  vRender(vol); vRebuildChart();
+}
+
+// ── FUNCIONS BASE ──────────────────────────────────────────
+function vBidons(vol,p){return vol<=0?0:Math.round(vol/VKG_PER_BIDON);}
+function vViatges(vol,p){return vol<=0?0:Math.max(1,Math.ceil(vol/p.HUB_CAP));}
+function vHoresTrad(vol,p){return vol<=0?0:Math.round(p.NUM_ESTAB*(p.MIN_PARADA+p.MIN_ENTRE)/60*10)/10;}
+function vHoresHub(vol,p){return vol<=0?0:Math.round(vViatges(vol,p)*(p.MIN_DESC_HUB+p.MIN_TRAJECTE_HUB)/60*10)/10;}
+function vKmRuta(vol,p){
+  const kmUrba=Math.round(p.NUM_ESTAB*p.KM_ENTRE*10)/10;
+  const kmBase=p.JORNADES_MES*p.KM_BASE_JORNADA;
+  return{kmUrba,kmBase,kmTotal:kmUrba+kmBase};
+}
+function vLitres(vol,p){const{kmUrba,kmBase}=vKmRuta(vol,p);return Math.round((kmUrba/VKM_PER_L_URB+kmBase/VKM_PER_L_CAR)*10)/10;}
+function vDesgast(vol,p){return Math.round(p.NUM_ESTAB*0.60);}
+function vVolNova(vol,p){
+  const hT=vHoresTrad(vol,p),hH=vHoresHub(vol,p),hTot=hT+hH;
+  if(hTot<=0)return 0;
+  return Math.round(vol*(hT/hTot));
+}
+function vParadesNova(vol,p){
+  if(vol<=0)return 0;
+  const hT=vHoresTrad(vol,p),hH=vHoresHub(vol,p),hTot=hT+hH;
+  return Math.round(p.NUM_ESTAB*(hTot>0?hT/hTot:0));
+}
+
+// ── CÀLCUL PRINCIPAL ──────────────────────────────────────
+function vCalc(vol,bpOvr){
+  const p=vGetP(),bp=bpOvr!==undefined?bpOvr:V_BIDON_PREU;
+  if(vol<=0)return{res_trad:0,res_cal:0,res_nov:0,res_zero:0,delta:0,p,bp,
+    b:0,viat:0,h_trad:0,h_hub:0,h_all:0,h_tot:0,eur_h:0,cx_tot:0,cx_hub:0,cx_nov:0,
+    ing:0,prima:0,cb:0,cz:0,liters:0,diesel:0,desg:0,incid:0,costos_op:0,
+    co2:0,biodiesel:0,vn:0,bn:0,pn:0,carga_pct:0,km_ruta:0,kmUrba:0,kmBase:0};
+  const b=vBidons(vol,p),viat=vViatges(vol,p);
+  const h_trad=vHoresTrad(vol,p),h_hub=vHoresHub(vol,p),h_all=h_trad,h_tot=h_trad+h_hub;
+  const eur_h=Math.round(p.SALDO_XOFER/p.HORES_MES_XOFER*100)/100;
+  const cx_tot=Math.round(p.SALDO_XOFER*(h_tot/p.HORES_MES_XOFER)*100)/100;
+  const cx_hub=Math.round(p.SALDO_XOFER*(h_hub/p.HORES_MES_XOFER)*100)/100;
+  const cx_nov=Math.round(p.SALDO_XOFER*(h_all/p.HORES_MES_XOFER)*100)/100;
+  const ing=Math.round(vol*p.PRECIO_UCO*100)/100;
+  const prima=Math.round(vol*p.PRIMA_CO2*100)/100;
+  const cb=b*bp,cz=p.FIX_ZERO+Math.round(vol*p.VAR_ZERO*100)/100;
+  const liters=vLitres(vol,p);
+  const{kmUrba,kmBase,kmTotal}=vKmRuta(vol,p);
+  const diesel=Math.round(liters*p.DIESEL_L*100)/100;
+  const desg=vDesgast(vol,p),incid=Math.round(vol*0.012);
+  const costos_op=cx_tot+diesel+desg+incid+p.AH_ADMIN;
+  const res_trad=Math.round((ing-cb-costos_op)*100)/100;
+  const res_cal=Math.round((ing-cb+prima-cz-cx_hub-incid)*100)/100;
+  const vn=vVolNova(vol,p),bn=Math.round(vn/VKG_PER_BIDON),pn=vParadesNova(vol,p);
+  const kmUrba_n=Math.round(pn*p.KM_ENTRE*10)/10;
+  const kmBase_n=Math.round(p.JORNADES_MES*p.KM_BASE_JORNADA*1.0*10)/10;
+  const lit_n=Math.round((kmUrba_n/VKM_PER_L_URB+kmBase_n/VKM_PER_L_CAR)*10)/10;
+  const die_n=Math.round(lit_n*p.DIESEL_L*100)/100;
+  const des_n=Math.round(pn*0.60),inc_n=Math.round(vn*0.012);
+  const res_nov=Math.round((vn*p.PRECIO_UCO-bn*bp-cx_nov-die_n-des_n-inc_n-p.AH_ADMIN)*100)/100;
+  const res_zero=Math.round((res_cal+res_nov)*100)/100;
+  const delta=Math.round((res_zero-res_trad)*100)/100;
+  const co2=Math.round(vol*VCO2_FACTOR),biodiesel=Math.round(vol*VBIODIESEL_REND);
+  const carga_pct=Math.round(Math.min(100,(vol/viat)/p.HUB_CAP*100));
+  return{b,viat,h_trad,h_hub,h_all,h_tot,eur_h,cx_tot,cx_hub,cx_nov,
+    ing,prima,cb,cz,liters,diesel,desg,incid,costos_op,
+    res_trad,res_cal,res_nov,res_zero,delta,co2,biodiesel,vn,bn,pn,carga_pct,
+    km_ruta:kmTotal,kmUrba,kmBase,p,bp};
+}
+
+function vNovaRutaCalc(vol,mes){
+  const p=vGetP(),bp=V_BIDON_PREU;
+  const vn=vVolNova(vol,p),pn=vParadesNova(vol,p);
+  const h_all=vHoresTrad(vol,p),pctR=VRAMPA[Math.max(0,Math.min(5,mes-1))];
+  const vnRampa=Math.round(vn*pctR),pnRampa=Math.round(pn*pctR),bnRampa=Math.round(vnRampa/VKG_PER_BIDON);
+  const kmUrba_n=Math.round(pnRampa*p.KM_ENTRE*10)/10;
+  const kmBase_n=Math.round(p.JORNADES_MES*p.KM_BASE_JORNADA*pctR*10)/10;
+  const lit_n=Math.round((kmUrba_n/VKM_PER_L_URB+kmBase_n/VKM_PER_L_CAR)*10)/10;
+  const ingBrut=Math.round(vnRampa*p.PRECIO_UCO);
+  const bid_n=Math.round(bnRampa*bp);
+  const cXofer=Math.round(p.SALDO_XOFER*(h_all/p.HORES_MES_XOFER)*pctR);
+  const cDiesel=Math.round(lit_n*p.DIESEL_L*100)/100;
+  const cDesg=Math.round(pnRampa*0.60),cIncid=Math.round(vnRampa*0.012);
+  const cAdmin=Math.round(p.AH_ADMIN*pctR);
+  const cArrFix=VCOSTOS_ARRENCADA_FIX[Math.max(0,Math.min(5,mes-1))];
+  const cArrVar=Math.round(VCOSTOS_ARRENCADA_VAR[Math.max(0,Math.min(5,mes-1))]*pctR);
+  const cTotal=cXofer+cDiesel+cDesg+cIncid+cAdmin+cArrFix+cArrVar;
+  const net=ingBrut-bid_n-cTotal;
+  return{vn,pn,pnRampa,vnRampa,bnRampa,h_all,pctR,
+    kmUrba_n,kmBase_n,lit_n,ingBrut,bid_n,cXofer,cDiesel,cDesg,cIncid,cAdmin,cArrFix,cArrVar,cTotal,net};
+}
+
+const vFmt=(n,sign=false)=>{const v=Number(n)||0;return(sign&&v>0?'+':'')+v.toLocaleString('ca-ES',{minimumFractionDigits:0,maximumFractionDigits:0})+' €';};
+const vFmtN=n=>{const v=Number(n);return isNaN(v)?'—':v.toLocaleString('ca-ES');};
 
 function vRender(vol){
-  const d=vCalc(vol);
-  document.getElementById('vol-label').textContent=vFmtN(vol);
+  const p=vGetP(),d=vCalc(vol);
+  document.getElementById('vol-label').textContent=vol>0?vol.toLocaleString('ca-ES'):'0';
+
+  if(vol<=0){
+    document.getElementById('vol-alert-box').innerHTML='<div style="background:#450a0a;border:1px solid #dc2626;border-radius:12px;padding:12px 16px;font-size:12px;color:#fca5a5;font-weight:700;margin-bottom:14px;">⚠ Cap establiment introduït · Introdueix establiments al calculador de mix per obtenir el volum i els resultats.</div>';
+    document.getElementById('vol-kpi-grid').innerHTML='';
+    ['vol-result-bar','vol-ingresos-block','vol-costes-block','vol-ahorros-block'].forEach(id=>{
+      document.getElementById(id).innerHTML='<div style="padding:16px 0;text-align:center;color:#334155;font-size:11px;">— Sense volum —</div>';
+    });
+    document.getElementById('vol-viajes-grid').innerHTML='';
+    document.getElementById('vol-nova-grid').innerHTML='';
+    document.getElementById('vol-nova-detall').innerHTML='<div style="color:#334155;font-size:11px;text-align:center;padding:12px 0;">— Sense volum —</div>';
+    return;
+  }
+
+  const nr=vNovaRutaCalc(vol,V_MES_RAMPA);
+  const resTotal=d.res_cal+nr.net;
+  const resTotalMadur=d.res_cal+d.res_nov;
+  const deltaMadur=Math.round((resTotalMadur-d.res_trad)*100)/100;
+  const deltaMes=Math.round((resTotal-d.res_trad)*100)/100;
+  const netUCO=Math.round((d.ing-d.cb)*100)/100;
 
   // Alert
-  const alertEl=document.getElementById('vol-alert-box');
-  if(d.resultado>=500){
-    alertEl.innerHTML='<div style="background:#14532d;border:1px solid #16a34a;border-radius:12px;padding:12px 16px;font-size:12px;color:#86efac;font-weight:700;margin-bottom:14px;">✅ Escenari rendible — resultat net '+vFmt(d.resultado,true)+'/mes. El model funciona de forma òptima.</div>';
-  }else if(d.resultado>=0){
-    alertEl.innerHTML='<div style="background:#422006;border:1px solid #d97706;border-radius:12px;padding:12px 16px;font-size:12px;color:#fde68a;font-weight:700;margin-bottom:14px;">⚠️ Escenari marginal — resultat net '+vFmt(d.resultado,true)+'/mes. Rendible però ajustat. Revisar volum objectiu.</div>';
-  }else{
-    alertEl.innerHTML='<div style="background:#450a0a;border:1px solid #dc2626;border-radius:12px;padding:12px 16px;font-size:12px;color:#fca5a5;font-weight:700;margin-bottom:14px;">❌ Escenari no rendible — resultat net '+vFmt(d.resultado,true)+'/mes. Volum insuficient per cobrir el sou fix de Z-Ero.</div>';
-  }
+  const aEl=document.getElementById('vol-alert-box');
+  if(resTotal>=500) aEl.innerHTML=`<div style="background:#14532d;border:1px solid #16a34a;border-radius:12px;padding:12px 16px;font-size:12px;color:#86efac;font-weight:700;margin-bottom:14px;">✅ Escenari viable — resultat net total <strong>${vFmt(resTotal,true)}/mes</strong>. El model funciona de forma òptima.</div>`;
+  else if(resTotal>=0) aEl.innerHTML=`<div style="background:#422006;border:1px solid #d97706;border-radius:12px;padding:12px 16px;font-size:12px;color:#fde68a;font-weight:700;margin-bottom:14px;">⚠️ Escenari marginal — resultat net total <strong>${vFmt(resTotal,true)}/mes</strong>. Viable però ajustat. Revisar volum objectiu.</div>`;
+  else aEl.innerHTML=`<div style="background:#450a0a;border:1px solid #dc2626;border-radius:12px;padding:12px 16px;font-size:12px;color:#fca5a5;font-weight:700;margin-bottom:14px;">❌ Escenari no viable — resultat net total <strong>${vFmt(resTotal,true)}/mes</strong>. Volum insuficient.</div>`;
+
+  // Bidon note
+  document.getElementById('vbidon-note').textContent=V_BIDON_PREU===15?'Estratègic · traçabilitat RED II + atenció 24/5':'Conservador · sense reducció als establiments';
 
   // KPIs
   document.getElementById('vol-kpi-grid').innerHTML=`
-    <div class="vkpi vpos"><div class="vkpi-label">Resultat net TOTAL Espinosa</div><div class="vkpi-val">${vFmt(d.resultado,true)}</div><div class="vkpi-note">Calella + flota alliberada</div></div>
-    <div class="vkpi vpos"><div class="vkpi-label">Subtotal zona Calella</div><div class="vkpi-val">${vFmt(d.resultado_calella,true)}</div><div class="vkpi-note">ingressos + estalvis − Z-Ero</div></div>
-    <div class="vkpi vpos" style="border-color:#7c3aed;"><div class="vkpi-label" style="color:#a78bfa;">Flota alliberada · nova ruta</div><div class="vkpi-val" style="color:#a78bfa;">+${vFmt(V_FLOTA_NOVA)}</div><div class="vkpi-note">nets/mes · ja descomptats tots costos</div></div>
-    <div class="vkpi"><div class="vkpi-label">Ingressos venda UCO</div><div class="vkpi-val">${vFmt(d.ing_uco)}</div><div class="vkpi-note">${vol} kg × 0,35 €/kg</div></div>
-    <div class="vkpi"><div class="vkpi-label">Prima qualitat ISCC</div><div class="vkpi-val">${vFmt(d.ing_iscc)}</div><div class="vkpi-note">${vol} kg × 0,05 €/kg</div></div>
-    <div class="vkpi vpos"><div class="vkpi-label">Total estalvis operatius</div><div class="vkpi-val">${vFmt(d.total_ahorros)}</div><div class="vkpi-note">xofer + dièsel + desgast + captació</div></div>
-    <div class="vkpi vneg"><div class="vkpi-label">Cost total Z-Ero</div><div class="vkpi-val">${vFmt(d.total_costes)}</div><div class="vkpi-note">variable + tara + sou fix</div></div>
-    <div class="vkpi vpos" style="border-color:#f59e0b;"><div class="vkpi-label" style="color:#fbbf24;">Estalvi bidons −25%</div><div class="vkpi-val" style="color:#fbbf24;">+${vFmt(d.estalvi_bidons)}</div><div class="vkpi-note">vs preu anterior 20€/bidó · RED II</div></div>
-    <div class="vkpi"><div class="vkpi-label">CO₂ evitat</div><div class="vkpi-val">${vFmtN(d.co2)} kg</div><div class="vkpi-note">factor ISCC 0,264 kg/kg</div></div>
-  `;
+    <div class="vkpi vpos"><div class="vkpi-label">Calella amb Z-Ero</div><div class="vkpi-val">${vFmt(d.res_cal,true)}</div><div class="vkpi-note">UCO+prima−bidons−Z-Ero−xofer hub−incid</div></div>
+    <div class="vkpi ${d.res_nov>=0?'vpos':'vneg'}"><div class="vkpi-label">Nova zona UCO (maduresa)</div><div class="vkpi-val">${vFmt(d.res_nov,true)}</div><div class="vkpi-note">${vFmtN(d.vn)} kg · ${vFmtN(d.pn)} estab.</div></div>
+    <div class="vkpi ${d.res_trad>=0?'vpos':'vneg'}"><div class="vkpi-label">Sense Z-Ero (tradicional)</div><div class="vkpi-val">${vFmt(d.res_trad,true)}</div><div class="vkpi-note">UCO−bidons−tots costos op.</div></div>
+    <div class="vkpi ${deltaMes>=0?'vpos':'vneg'}"><div class="vkpi-label">Δ Guany net Z-Ero · mes ${V_MES_RAMPA}</div><div class="vkpi-val">${vFmt(deltaMes,true)}</div><div class="vkpi-note">vs tradicional · maduresa: ${vFmt(deltaMadur,true)}/mes</div></div>
+    <div class="vkpi vblu"><div class="vkpi-label">Hores alliberades</div><div class="vkpi-val">${vFmtN(d.h_all)} h</div><div class="vkpi-note">${vFmtN(p.NUM_ESTAB)} estab. × ${p.MIN_PARADA+p.MIN_ENTRE} min ÷ 60</div></div>
+    <div class="vkpi vblu"><div class="vkpi-label">Establiments actius</div><div class="vkpi-val">${vFmtN(p.NUM_ESTAB)}</div><div class="vkpi-note">${vFmtN(d.b)} bidons · ${vFmtN(d.viat)} viatges hub</div></div>
+    <div class="vkpi vamb"><div class="vkpi-label">CO₂ evitat</div><div class="vkpi-val">${vFmtN(d.co2)} kg</div><div class="vkpi-note">${vFmtN(vol)} kg UCO × 0,264</div></div>
+    <div class="vkpi vamb"><div class="vkpi-label">Biodièsel produït</div><div class="vkpi-val">${vFmtN(d.biodiesel)} L</div><div class="vkpi-note">${vFmtN(vol)} kg × 84% rendiment</div></div>`;
 
   // Resultat gran
-  const resColor=d.resultado>=0?'#34d399':'#f87171';
+  const resColor=resTotal>=0?'#34d399':'#f87171';
   document.getElementById('vol-result-bar').innerHTML=`
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
       <div>
         <div style="font-size:13px;color:#e2e8f0;font-weight:700;">Resultat net TOTAL mensual per a Espinosa</div>
-        <div style="font-size:11px;color:#64748b;font-weight:600;margin-top:4px;">amb ${vol} kg/mes · ${d.viajes_opt} viatge${d.viajes_opt>1?'s':''}/mes al hub · càrrega ${d.carga_pct}%</div>
-        <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;">
-          <div style="font-size:11px;background:#1e2d45;border-radius:8px;padding:4px 10px;">
-            <span style="color:#94a3b8;">Subtotal Calella: </span><span style="color:#34d399;font-weight:700;">${vFmt(d.resultado_calella,true)}</span>
-          </div>
-          <div style="font-size:11px;background:#2d1f4e;border-radius:8px;padding:4px 10px;border:1px solid #4c1d7a;">
-            <span style="color:#94a3b8;">Flota nova ruta: </span><span style="color:#a78bfa;font-weight:700;">+${vFmt(V_FLOTA_NOVA)}</span>
-          </div>
-          <div style="font-size:11px;background:#1f2d1f;border-radius:8px;padding:4px 10px;border:1px solid #1a5c3a;">
-            <span style="color:#94a3b8;">Estalvi bidons −25%: </span><span style="color:#fbbf24;font-weight:700;">+${vFmt(d.estalvi_bidons)}</span>
-          </div>
+        <div style="font-size:11px;color:#64748b;font-weight:600;margin-top:4px;">Calella Z-Ero ${vFmt(d.res_cal,true)} + nova zona ${vFmt(nr.net,true)} (mes ${V_MES_RAMPA})</div>
+        <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;">
+          <div style="font-size:11px;background:#1e2d45;border-radius:8px;padding:4px 10px;"><span style="color:#94a3b8;">Subtotal Calella: </span><span style="color:#34d399;font-weight:700;">${vFmt(d.res_cal,true)}</span></div>
+          <div style="font-size:11px;background:#1e2d45;border-radius:8px;padding:4px 10px;"><span style="color:#94a3b8;">Nova zona: </span><span style="color:#4ade80;font-weight:700;">${vFmt(nr.net,true)}</span></div>
+          <div style="font-size:11px;background:#1e2d45;border-radius:8px;padding:4px 10px;"><span style="color:#94a3b8;">Sense Z-Ero: </span><span style="color:#f87171;font-weight:700;">${vFmt(d.res_trad,true)}</span></div>
         </div>
       </div>
       <div style="text-align:right;">
-        <div style="font-size:34px;font-weight:900;color:${resColor};">${vFmt(d.resultado,true)}</div>
-        <div style="font-size:11px;color:#64748b;font-weight:600;margin-top:2px;">≈ ${vFmt(d.resultado*12,true)} / any</div>
+        <div style="font-size:34px;font-weight:900;color:${resColor};">${vFmt(resTotal,true)}</div>
+        <div style="font-size:11px;color:#64748b;font-weight:600;margin-top:2px;">≈ ${vFmt(resTotal*12,true)} / any</div>
+        <div style="font-size:12px;font-weight:700;color:${deltaMes>=0?'#86efac':'#f87171'};margin-top:4px;">Δ ${vFmt(deltaMes,true)}/mes vs tradicional</div>
       </div>
     </div>`;
 
-  // Ingressos
+  // Ingressos (recollida tradicional)
   document.getElementById('vol-ingresos-block').innerHTML=`
-    <div class="vsec-title">Ingressos directes</div>
-    <div class="vline"><span class="vline-label">Venda oli UCO (${vol} kg × 0,35 €)</span><span class="vline-val pos">${vFmt(d.ing_uco)}</span></div>
-    <div class="vline"><span class="vline-label">Prima qualitat ISCC (× 0,05 €)</span><span class="vline-val pos">${vFmt(d.ing_iscc)}</span></div>
-    <div class="vsubtotal"><span style="color:#94a3b8;">Total ingressos</span><span style="color:#34d399;">${vFmt(d.total_ingresos)}</span></div>`;
+    <div class="vsec-title">📦 Recollida tradicional · Calella</div>
+    <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#64748b;padding:4px 0 6px;">Volums i ingressos bruts</div>
+    <div class="vline"><span class="vline-label">Volum UCO recollit <small style="display:block;font-size:10px;color:#334155;">${vFmtN(vol)} kg · ${vFmtN(d.b)} bidons (${VKG_PER_BIDON} kg/bidó)</small></span><span class="vline-val pos">${vFmt(d.ing)}</span></div>
+    <div class="vline"><span class="vline-label">− Bidons pagats als establiments <small style="display:block;font-size:10px;color:#334155;">${vFmtN(d.b)} bidons × ${d.bp} €/bidó</small></span><span class="vline-val neg">− ${vFmt(d.cb)}</span></div>
+    <div class="vsubtotal" style="background:rgba(52,211,153,0.05);padding:6px 8px;border-radius:5px;margin-bottom:4px;"><span style="color:#94a3b8;font-weight:700;">= Volum net</span><span style="color:${netUCO>=0?'#34d399':'#f87171'};font-size:14px;">${vFmt(netUCO,true)}</span></div>
+    <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#64748b;padding:8px 0 6px;margin-top:4px;border-top:1px solid #1e2d45;">Costos operatius ruta</div>
+    <div class="vline"><span class="vline-label">Xofer (ruta + viatges central) <small style="display:block;font-size:10px;color:#334155;">${vFmtN(d.h_trad)}h + ${vFmtN(d.h_hub)}h = ${vFmtN(d.h_tot)}h · ${vFmtN(d.eur_h)} €/h</small></span><span class="vline-val neg">− ${vFmt(d.cx_tot)}</span></div>
+    <div class="vline"><span class="vline-label">Dièsel ruta <small style="display:block;font-size:10px;color:#334155;">${vFmtN(d.kmUrba)} km urbà + ${vFmtN(d.kmBase)} km base = ${vFmtN(d.liters)} L × ${p.DIESEL_L.toFixed(2)} €/L</small></span><span class="vline-val neg">− ${vFmt(d.diesel)}</span></div>
+    <div class="vline"><span class="vline-label">Desgast vehicle <small style="display:block;font-size:10px;color:#334155;">${vFmtN(p.NUM_ESTAB)} estab. × 0,60 €</small></span><span class="vline-val neg">− ${vFmt(d.desg)}</span></div>
+    <div class="vline"><span class="vline-label">Incidències <small style="display:block;font-size:10px;color:#334155;">${vFmtN(vol)} kg × 0,012 €/kg</small></span><span class="vline-val neg">− ${vFmt(d.incid)}</span></div>
+    <div class="vline" style="color:#93c5fd;"><span class="vline-label" style="color:#93c5fd;">Admin RED II manual <small style="display:block;font-size:10px;color:#334155;">Albarans paper · gestió manual</small></span><span class="vline-val neg" style="color:#93c5fd;">− ${vFmt(p.AH_ADMIN)}</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0 0;margin-top:6px;border-top:2px solid rgba(248,113,113,0.3);">
+      <span style="font-size:12px;font-weight:700;color:#94a3b8;">RESULTAT TRADICIONAL</span>
+      <span style="font-size:16px;font-weight:700;color:${d.res_trad>=0?'#34d399':'#f87171'};">${vFmt(d.res_trad,true)}</span>
+    </div>`;
 
-  // Costos
+  // Costos (Z-Ero Calella)
   document.getElementById('vol-costes-block').innerHTML=`
-    <div class="vsec-title">Costos del servei Z-Ero</div>
-    <div class="vline"><span class="vline-label">Cost variable (${vol} kg × 0,22 €)</span><span class="vline-val neg">${vFmt(d.cost_var)}</span></div>
-    <div class="vline"><span class="vline-label">Tara barrils (4% × ${vol} kg × 0,22 €)</span><span class="vline-val neg">${vFmt(d.cost_tara)}</span></div>
-    <div class="vline" style="background:rgba(251,191,36,0.07);border-radius:6px;padding:7px 8px;flex-direction:column;align-items:flex-start;gap:4px;">
-      <div style="display:flex;justify-content:space-between;width:100%;align-items:center;">
-        <span class="vline-label" style="color:#fbbf24;font-weight:700;">🛢 Incentiu establiments (${d.num_bidons} bidons × <span style="text-decoration:line-through;opacity:0.5;font-size:10px;">20€</span> <strong>15 €/bidó</strong> −25%)</span>
-        <span class="vline-val neg" style="color:#fbbf24;">${vFmt(d.cost_bidons)}</span>
-      </div>
-      <div style="display:flex;gap:12px;font-size:10px;color:#64748b;padding:0 0 2px;">
-        <span>⛽ Encariment diesel sostingut</span>
-        <span>📋 Obligació normativa RED II</span>
-        <span style="color:#34d399;font-weight:700;">Estalvi vs anterior: +${vFmt(d.estalvi_bidons)}</span>
-      </div>
-    </div>
-    <div class="vline"><span class="vline-label">Sou fix mensual Z-Ero</span><span class="vline-val neg">${vFmt(V_SUELDO_FIJO)}</span></div>
-    <div class="vsubtotal"><span style="color:#94a3b8;">Total costos Z-Ero</span><span style="color:#f87171;">${vFmt(d.total_costes)}</span></div>`;
+    <div class="vsec-title">⚡ Recollida amb Z-Ero CO₂ · Calella</div>
+    <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#64748b;padding:4px 0 6px;">Volums i ingressos</div>
+    <div class="vline"><span class="vline-label">Volum UCO recollit <small style="display:block;font-size:10px;color:#334155;">${vFmtN(vol)} kg · ${vFmtN(d.b)} bidons</small></span><span class="vline-val pos">${vFmt(d.ing)}</span></div>
+    <div class="vline"><span class="vline-label">− Bidons pagats als establiments <small style="display:block;font-size:10px;color:#334155;">${vFmtN(d.b)} bidons × ${d.bp} €/bidó</small></span><span class="vline-val neg">− ${vFmt(d.cb)}</span></div>
+    <div class="vline" style="color:#86efac;"><span class="vline-label" style="color:#86efac;">+ Prima qualitat 0CO₂ <small style="display:block;font-size:10px;color:#334155;">${vFmtN(vol)} kg × ${p.PRIMA_CO2.toFixed(3)} €/kg</small></span><span class="vline-val pos" style="color:#86efac;">+ ${vFmt(d.prima)}</span></div>
+    <div class="vsubtotal" style="background:rgba(52,211,153,0.05);padding:6px 8px;border-radius:5px;margin-bottom:4px;"><span style="color:#94a3b8;font-weight:700;">= Net + prima</span><span style="color:${(netUCO+d.prima)>=0?'#34d399':'#f87171'};font-size:14px;">${vFmt(netUCO+d.prima,true)}</span></div>
+    <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#64748b;padding:8px 0 6px;margin-top:4px;border-top:1px solid #1e2d45;">Costos del model Z-Ero</div>
+    <div class="vline"><span class="vline-label">Servei Z-Ero CO₂ <small style="display:block;font-size:10px;color:#334155;">${vFmtN(p.FIX_ZERO)} € fix + ${vFmtN(vol)} kg × ${p.VAR_ZERO.toFixed(2)} €/kg</small></span><span class="vline-val neg">− ${vFmt(d.cz)}</span></div>
+    <div class="vline"><span class="vline-label">Xofer viatges hub ↔ Calella <small style="display:block;font-size:10px;color:#334155;">${vFmtN(d.viat)} viatges × ${p.MIN_TRAJECTE_HUB+p.MIN_DESC_HUB} min · ${vFmtN(d.eur_h)} €/h</small></span><span class="vline-val neg">− ${vFmt(d.cx_hub)}</span></div>
+    <div class="vline"><span class="vline-label">Incidències (parcials) <small style="display:block;font-size:10px;color:#334155;">${vFmtN(vol)} kg × 0,012 €/kg</small></span><span class="vline-val neg">− ${vFmt(d.incid)}</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0 0;margin-top:6px;border-top:2px solid rgba(74,222,128,0.4);">
+      <span style="font-size:12px;font-weight:700;color:#94a3b8;">RESULTAT CALELLA Z-Ero</span>
+      <span style="font-size:16px;font-weight:700;color:${d.res_cal>=0?'#34d399':'#f87171'};">${vFmt(d.res_cal,true)}</span>
+    </div>`;
 
-  // Estalvis
+  // Comparativa
   document.getElementById('vol-ahorros-block').innerHTML=`
-    <div class="vsec-title">Estalvis operatius Espinosa (eliminació ruta tradicional)</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0;">
-      <div class="vline"><span class="vline-label">Xofer alliberat (${vFmtN(d.ah_chofer/V_CHOFER_H)} h × 22 €/h)</span><span class="vline-val pos">${vFmt(d.ah_chofer)}</span></div>
-      <div class="vline"><span class="vline-label">Dièsel eliminat (${vFmtN(vDiesel(vol))} L × 1,55 €/L)</span><span class="vline-val pos">${vFmt(d.ah_diesel)}</span></div>
-      <div class="vline"><span class="vline-label">Desgast vehicle (frens, caixa, pneum.)</span><span class="vline-val pos">${vFmt(d.ah_desgast)}</span></div>
-      <div class="vline"><span class="vline-label">Captació clients nous (cost zero)</span><span class="vline-val pos">${vFmt(d.ah_captacio)}</span></div>
+    <div class="vsec-title">⚖️ Comparativa · tradicional vs Z-Ero + nova zona</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+      <div style="background:rgba(248,113,113,0.05);border:1px solid rgba(248,113,113,0.2);border-radius:10px;padding:14px 16px;">
+        <div style="font-size:9.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#f87171;margin-bottom:10px;">Recollida tradicional</div>
+        <div class="vline" style="font-size:11.5px;"><span class="vline-label">Volum net (UCO − bidons)</span><span style="color:${netUCO>=0?'#34d399':'#f87171'};font-weight:700;">${vFmt(netUCO,true)}</span></div>
+        <div class="vline" style="font-size:11.5px;"><span class="vline-label">− Costos operatius totals</span><span style="color:#f87171;font-weight:700;">− ${vFmt(d.costos_op)}</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0 0;margin-top:6px;border-top:1px solid rgba(226,232,240,0.1);">
+          <span style="font-size:10.5px;color:#64748b;">Resultat mensual</span>
+          <span style="font-size:15px;font-weight:700;color:${d.res_trad>=0?'#34d399':'#f87171'};">${vFmt(d.res_trad,true)}</span>
+        </div>
+        <div style="font-size:10.5px;text-align:right;margin-top:3px;color:#64748b;">${vFmt(d.res_trad*12,true)} / any</div>
+      </div>
+      <div style="background:rgba(74,222,128,0.05);border:1px solid rgba(74,222,128,0.25);border-radius:10px;padding:14px 16px;">
+        <div style="font-size:9.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#4ade80;margin-bottom:10px;">Amb Z-Ero + nova zona</div>
+        <div class="vline" style="font-size:11.5px;"><span class="vline-label">Calella Z-Ero</span><span style="color:${d.res_cal>=0?'#34d399':'#f87171'};font-weight:700;">${vFmt(d.res_cal,true)}</span></div>
+        <div class="vline" style="font-size:11.5px;"><span class="vline-label">+ Nova zona (${vFmtN(d.vn)} kg · maduresa)</span><span style="color:#4ade80;font-weight:700;">+ ${vFmt(d.res_nov)}</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0 0;margin-top:6px;border-top:1px solid rgba(226,232,240,0.1);">
+          <span style="font-size:10.5px;color:#64748b;">Resultat mensual (maduresa)</span>
+          <span style="font-size:15px;font-weight:700;color:${d.res_zero>=0?'#34d399':'#f87171'};">${vFmt(d.res_zero,true)}</span>
+        </div>
+        <div style="font-size:10.5px;text-align:right;margin-top:3px;color:#64748b;">${vFmt(d.res_zero*12,true)} / any</div>
+      </div>
     </div>
-    <div class="vsubtotal"><span style="color:#94a3b8;">Total estalvis</span><span style="color:#34d399;">${vFmt(d.total_ahorros)}</span></div>
-    <div style="margin-top:14px;background:#1a0e38;border-radius:10px;border:1px solid #4c1d7a;padding:14px 16px;">
-      <div style="font-size:10px;font-weight:800;color:#a78bfa;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px;">🚛 Guany net flota alliberada · nova ruta equivalent</div>
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
-        <div style="font-size:11px;color:#7c6aad;max-width:420px;line-height:1.5;">
-          Camió + xofer alliberats de Calella → redirigits a nova zona. Valor mínim calculat conservadorament: <strong style="color:#c4b5fd;">+${vFmt(V_FLOTA_NOVA)}/mes</strong> ja nets de <em>tots</em> els costos ocults (xofer, combustible, desgast, captació, imprevistos).
-        </div>
-        <div style="text-align:right;">
-          <div style="font-size:28px;font-weight:900;color:#a78bfa;">+${vFmt(V_FLOTA_NOVA)}</div>
-          <div style="font-size:10px;color:#64748b;">nets / mes</div>
-        </div>
+    <div style="background:rgba(255,255,255,0.025);border-radius:10px;padding:11px 15px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+      <div>
+        <div style="font-size:10px;color:#64748b;">Δ Guany net de contractar Z-Ero · mes ${V_MES_RAMPA}</div>
+        <div style="font-size:10px;color:#64748b;margin-top:2px;">xofer es redistribueix a nova zona</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:17px;font-weight:700;color:${deltaMes>=0?'#86efac':'#f87171'};">${vFmt(deltaMes,true)}/mes</div>
+        <div style="font-size:11px;color:#64748b;margin-top:3px;">Maduresa plena (mes 6): <strong style="color:${deltaMadur>=0?'#86efac':'#f87171'};">${vFmt(deltaMadur,true)}/mes · ${vFmt(deltaMadur*12,true)}/any</strong></div>
       </div>
     </div>`;
 
-  // Viatges
-  const trad=vParadesTrad(vol);
+  // Logística
   document.getElementById('vol-viajes-grid').innerHTML=`
-    <div class="vcard"><div class="vcard-n">${vFmtN(trad)}</div><div class="vcard-label">Parades model tradicional</div></div>
-    <div class="vcard"><div class="vcard-n" style="color:#34d399;">${d.viajes_opt}</div><div class="vcard-label">Viatges al hub Z-Ero</div></div>
-    <div class="vcard"><div class="vcard-n">${d.carga_pct}%</div><div class="vcard-label">Càrrega per viatge</div></div>
-    <div class="vcard"><div class="vcard-n">${vFmtN(Math.round(vol/d.viajes_opt))}</div><div class="vcard-label">kg per viatge al hub</div></div>
-    <div class="vcard"><div class="vcard-n">${Math.round(30/d.viajes_opt)}</div><div class="vcard-label">Dies entre viatges</div></div>
-    <div class="vcard"><div class="vcard-n" style="color:#a78bfa;">${vFmtN(d.km_bio)}</div><div class="vcard-label">km recorreguts amb biodièsel produït</div></div>`;
+    <div class="vcard"><div class="vcard-n" style="color:#f87171;">${vFmtN(p.NUM_ESTAB)}</div><div class="vcard-label">Establiments ruta trad.</div><div class="vcard-note">${vFmtN(d.b)} bidons · ${vFmtN(Math.round(vol/p.NUM_ESTAB))} kg/estab.</div></div>
+    <div class="vcard"><div class="vcard-n" style="color:#fbbf24;">${vFmtN(d.h_trad)} h</div><div class="vcard-label">Temps ruta trad.</div><div class="vcard-note">${vFmtN(p.NUM_ESTAB)} estab. × ${p.MIN_PARADA+p.MIN_ENTRE} min</div></div>
+    <div class="vcard"><div class="vcard-n" style="color:#34d399;">${vFmtN(d.viat)}</div><div class="vcard-label">Viatges hub/mes</div><div class="vcard-note">1 viatge / ${vFmtN(p.HUB_CAP)} kg · càrrega ${d.carga_pct}%</div></div>
+    <div class="vcard"><div class="vcard-n" style="color:#93c5fd;">${vFmtN(d.h_hub)} h</div><div class="vcard-label">Temps viatges hub</div><div class="vcard-note">${d.viat} viatges × ${p.MIN_TRAJECTE_HUB+p.MIN_DESC_HUB} min</div></div>
+    <div class="vcard" style="border-color:rgba(74,222,128,0.3);"><div class="vcard-n" style="color:#34d399;">${vFmtN(d.h_all)} h</div><div class="vcard-label">Hores alliberades</div><div class="vcard-note">ruta tradicional eliminada</div></div>
+    <div class="vcard"><div class="vcard-n" style="color:#fbbf24;">${vFmtN(d.km_ruta)} km</div><div class="vcard-label">Km ruta trad.</div><div class="vcard-note">${vFmtN(d.kmUrba)} km urbà + ${vFmtN(d.kmBase)} km base</div></div>
+    <div class="vcard"><div class="vcard-n" style="color:#fbbf24;">${vFmtN(d.biodiesel)} L</div><div class="vcard-label">Biodièsel produït</div><div class="vcard-note">${vFmtN(vol)} kg × 84%</div></div>
+    <div class="vcard"><div class="vcard-n" style="color:#fbbf24;">${vFmtN(d.co2)} kg</div><div class="vcard-label">CO₂ evitat</div><div class="vcard-note">${vFmtN(vol)} kg × 0,264</div></div>`;
 
-  updateVolumsChart(vol);
+  // Nova zona
+  const mesLbl=V_MES_RAMPA<6?`Mes ${V_MES_RAMPA} d'arrencada`:'Maduresa plena (mes 6+)';
+  const pct=Math.round(nr.pctR*100);
+  document.getElementById('vol-nova-grid').innerHTML=`
+    <div class="vcard"><div class="vcard-n" style="color:#34d399;">${vFmtN(nr.vn)} kg</div><div class="vcard-label">Volum nova zona</div><div class="vcard-note">proporcional a ${vFmtN(nr.h_all)}h alliberades</div></div>
+    <div class="vcard"><div class="vcard-n" style="color:#34d399;">${vFmtN(nr.pnRampa)}</div><div class="vcard-label">Establiments</div><div class="vcard-note">${vFmtN(nr.bnRampa)} bidons · màx: ${vFmtN(nr.pn)}</div></div>
+    <div class="vcard"><div class="vcard-n" style="color:#fbbf24;">${pct}%</div><div class="vcard-label">Rampa captació</div><div class="vcard-note">${mesLbl}</div></div>
+    <div class="vcard" style="border-color:rgba(74,222,128,0.3);"><div class="vcard-n" style="color:${nr.net>=0?'#34d399':'#f87171'};">${vFmt(nr.net,true)}</div><div class="vcard-label">Net nova zona</div><div class="vcard-note">UCO − bidons − costos op.</div></div>`;
+
+  document.getElementById('vol-nova-detall').innerHTML=`
+    <div class="vsec-title">Detall financer nova zona · ${mesLbl} (${pct}% rampa)</div>
+    <div class="vline"><span class="vline-label">Venda UCO <small style="display:block;font-size:10px;color:#334155;">${vFmtN(nr.vnRampa)} kg × ${d.p.PRECIO_UCO.toFixed(2)} €/kg</small></span><span class="vline-val pos">${vFmt(nr.ingBrut)}</span></div>
+    <div class="vline"><span class="vline-label">Pagament bidons <small style="display:block;font-size:10px;color:#334155;">${vFmtN(nr.bnRampa)} bidons × ${V_BIDON_PREU} €</small></span><span class="vline-val neg">− ${vFmt(nr.bid_n)}</span></div>
+    <div class="vline"><span class="vline-label">Xofer <small style="display:block;font-size:10px;color:#334155;">${vFmtN(nr.h_all)}h × ${pct}%</small></span><span class="vline-val neg">− ${vFmt(nr.cXofer)}</span></div>
+    <div class="vline"><span class="vline-label">Dièsel <small style="display:block;font-size:10px;color:#334155;">${vFmtN(nr.kmUrba_n)} km urbà + ${vFmtN(nr.kmBase_n)} km base = ${vFmtN(nr.lit_n)} L</small></span><span class="vline-val neg">− ${vFmt(nr.cDiesel)}</span></div>
+    <div class="vline"><span class="vline-label">Desgast vehicle</span><span class="vline-val neg">− ${vFmt(nr.cDesg)}</span></div>
+    <div class="vline"><span class="vline-label">Incidències + admin</span><span class="vline-val neg">− ${vFmt(nr.cIncid+nr.cAdmin)}</span></div>
+    ${nr.cArrFix+nr.cArrVar>0?`<div class="vline"><span class="vline-label">Costos arrencada</span><span class="vline-val neg">− ${vFmt(nr.cArrFix+nr.cArrVar)}</span></div>`:''}
+    <div class="vsubtotal"><span style="color:#94a3b8;">Net nova zona · mes ${V_MES_RAMPA}</span><span style="color:${nr.net>=0?'#34d399':'#f87171'};font-weight:700;">${vFmt(nr.net,true)}</span></div>`;
 }
 
-let _volumsChart=null;
-function buildVolumsChart(){
-  const vols=[];
-  for(let v=500;v<=8000;v+=100)vols.push(v);
-  const results=vols.map(v=>vCalc(v).resultado);
-  const beIdx=results.findIndex(r=>r>=0);
-  const beVol=beIdx>=0?vols[beIdx]:null;
-  if(beVol) document.getElementById('vol-punto-eq').textContent='Break-even aprox. '+vFmtN(beVol)+' kg/mes';
-  const ctx=document.getElementById('vol-curva').getContext('2d');
-  _volumsChart=new Chart(ctx,{
-    type:'line',
-    data:{
-      labels:vols.map(v=>v%1000===0?vFmtN(v):''),
-      datasets:[
-        {label:'Resultat net',data:results,borderColor:'#7c3aed',backgroundColor:'rgba(124,58,237,0.10)',borderWidth:2,pointRadius:0,tension:0.3,fill:true},
-        {label:'Break-even',data:vols.map(()=>0),borderColor:'#60a5fa',borderWidth:1,borderDash:[6,4],pointRadius:0}
-      ]
-    },
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{
-        label:c=>vFmt(Math.round(c.parsed.y),true),
-        title:c=>vFmtN(parseInt(c[0].label||0))+' kg/mes'
-      }}},
-      scales:{
-        x:{ticks:{font:{size:10},color:'#64748b',maxTicksLimit:12,autoSkip:true},grid:{color:'rgba(255,255,255,0.05)'}},
-        y:{ticks:{font:{size:10},color:'#64748b',callback:v=>(v>=0?'+':'')+Math.round(v)+'€'},grid:{color:'rgba(255,255,255,0.05)'}}
-      }
+function vSetBidon(preu){
+  V_BIDON_PREU=preu;
+  document.getElementById('vp-bidon-preu').value=preu;
+  document.getElementById('vbtn-20').className='vtbtn'+(preu===20?' vtab':'');
+  document.getElementById('vbtn-15').className='vtbtn'+(preu===15?' vtao':'');
+  const vol=parseInt(document.getElementById('vol-slider').value)||0;
+  vRender(vol); vRebuildChart();
+}
+
+function vSetMesRampa(mes){
+  V_MES_RAMPA=mes;
+  document.querySelectorAll('.vrbtn').forEach((b,i)=>{
+    b.className='vrbtn'+(i+1===mes?' vrbtn-on':'');
+  });
+  const vol=parseInt(document.getElementById('vol-slider').value)||0;
+  vRender(vol); vRebuildChart();
+}
+
+function vBuildChart(){
+  const ctxEl=document.getElementById('vol-curva');
+  if(!ctxEl||typeof Chart==='undefined')return;
+  const vols=[]; for(let v=500;v<=10000;v+=100)vols.push(v);
+  const safeCalc=(v,bp)=>{try{return vCalc(v,bp);}catch(e){return{res_cal:0,res_trad:0};}};
+  const safeNova=(v,m)=>{try{return vNovaRutaCalc(v,m);}catch(e){return{net:0};}};
+  const r15=vols.map(v=>{const d=safeCalc(v,15),nr=safeNova(v,V_MES_RAMPA);return d.res_cal+nr.net;});
+  const r20=vols.map(v=>{const d=safeCalc(v,20),nr=safeNova(v,V_MES_RAMPA);return d.res_cal+nr.net;});
+  const eq15=vols.find(v=>{const d=safeCalc(v,15),nr=safeNova(v,V_MES_RAMPA);return d.res_cal+nr.net>=0;});
+  const eq20=vols.find(v=>{const d=safeCalc(v,20),nr=safeNova(v,V_MES_RAMPA);return d.res_cal+nr.net>=0;});
+  const pEl=document.getElementById('vol-punto-eq');
+  if(pEl)pEl.textContent=`Break-even: 15€ ≈ ${eq15?vFmtN(eq15):'—'} kg · 20€ ≈ ${eq20?vFmtN(eq20):'—'} kg`;
+  const ctx=ctxEl.getContext('2d');
+  _vChart=new Chart(ctx,{type:'line',data:{labels:vols,datasets:[
+    {label:'Total 15€',data:r15,borderColor:'#4ade80',borderWidth:2,pointRadius:0,tension:0.3,fill:false},
+    {label:'Total 20€',data:r20,borderColor:'rgba(96,165,250,0.7)',borderWidth:2,pointRadius:0,tension:0.3,fill:false},
+    {label:'Zero',data:vols.map(()=>0),borderColor:'rgba(96,165,250,0.3)',borderWidth:1,borderDash:[6,4],pointRadius:0}
+  ]},options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{
+      label:c=>vFmt(Math.round(c.parsed.y),true),
+      title:c=>vFmtN(parseInt(c[0].label||0))+' kg/mes'
+    },backgroundColor:'#141927',borderColor:'rgba(226,232,240,0.1)',borderWidth:1,titleColor:'#e2e8f0',bodyColor:'#e2e8f0'}},
+    scales:{
+      x:{ticks:{font:{size:10},color:'rgba(226,232,240,0.3)',maxTicksLimit:12,autoSkip:true},grid:{color:'rgba(255,255,255,0.05)'}},
+      y:{ticks:{font:{size:10},color:'rgba(226,232,240,0.3)',callback:v=>(v>=0?'+':'')+Math.round(v)+'€'},grid:{color:'rgba(255,255,255,0.05)'}}
     }
-  });
+  }});
 }
 
-function updateVolumsChart(vol){
-  if(!_volumsChart)return;
-  // highlight current vol with annotation point — chart already reactive via render
+function vRebuildChart(){
+  if(_vChart){_vChart.destroy();_vChart=null;}
+  vBuildChart();
 }
 
-document.getElementById('vol-slider').addEventListener('input',function(){
-  [500,1200,2500,4500,6000,8000].forEach(p=>{
-    const el=document.getElementById('pre-'+p);
-    if(el)el.className='vbtn';
-  });
-  vRender(parseInt(this.value));
-});
-
-// Init render
-vRender(4500);
+// Init
+vRender(0);
+vGetMixData();
+(function initVChart(){if(typeof Chart!=='undefined'){vBuildChart();}else{setTimeout(initVChart,100);}})();
 </script>
+
 <div id="hub-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.65);z-index:300;align-items:center;justify-content:center;" onclick="if(event.target===this)closeHubModal()">
   <div style="background:white;border-radius:20px;padding:28px;width:90%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
     <div style="font-size:16px;font-weight:900;color:#0f172a;margin-bottom:6px;">⚙ Editar Hub</div>
@@ -1721,7 +2068,7 @@ if (t) t.classList.toggle('on', s === v);
 });
 if (v === 'establiments') renderEstabliments();
 if (v === 'espinosa') { recalcDieselDebounced(); espPoblaSelectorRefs(); }
-if (v === 'volums' && !window._volumsChartBuilt) { window._volumsChartBuilt = true; buildVolumsChart(); }
+if (v === 'volums' && !window._volumsChartBuilt) { window._volumsChartBuilt = true; vBuildChart(); }
 }
 // ── DATE RANGE PICKER ────────────────────────────────────────────────────────
 let _allRecs = {};
