@@ -13,6 +13,8 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
+<!-- QRCode.js library for generating QR -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <!-- ===== PANTALLA LOGIN ===== -->
 <div id="login-screen" style="display:flex;position:fixed;inset:0;z-index:9999;background:#0b1120;align-items:center;justify-content:center;flex-direction:column;overflow-y:auto;">
@@ -61,7 +63,7 @@
              style="height:48px;object-fit:contain;max-width:160px;"
              onerror="this.parentElement.innerHTML='<span style=\'color:#0f172a;font-weight:900;font-size:18px;font-style:italic;\'>F. ESPINOSA</span>'">
       </div>
-      <div style="color:#e2e8f0;font-size:22px;font-weight:900;letter-spacing:0.3px;margin-top:2px;">amb col·laborador autoritzat Z-Ero CO₂</div>
+      <div style="color:#e2e8f0;font-size:22px;font-weight:900;letter-spacing:0.3px;margin-top:2px;">Espinosa Olis</div>
       <div style="color:#60a5fa;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;margin-top:5px;">Plataforma de gestió · UCO</div>
     </div>
 
@@ -102,7 +104,27 @@
         <span style="color:#b45309;font-weight:600;">Per sincronitzar, puja l'arxiu a un servidor (ex: tiiny.host).</span>
       </div>
     </div>
-      <!-- ── Powered by Z-Ero (discret) ── -->
+
+    <!-- ── QR PRIMER ÚS ── -->
+    <div class="login-fadein-3">
+      <button class="qr-toggle-btn" onclick="toggleQR(this)" id="qr-toggle-btn" style="width:100%;justify-content:center;margin-top:14px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="4" height="4" rx="0.5"/><rect x="20" y="14" width="1" height="1"/><rect x="14" y="20" width="1" height="1"/><rect x="18" y="19" width="3" height="2" rx="0.5"/><rect x="20" y="17" width="1" height="1"/></svg>
+        Accedir des del mòbil · Escanejar QR
+      </button>
+
+      <div class="qr-panel" id="qr-panel">
+        <div style="background:#1e293b;border-radius:20px;border:1px solid #334155;padding:24px;margin-top:10px;text-align:center;">
+          <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;">Primer ús · Obre al mòbil</div>
+          <div id="qr-canvas-wrap" style="display:flex;justify-content:center;margin-bottom:14px;"></div>
+          <div style="font-size:12px;color:#64748b;font-weight:600;line-height:1.6;">
+            Escaneja amb la càmera del mòbil per<br>accedir a la plataforma des del teu telèfon.
+          </div>
+          <div style="margin-top:14px;background:#0f172a;border-radius:10px;padding:10px 14px;font-size:10px;color:#475569;font-weight:700;letter-spacing:0.3px;word-break:break-all;" id="qr-url-display"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Powered by Z-Ero (discret) ── -->
     <div style="text-align:center;margin-top:20px;">
       <div style="display:inline-flex;align-items:center;gap:8px;opacity:0.45;">
         <div style="background:#2563eb;padding:4px 7px;border-radius:6px;font-weight:900;font-style:italic;font-size:13px;color:white;line-height:1;">Z</div>
@@ -120,6 +142,43 @@
 </div>
 
 <script>
+// ── QR: genera el codi amb la URL actual ──────────────────────────────────────
+(function initQR(){
+  const appUrl = window.location.href.split('?')[0].split('#')[0];
+  const displayEl = document.getElementById('qr-url-display');
+  if(displayEl) displayEl.textContent = appUrl;
+
+  // Genera el QR quan es desplega el panell (lazy)
+  window._qrGenerated = false;
+  window._qrAppUrl = appUrl;
+})();
+
+function toggleQR(btn){
+  const panel = document.getElementById('qr-panel');
+  const isOpen = panel.classList.toggle('open');
+  btn.style.borderColor = isOpen ? '#60a5fa' : '#334155';
+  btn.style.color = isOpen ? '#93c5fd' : '#64748b';
+  btn.style.background = isOpen ? '#1e293b' : 'transparent';
+
+  if(isOpen && !window._qrGenerated){
+    window._qrGenerated = true;
+    const wrap = document.getElementById('qr-canvas-wrap');
+    wrap.innerHTML = '';
+    try{
+      new QRCode(wrap, {
+        text: window._qrAppUrl,
+        width: 160,
+        height: 160,
+        colorDark: '#e2e8f0',
+        colorLight: '#1e293b',
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    } catch(e){
+      wrap.innerHTML = '<div style="color:#64748b;font-size:12px;padding:20px;">Error generant QR</div>';
+    }
+  }
+}
+</script>
 <!-- ===== APP (s'amaga fins login) ===== -->
 <div id="app-root" style="display:none;">
 <style>
@@ -4179,4 +4238,4 @@ function vClearSearch(who) {
 
 </script>
 </body>
-</html>l>
+</html>
