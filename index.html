@@ -360,11 +360,47 @@ function toggleQR(btn){
   <span id="op-co2-detail" style="display:none;"></span>
   <div class="table-wrap">
     <div class="table-bar">
-      <span>Registre operatiu avui</span>
+      <span>Registre operatiu</span>
       <div style="display:flex;align-items:center;gap:16px;">
         <span class="mono" id="next-id" style="font-size:11px;color:#60a5fa;">ID: Z-08370-001</span>
         <span id="op-count" style="color:#60a5fa;font-weight:700;">0 recollides</span>
       </div>
+    </div>
+    <!-- Barra de cerca operador -->
+    <div style="background:#0d1626;padding:12px 16px;border-bottom:1px solid #1e2d45;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+      <div style="position:relative;flex:2;min-width:160px;">
+        <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:13px;color:#475569;pointer-events:none;">🔍</span>
+        <input id="op-search-text" type="text" placeholder="Ref., establiment, incidència..." oninput="vFilterTable('op')"
+          style="width:100%;background:#131c2e;border:1.5px solid #1e2d45;border-radius:9px;padding:7px 10px 7px 32px;font-size:12px;color:#e2e8f0;font-family:inherit;outline:none;transition:border-color 0.2s;"
+          onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#1e2d45'">
+      </div>
+      <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+        <span style="font-size:10px;color:#475569;font-weight:700;white-space:nowrap;">Kg min</span>
+        <input id="op-search-kg-min" type="number" min="0" placeholder="0" oninput="vFilterTable('op')"
+          style="width:64px;background:#131c2e;border:1.5px solid #1e2d45;border-radius:9px;padding:7px 8px;font-size:12px;color:#93c5fd;font-family:inherit;outline:none;text-align:center;"
+          onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#1e2d45'">
+      </div>
+      <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+        <span style="font-size:10px;color:#475569;font-weight:700;white-space:nowrap;">Kg màx</span>
+        <input id="op-search-kg-max" type="number" min="0" placeholder="∞" oninput="vFilterTable('op')"
+          style="width:64px;background:#131c2e;border:1.5px solid #1e2d45;border-radius:9px;padding:7px 8px;font-size:12px;color:#93c5fd;font-family:inherit;outline:none;text-align:center;"
+          onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#1e2d45'">
+      </div>
+      <input id="op-search-date" type="date" oninput="vFilterTable('op')"
+        style="background:#131c2e;border:1.5px solid #1e2d45;border-radius:9px;padding:7px 10px;font-size:12px;color:#fbbf24;font-family:inherit;outline:none;flex-shrink:0;"
+        onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#1e2d45'">
+      <select id="op-search-estat" onchange="vFilterTable('op')"
+        style="background:#131c2e;border:1.5px solid #1e2d45;border-radius:9px;padding:7px 10px;font-size:12px;color:#e2e8f0;font-family:inherit;outline:none;flex-shrink:0;cursor:pointer;">
+        <option value="">Tots els estats</option>
+        <option value="net">Net / Filtrat</option>
+        <option value="brut">Brut / Residus</option>
+        <option value="degradat">Degradat</option>
+        <option value="pendent">Pendent</option>
+      </select>
+      <button onclick="vClearSearch('op')" title="Netejar filtres"
+        style="background:transparent;border:1.5px solid #1e2d45;border-radius:9px;padding:7px 12px;font-size:11px;color:#64748b;cursor:pointer;font-family:inherit;flex-shrink:0;white-space:nowrap;"
+        onmouseover="this.style.borderColor='#dc2626';this.style.color='#f87171'" onmouseout="this.style.borderColor='#1e2d45';this.style.color='#64748b'">✕ Netejar</button>
+      <span id="op-search-count" style="font-size:11px;color:#475569;font-weight:600;flex-shrink:0;white-space:nowrap;"></span>
     </div>
     <table>
       <thead><tr><th>Ref.</th><th>Establiment</th><th>Pes</th><th>Barrils</th><th>Precintes</th><th>Estat oli</th><th>Incidència</th><th>Origen</th><th>Hora</th><th>Acció</th></tr></thead>
@@ -693,6 +729,48 @@ function toggleQR(btn){
         <span id="esp-table-count" style="color:#60a5fa;">44 registres</span>
       </div>
     </div>
+    <!-- Barra de cerca gestor -->
+    <div style="background:#0d1626;padding:12px 16px;border-bottom:1px solid #1e2d45;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+      <div style="position:relative;flex:2;min-width:160px;">
+        <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:13px;color:#475569;pointer-events:none;">🔍</span>
+        <input id="esp-search-text" type="text" placeholder="Ref. RED II, establiment, anotació..." oninput="vFilterTable('esp')"
+          style="width:100%;background:#131c2e;border:1.5px solid #1e2d45;border-radius:9px;padding:7px 10px 7px 32px;font-size:12px;color:#e2e8f0;font-family:inherit;outline:none;transition:border-color 0.2s;"
+          onfocus="this.style.borderColor='#7c3aed'" onblur="this.style.borderColor='#1e2d45'">
+      </div>
+      <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+        <span style="font-size:10px;color:#475569;font-weight:700;white-space:nowrap;">Kg min</span>
+        <input id="esp-search-kg-min" type="number" min="0" placeholder="0" oninput="vFilterTable('esp')"
+          style="width:64px;background:#131c2e;border:1.5px solid #1e2d45;border-radius:9px;padding:7px 8px;font-size:12px;color:#93c5fd;font-family:inherit;outline:none;text-align:center;"
+          onfocus="this.style.borderColor='#7c3aed'" onblur="this.style.borderColor='#1e2d45'">
+      </div>
+      <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+        <span style="font-size:10px;color:#475569;font-weight:700;white-space:nowrap;">Kg màx</span>
+        <input id="esp-search-kg-max" type="number" min="0" placeholder="∞" oninput="vFilterTable('esp')"
+          style="width:64px;background:#131c2e;border:1.5px solid #1e2d45;border-radius:9px;padding:7px 8px;font-size:12px;color:#93c5fd;font-family:inherit;outline:none;text-align:center;"
+          onfocus="this.style.borderColor='#7c3aed'" onblur="this.style.borderColor='#1e2d45'">
+      </div>
+      <input id="esp-search-date" type="date" oninput="vFilterTable('esp')"
+        style="background:#131c2e;border:1.5px solid #1e2d45;border-radius:9px;padding:7px 10px;font-size:12px;color:#fbbf24;font-family:inherit;outline:none;flex-shrink:0;"
+        onfocus="this.style.borderColor='#7c3aed'" onblur="this.style.borderColor='#1e2d45'">
+      <select id="esp-search-estat" onchange="vFilterTable('esp')"
+        style="background:#131c2e;border:1.5px solid #1e2d45;border-radius:9px;padding:7px 10px;font-size:12px;color:#e2e8f0;font-family:inherit;outline:none;flex-shrink:0;cursor:pointer;">
+        <option value="">Tots els estats</option>
+        <option value="net">Net / Filtrat</option>
+        <option value="brut">Brut / Residus</option>
+        <option value="degradat">Degradat</option>
+        <option value="pendent">Pendent</option>
+      </select>
+      <select id="esp-search-origen" onchange="vFilterTable('esp')"
+        style="background:#131c2e;border:1.5px solid #1e2d45;border-radius:9px;padding:7px 10px;font-size:12px;color:#e2e8f0;font-family:inherit;outline:none;flex-shrink:0;cursor:pointer;">
+        <option value="">Tots els orígens</option>
+        <option value="transp">Transportista</option>
+        <option value="operador">Operador</option>
+      </select>
+      <button onclick="vClearSearch('esp')" title="Netejar filtres"
+        style="background:transparent;border:1.5px solid #1e2d45;border-radius:9px;padding:7px 12px;font-size:11px;color:#64748b;cursor:pointer;font-family:inherit;flex-shrink:0;white-space:nowrap;"
+        onmouseover="this.style.borderColor='#dc2626';this.style.color='#f87171'" onmouseout="this.style.borderColor='#1e2d45';this.style.color='#64748b'">✕ Netejar</button>
+      <span id="esp-search-count" style="font-size:11px;color:#475569;font-weight:600;flex-shrink:0;white-space:nowrap;"></span>
+    </div>
     <table>
       <thead><tr><th>Codi RED II</th><th>Establiment</th><th>Pes real ⚖️ Hub</th><th>Barrils</th><th>Estat oli</th><th>Transportista</th><th>Timestamp GPS</th><th>Anotació gestor</th><th>Segell</th></tr></thead>
       <tbody id="esp-tbody">
@@ -920,6 +998,52 @@ function toggleQR(btn){
         <span id="vol-punto-eq" style="font-size:11px;color:#94a3b8;font-weight:700;margin-left:auto;"></span>
       </div>
     </div>
+
+    <!-- ── ANÀLISI ESTACIONAL ─────────────────────────────────────────── -->
+    <div style="background:#0c1220;border:1px solid rgba(168,139,250,0.25);border-radius:14px;padding:20px 24px;margin-bottom:24px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid rgba(168,139,250,0.12);">
+        <div>
+          <div style="font-size:10px;font-weight:800;color:#a78bfa;text-transform:uppercase;letter-spacing:2px;">📅 Anàlisi estacional anual · Calella Costa</div>
+          <div style="font-size:11px;color:#64748b;margin-top:3px;">Cada mes té el seu factor de producció · hotels i càmpings amb fort pes a l'estiu</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button onclick="vSeasonPreset('calella')" id="vsbtn-calella" class="vseasbtn vseasbtn-on">🌊 Calella</button>
+          <button onclick="vSeasonPreset('uniforme')" id="vsbtn-uniforme" class="vseasbtn">📐 Uniforme</button>
+          <button onclick="vSeasonPreset('hivern')" id="vsbtn-hivern" class="vseasbtn">❄️ Interior</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(12,1fr);gap:6px;margin-bottom:18px;" id="vseas-grid"></div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;font-size:10px;font-weight:700;">
+        <span style="color:#f87171;">● Baixa (nov–mar)</span>
+        <span style="color:#fbbf24;">● Mitja (abr–mai, oct)</span>
+        <span style="color:#34d399;">● Alta (jun–set)</span>
+        <span style="color:#60a5fa;margin-left:auto;" id="vseas-total-label">Total anual: — kg</span>
+      </div>
+      <div style="overflow-x:auto;margin-bottom:16px;">
+        <table style="width:100%;border-collapse:collapse;font-size:11px;">
+          <thead>
+            <tr style="background:#0d1626;">
+              <th style="padding:8px 10px;text-align:left;color:#64748b;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;white-space:nowrap;">Mes</th>
+              <th style="padding:8px 10px;text-align:right;color:#64748b;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;">Factor</th>
+              <th style="padding:8px 10px;text-align:right;color:#64748b;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;">Estab. actius</th>
+              <th style="padding:8px 10px;text-align:right;color:#64748b;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;">kg / mes</th>
+              <th style="padding:8px 10px;text-align:right;color:#64748b;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;">Ingrés UCO</th>
+              <th style="padding:8px 10px;text-align:right;color:#64748b;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;">− Bidons</th>
+              <th style="padding:8px 10px;text-align:right;color:#64748b;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;">+ Prima CO₂</th>
+              <th style="padding:8px 10px;text-align:right;color:#64748b;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;">− Z-Ero</th>
+              <th style="padding:8px 10px;text-align:right;color:#64748b;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;">− Xofer hub</th>
+              <th style="padding:8px 10px;text-align:right;color:#64748b;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;white-space:nowrap;">Resultat net</th>
+            </tr>
+          </thead>
+          <tbody id="vseas-tbody"></tbody>
+          <tfoot id="vseas-tfoot"></tfoot>
+        </table>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:16px;" id="vseas-kpis"></div>
+      <div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;">Resultat net mensual (€)</div>
+      <div style="position:relative;height:200px;"><canvas id="vseas-chart"></canvas></div>
+    </div>
+
   </div>
 </section>
 
@@ -958,6 +1082,9 @@ function toggleQR(btn){
 .vcard-label{font-size:10px;color:#64748b;font-weight:700;margin-top:4px;line-height:1.3;}
 .vcard-note{font-size:9px;color:#334155;margin-top:3px;line-height:1.3;}
 @keyframes vPulse{0%,100%{opacity:1}50%{opacity:0.5}}
+.vseasbtn{font-size:11px;font-family:inherit;padding:6px 14px;border-radius:20px;border:1px solid rgba(168,139,250,0.2);background:transparent;color:#64748b;cursor:pointer;transition:all 0.15s;font-weight:600;}
+.vseasbtn:hover{border-color:rgba(168,139,250,0.5);color:#a78bfa;}
+.vseasbtn.vseasbtn-on{background:#7c3aed;color:white;border-color:#7c3aed;font-weight:700;}
 </style>
 
 <script>
@@ -1032,6 +1159,7 @@ function vOnMixChange(){
   volLbl.style.color=vol>0?'#4ade80':'#f87171';
   vRender(vol);
   vRebuildChart();
+  vRenderSeasonal();
 }
 
 function vOnParamChange(){
@@ -1039,7 +1167,7 @@ function vOnParamChange(){
   document.getElementById('vbtn-20').className='vtbtn'+(V_BIDON_PREU===20?' vtab':'');
   document.getElementById('vbtn-15').className='vtbtn'+(V_BIDON_PREU===15?' vtao':'');
   const vol=parseInt(document.getElementById('vol-slider').value)||0;
-  vRender(vol); vRebuildChart();
+  vRender(vol); vRebuildChart(); vRenderSeasonal();
 }
 
 // ── FUNCIONS BASE ──────────────────────────────────────────
@@ -1066,8 +1194,8 @@ function vParadesNova(vol,p){
 }
 
 // ── CÀLCUL PRINCIPAL ──────────────────────────────────────
-function vCalc(vol,bpOvr){
-  const p=vGetP(),bp=bpOvr!==undefined?bpOvr:V_BIDON_PREU;
+function vCalc(vol,bpOvr,pOvr){
+  const p=Object.assign({},vGetP(),pOvr||{}),bp=bpOvr!==undefined?bpOvr:V_BIDON_PREU;
   if(vol<=0)return{res_trad:0,res_cal:0,res_nov:0,res_zero:0,delta:0,p,bp,
     b:0,viat:0,h_trad:0,h_hub:0,h_all:0,h_tot:0,eur_h:0,cx_tot:0,cx_hub:0,cx_nov:0,
     ing:0,prima:0,cb:0,cz:0,liters:0,diesel:0,desg:0,incid:0,costos_op:0,
@@ -1353,6 +1481,218 @@ vRender(0);
 vGetMixData();
 // El gràfic s'inicialitza quan la pestanya 'volums' s'activa (via nav handler)
 // per assegurar que el canvas té mida correcta
+
+// ── ESTACIONALITAT ────────────────────────────────────────────────────────
+const VMONTHS = ['Gen','Feb','Mar','Abr','Mai','Jun','Jul','Ago','Set','Oct','Nov','Des'];
+
+// Perfils: factor 0-2 per cada mes (1.0 = base del mix introduït)
+const VSEAS_PRESETS = {
+  // Calella Costa Maresme: temporada turística molt marcada
+  // hotels i càmpings: ×3.5 a l'estiu, quasi zero a l'hivern
+  // restaurants locals: menys variació però notable
+  calella: [0.28, 0.30, 0.38, 0.60, 0.80, 1.55, 1.90, 1.95, 1.40, 0.72, 0.32, 0.28],
+  uniforme:[1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00],
+  hivern:  [0.70, 0.72, 0.82, 0.92, 1.05, 1.15, 1.20, 1.18, 1.05, 0.92, 0.78, 0.68],
+};
+// % establiments actius per mes (Calella: alguns hotels i càmpings tanquen)
+const VSEAS_ESTAB = {
+  calella: [0.55, 0.58, 0.65, 0.78, 0.88, 1.00, 1.00, 1.00, 0.95, 0.80, 0.60, 0.55],
+  uniforme:[1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00],
+  hivern:  [0.80, 0.82, 0.88, 0.94, 1.00, 1.00, 1.00, 1.00, 1.00, 0.94, 0.85, 0.80],
+};
+const VSEAS_COLOR = [
+  '#f87171','#f87171','#f87171','#fbbf24','#fbbf24',
+  '#34d399','#34d399','#34d399','#34d399','#fbbf24',
+  '#f87171','#f87171'
+];
+
+let _vSeasFactors = [...VSEAS_PRESETS.calella];
+let _vSeasEstab   = [...VSEAS_ESTAB.calella];
+let _vSeasChart   = null;
+let _vCurPreset   = 'calella';
+
+function vSeasonPreset(name) {
+  _vSeasFactors = [...VSEAS_PRESETS[name]];
+  _vSeasEstab   = [...VSEAS_ESTAB[name]];
+  _vCurPreset   = name;
+  ['calella','uniforme','hivern'].forEach(p => {
+    const b = document.getElementById('vsbtn-'+p);
+    if(b) b.className = 'vseasbtn' + (p===name?' vseasbtn-on':'');
+  });
+  vBuildSeasGrid();
+  vRenderSeasonal();
+}
+
+function vBuildSeasGrid() {
+  const grid = document.getElementById('vseas-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  VMONTHS.forEach((m, i) => {
+    const col = VSEAS_COLOR[i];
+    const pct = Math.round(_vSeasFactors[i] * 100);
+    grid.insertAdjacentHTML('beforeend', `
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <div style="font-size:9px;font-weight:800;color:${col};text-transform:uppercase;letter-spacing:0.5px;">${m}</div>
+        <div style="font-size:9px;color:#475569;font-weight:600;">${pct}%</div>
+        <div style="width:100%;height:6px;background:#1e2d45;border-radius:3px;overflow:hidden;">
+          <div style="height:100%;width:${Math.min(100,pct)}%;background:${col};border-radius:3px;transition:width 0.3s;"></div>
+        </div>
+        <input type="number" min="0" max="300" step="1" value="${pct}"
+          oninput="vSeasFactorChange(${i}, this.value)"
+          style="width:100%;text-align:center;background:#0d1626;border:1px solid ${col}33;border-radius:5px;padding:3px 2px;font-size:10px;font-weight:700;color:${col};font-family:inherit;outline:none;"
+          onfocus="this.style.borderColor='${col}'" onblur="this.style.borderColor='${col}33'">
+      </div>`);
+  });
+}
+
+function vSeasFactorChange(i, val) {
+  const pct = Math.max(0, Math.min(300, parseInt(val) || 0));
+  _vSeasFactors[i] = pct / 100;
+  // Estab actius: proporcional al factor (cap a 100% com a màxim)
+  _vSeasEstab[i] = Math.min(1.0, 0.50 + pct / 200);
+  _vCurPreset = 'custom';
+  ['calella','uniforme','hivern'].forEach(p => {
+    const b = document.getElementById('vsbtn-'+p);
+    if(b) b.className = 'vseasbtn';
+  });
+  vRenderSeasonal();
+}
+
+function vRenderSeasonal() {
+  const tbody = document.getElementById('vseas-tbody');
+  const tfoot = document.getElementById('vseas-tfoot');
+  const kpisEl = document.getElementById('vseas-kpis');
+  const labelEl = document.getElementById('vseas-total-label');
+  if (!tbody) return;
+
+  // Volum base del mix (el que hi ha al vol-slider)
+  const volBase = parseInt(document.getElementById('vol-slider')?.value) || 0;
+  if (volBase <= 0) {
+    tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;padding:16px;color:#475569;font-size:11px;font-style:italic;">Introdueix establiments al calculador de mix per activar l'anàlisi estacional</td></tr>`;
+    if(tfoot) tfoot.innerHTML = '';
+    if(kpisEl) kpisEl.innerHTML = '';
+    if(labelEl) labelEl.textContent = 'Total anual: — kg';
+    vRebuildSeasChart([]);
+    return;
+  }
+
+  const p = vGetP();
+  let totalKg=0, totalNet=0, totalIng=0, totalBid=0, totalPrima=0, totalZero=0, totalXofer=0;
+  let bestMes='', bestNet=-Infinity, worstMes='', worstNet=Infinity;
+  const netPerMes = [];
+
+  tbody.innerHTML = '';
+  VMONTHS.forEach((m, i) => {
+    const factor = _vSeasFactors[i];
+    const estabPct = _vSeasEstab[i];
+    const volMes = Math.round(volBase * factor);
+    const estabMes = Math.max(1, Math.round(p.NUM_ESTAB * estabPct));
+
+    // Recalcula vCalc amb NUM_ESTAB proporcional al mes (sense tocar el DOM)
+    const seasOvr = { NUM_ESTAB: estabMes };
+    const d = volMes > 0 ? vCalc(volMes, undefined, seasOvr) : {res_cal:0,ing:0,cb:0,prima:0,cz:0,cx_hub:0,b:0};
+
+    const net = d.res_cal;
+    netPerMes.push(net);
+    totalKg += volMes; totalNet += net; totalIng += d.ing;
+    totalBid += d.cb; totalPrima += d.prima; totalZero += d.cz; totalXofer += d.cx_hub;
+
+    if(net > bestNet) { bestNet = net; bestMes = m; }
+    if(net < worstNet){ worstNet = net; worstMes = m; }
+
+    const col = VSEAS_COLOR[i];
+    const netCol = net >= 0 ? '#34d399' : '#f87171';
+    tbody.insertAdjacentHTML('beforeend', `<tr style="border-bottom:1px solid #1a2540;">
+      <td style="padding:7px 10px;font-weight:700;color:${col};white-space:nowrap;">${m}</td>
+      <td style="padding:7px 10px;text-align:right;font-family:monospace;color:${col};">${Math.round(factor*100)}%</td>
+      <td style="padding:7px 10px;text-align:right;color:#94a3b8;">${estabMes}</td>
+      <td style="padding:7px 10px;text-align:right;font-weight:700;color:#e2e8f0;">${volMes > 0 ? volMes.toLocaleString('ca-ES') : '—'}</td>
+      <td style="padding:7px 10px;text-align:right;color:#34d399;">+${Math.round(d.ing).toLocaleString('ca-ES')} €</td>
+      <td style="padding:7px 10px;text-align:right;color:#f87171;">−${Math.round(d.cb).toLocaleString('ca-ES')} €</td>
+      <td style="padding:7px 10px;text-align:right;color:#86efac;">+${Math.round(d.prima).toLocaleString('ca-ES')} €</td>
+      <td style="padding:7px 10px;text-align:right;color:#f87171;">−${Math.round(d.cz).toLocaleString('ca-ES')} €</td>
+      <td style="padding:7px 10px;text-align:right;color:#f87171;">−${Math.round(d.cx_hub).toLocaleString('ca-ES')} €</td>
+      <td style="padding:7px 10px;text-align:right;font-weight:900;font-size:12px;color:${netCol};">${net >= 0 ? '+' : ''}${Math.round(net).toLocaleString('ca-ES')} €</td>
+    </tr>`);
+  });
+
+  // Total anual
+  const totalNetCol = totalNet >= 0 ? '#34d399' : '#f87171';
+  if(tfoot) tfoot.innerHTML = `<tr style="background:#0d1626;border-top:2px solid rgba(168,139,250,0.3);">
+    <td style="padding:9px 10px;font-weight:900;color:#a78bfa;font-size:12px;" colspan="3">TOTAL ANUAL</td>
+    <td style="padding:9px 10px;text-align:right;font-weight:900;color:#e2e8f0;font-size:12px;">${totalKg.toLocaleString('ca-ES')} kg</td>
+    <td style="padding:9px 10px;text-align:right;font-weight:700;color:#34d399;">+${Math.round(totalIng).toLocaleString('ca-ES')} €</td>
+    <td style="padding:9px 10px;text-align:right;font-weight:700;color:#f87171;">−${Math.round(totalBid).toLocaleString('ca-ES')} €</td>
+    <td style="padding:9px 10px;text-align:right;font-weight:700;color:#86efac;">+${Math.round(totalPrima).toLocaleString('ca-ES')} €</td>
+    <td style="padding:9px 10px;text-align:right;font-weight:700;color:#f87171;">−${Math.round(totalZero).toLocaleString('ca-ES')} €</td>
+    <td style="padding:9px 10px;text-align:right;font-weight:700;color:#f87171;">−${Math.round(totalXofer).toLocaleString('ca-ES')} €</td>
+    <td style="padding:9px 10px;text-align:right;font-weight:900;font-size:14px;color:${totalNetCol};">${totalNet >= 0 ? '+' : ''}${Math.round(totalNet).toLocaleString('ca-ES')} €</td>
+  </tr>`;
+
+  if(labelEl) labelEl.textContent = `Total anual: ${totalKg.toLocaleString('ca-ES')} kg · ${Math.round(totalNet).toLocaleString('ca-ES')} € net`;
+
+  // KPIs anuals
+  const mesosPos = netPerMes.filter(n => n >= 0).length;
+  const avgMensual = Math.round(totalNet / 12);
+  if(kpisEl) kpisEl.innerHTML = `
+    <div class="vkpi ${totalNet>=0?'vpos':'vneg'}"><div class="vkpi-label">Resultat net anual</div><div class="vkpi-val">${(totalNet>=0?'+':'')+Math.round(totalNet).toLocaleString('ca-ES')} €</div><div class="vkpi-note">amb estacionalitat Calella</div></div>
+    <div class="vkpi vblu"><div class="vkpi-label">Mitjana mensual</div><div class="vkpi-val">${(avgMensual>=0?'+':'')+avgMensual.toLocaleString('ca-ES')} €</div><div class="vkpi-note">vs model pla: ${Math.round(vCalc(volBase).res_cal).toLocaleString('ca-ES')} €/mes</div></div>
+    <div class="vkpi vamb"><div class="vkpi-label">Volum total anual</div><div class="vkpi-val">${totalKg.toLocaleString('ca-ES')} kg</div><div class="vkpi-note">vs pla: ${(volBase*12).toLocaleString('ca-ES')} kg</div></div>
+    <div class="vkpi ${mesosPos>=6?'vpos':'vneg'}"><div class="vkpi-label">Mesos positius</div><div class="vkpi-val">${mesosPos} / 12</div><div class="vkpi-note">Millor: ${bestMes} · Pitjor: ${worstMes}</div></div>
+    <div class="vkpi vpos"><div class="vkpi-label">Millor mes</div><div class="vkpi-val">${(bestNet>=0?'+':'')+Math.round(bestNet).toLocaleString('ca-ES')} €</div><div class="vkpi-note">${bestMes}</div></div>
+    <div class="vkpi vneg"><div class="vkpi-label">Pitjor mes</div><div class="vkpi-val">${(worstNet>=0?'+':'')+Math.round(worstNet).toLocaleString('ca-ES')} €</div><div class="vkpi-note">${worstMes}</div></div>`;
+
+  vRebuildSeasChart(netPerMes);
+}
+
+function vRebuildSeasChart(netPerMes) {
+  if (_vSeasChart) { _vSeasChart.destroy(); _vSeasChart = null; }
+  const ctxEl = document.getElementById('vseas-chart');
+  if (!ctxEl || typeof Chart === 'undefined') return;
+  const ctx = ctxEl.getContext('2d');
+  _vSeasChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: VMONTHS,
+      datasets: [{
+        data: netPerMes,
+        backgroundColor: netPerMes.map(v => v >= 0 ? 'rgba(52,211,153,0.7)' : 'rgba(248,113,113,0.7)'),
+        borderColor:     netPerMes.map(v => v >= 0 ? '#34d399' : '#f87171'),
+        borderWidth: 1.5,
+        borderRadius: 5,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: c => (c.parsed.y >= 0 ? '+' : '') + Math.round(c.parsed.y).toLocaleString('ca-ES') + ' €',
+          },
+          backgroundColor: '#141927', borderColor: 'rgba(226,232,240,0.1)', borderWidth: 1,
+          titleColor: '#e2e8f0', bodyColor: '#e2e8f0'
+        }
+      },
+      scales: {
+        x: { ticks: { font:{size:11}, color:'rgba(226,232,240,0.5)' }, grid: { display: false } },
+        y: {
+          ticks: { font:{size:10}, color:'rgba(226,232,240,0.3)', callback: v => (v>=0?'+':'')+Math.round(v)+'€' },
+          grid: { color:'rgba(255,255,255,0.05)' }
+        }
+      }
+    }
+  });
+}
+
+// Inicialitza el grid d'estacionalitat a l'arrencada
+(function initSeasonal() {
+  if (document.getElementById('vseas-grid')) {
+    vBuildSeasGrid();
+  } else {
+    setTimeout(initSeasonal, 200);
+  }
+})();
 </script>
 
 <div id="hub-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.65);z-index:300;align-items:center;justify-content:center;" onclick="if(event.target===this)closeHubModal()">
@@ -2068,7 +2408,7 @@ if (t) t.classList.toggle('on', s === v);
 });
 if (v === 'establiments') renderEstabliments();
 if (v === 'espinosa') { recalcDieselDebounced(); espPoblaSelectorRefs(); }
-if (v === 'volums') { if(typeof Chart!=='undefined'){vRebuildChart();}else{setTimeout(()=>vRebuildChart(),300);} }
+if (v === 'volums') { if(typeof Chart!=='undefined'){vRebuildChart();vRenderSeasonal();}else{setTimeout(()=>{vRebuildChart();vRenderSeasonal();},300);} }
 }
 // ── DATE RANGE PICKER ────────────────────────────────────────────────────────
 let _allRecs = {};
@@ -3798,6 +4138,103 @@ const el = document.getElementById(i); if(el) el.value='';
 });
 const tStat = document.getElementById('t-estat'); if(tStat) tStat.selectedIndex=0;
 alert('Nova sessió iniciada. Totes les dades segueixen guardades a Firebase.');
-}</script>
+}
+
+// ── CERCA I FILTRATGE DE REGISTRES ──────────────────────────────────────────
+function vFilterTable(who) {
+  const g  = id => document.getElementById(id);
+  const tbody = g(who === 'op' ? 'op-tbody' : 'esp-tbody');
+  if (!tbody) return;
+
+  const txt    = (g(who+'-search-text')?.value  || '').toLowerCase().trim();
+  const kgMin  = parseFloat(g(who+'-search-kg-min')?.value) || 0;
+  const kgMax  = parseFloat(g(who+'-search-kg-max')?.value) || Infinity;
+  const dateV  = g(who+'-search-date')?.value || '';
+  const estat  = (g(who+'-search-estat')?.value || '').toLowerCase();
+  const origen = who === 'esp' ? (g('esp-search-origen')?.value || '') : '';
+
+  let dateCaES = '';
+  if (dateV) {
+    const [y,m,d] = dateV.split('-');
+    dateCaES = d + '/' + m + '/' + y;
+  }
+
+  const rows = tbody.querySelectorAll('tr');
+  let visible = 0, total = 0;
+
+  rows.forEach(row => {
+    if (row.id === 'op-load-more' || row.id === 'esp-load-more') return;
+    if (row.id && row.id.startsWith('panel-')) return;
+    if (row.id && (row.id === 'op-no-search-result' || row.id === 'esp-no-search-result')) return;
+
+    total++;
+    const cells = row.querySelectorAll('td');
+    if (!cells.length) return;
+
+    const cellText = Array.from(cells).map(c => c.textContent.toLowerCase()).join(' ');
+    const kg = parseFloat(cells[2]?.textContent) || 0;
+
+    const passText  = !txt     || cellText.includes(txt);
+    const passKgMin = kg >= kgMin;
+    const passKgMax = kg <= kgMax;
+    const passDate  = !dateCaES || cellText.includes(dateCaES);
+    const passEstat = !estat   || cellText.includes(estat);
+    const passOri   = !origen  || (origen === 'transp' ? cellText.includes('transp') : (!cellText.includes('transp') && cellText.includes('operador')));
+
+    const show = passText && passKgMin && passKgMax && passDate && passEstat && passOri;
+    row.style.display = show ? '' : 'none';
+
+    if (row.id && row.id.startsWith('row-')) {
+      const panelId = 'panel-' + row.id.slice(4);
+      const panel = document.getElementById(panelId);
+      if (panel) panel.style.display = 'none';
+    }
+
+    if (show) visible++;
+  });
+
+  const countEl = g(who+'-search-count');
+  const isFiltering = txt || kgMin > 0 || kgMax < Infinity || dateCaES || estat || origen;
+  if (countEl) {
+    if (!isFiltering) {
+      countEl.textContent = '';
+    } else if (visible === 0) {
+      countEl.textContent = 'Cap resultat';
+      countEl.style.color = '#f87171';
+    } else {
+      countEl.textContent = visible + ' de ' + total + ' registres';
+      countEl.style.color = '#4ade80';
+    }
+  }
+
+  const noResultId = who + '-no-search-result';
+  let noResultRow = document.getElementById(noResultId);
+  if (visible === 0 && isFiltering) {
+    if (!noResultRow) {
+      noResultRow = document.createElement('tr');
+      noResultRow.id = noResultId;
+      noResultRow.innerHTML = '<td colspan="10" style="text-align:center;padding:20px;color:#64748b;font-size:12px;font-style:italic;">Cap registre coincideix amb els filtres aplicats &nbsp;·&nbsp; <button onclick=\'vClearSearch(\"'+who+'\")\'  style=\'background:transparent;border:none;color:#2563eb;font-weight:700;font-size:12px;cursor:pointer;font-family:inherit;\'>Netejar filtres</button></td>';
+      tbody.appendChild(noResultRow);
+    }
+    noResultRow.style.display = '';
+  } else if (noResultRow) {
+    noResultRow.style.display = 'none';
+  }
+}
+
+function vClearSearch(who) {
+  const g = id => document.getElementById(id);
+  ['search-text','search-kg-min','search-kg-max','search-date','search-estat'].forEach(s => {
+    const el = g(who+'-'+s);
+    if (el) el.value = '';
+  });
+  if (who === 'esp') {
+    const ori = g('esp-search-origen');
+    if (ori) ori.value = '';
+  }
+  vFilterTable(who);
+}
+
+</script>
 </body>
 </html>
