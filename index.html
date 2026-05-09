@@ -106,26 +106,7 @@
       </div>
     </div>
 
-    <!-- ── QR PRIMER ÚS ── -->
-    <div class="login-fadein-3">
-      <button class="qr-toggle-btn" onclick="toggleQR(this)" id="qr-toggle-btn" style="width:100%;justify-content:center;margin-top:14px;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="4" height="4" rx="0.5"/><rect x="20" y="14" width="1" height="1"/><rect x="14" y="20" width="1" height="1"/><rect x="18" y="19" width="3" height="2" rx="0.5"/><rect x="20" y="17" width="1" height="1"/></svg>
-        Accedir des del mòbil · Escanejar QR
-      </button>
-
-      <div class="qr-panel" id="qr-panel">
-        <div style="background:#1e293b;border-radius:20px;border:1px solid #334155;padding:24px;margin-top:10px;text-align:center;">
-          <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;">Primer ús · Obre al mòbil</div>
-          <div id="qr-canvas-wrap" style="display:flex;justify-content:center;margin-bottom:14px;"></div>
-          <div style="font-size:12px;color:#64748b;font-weight:600;line-height:1.6;">
-            Escaneja amb la càmera del mòbil per<br>accedir a la plataforma des del teu telèfon.
-          </div>
-          <div style="margin-top:14px;background:#0f172a;border-radius:10px;padding:10px 14px;font-size:10px;color:#475569;font-weight:700;letter-spacing:0.3px;word-break:break-all;" id="qr-url-display"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── Powered by Z-Ero (discret) ── -->
+   <!-- ── Powered by Z-Ero (discret) ── -->
     <div style="text-align:center;margin-top:20px;">
       <div style="display:inline-flex;align-items:center;gap:8px;opacity:0.45;">
         <div style="background:#2563eb;padding:4px 7px;border-radius:6px;font-weight:900;font-style:italic;font-size:13px;color:white;line-height:1;">Z</div>
@@ -143,43 +124,6 @@
 </div>
 
 <script>
-// ── QR: genera el codi amb la URL actual ──────────────────────────────────────
-(function initQR(){
-  const appUrl = window.location.href.split('?')[0].split('#')[0];
-  const displayEl = document.getElementById('qr-url-display');
-  if(displayEl) displayEl.textContent = appUrl;
-
-  // Genera el QR quan es desplega el panell (lazy)
-  window._qrGenerated = false;
-  window._qrAppUrl = appUrl;
-})();
-
-function toggleQR(btn){
-  const panel = document.getElementById('qr-panel');
-  const isOpen = panel.classList.toggle('open');
-  btn.style.borderColor = isOpen ? '#60a5fa' : '#334155';
-  btn.style.color = isOpen ? '#93c5fd' : '#64748b';
-  btn.style.background = isOpen ? '#1e293b' : 'transparent';
-
-  if(isOpen && !window._qrGenerated){
-    window._qrGenerated = true;
-    const wrap = document.getElementById('qr-canvas-wrap');
-    wrap.innerHTML = '';
-    try{
-      new QRCode(wrap, {
-        text: window._qrAppUrl,
-        width: 160,
-        height: 160,
-        colorDark: '#e2e8f0',
-        colorLight: '#1e293b',
-        correctLevel: QRCode.CorrectLevel.M
-      });
-    } catch(e){
-      wrap.innerHTML = '<div style="color:#64748b;font-size:12px;padding:20px;">Error generant QR</div>';
-    }
-  }
-}
-</script>
 <!-- ===== APP (s'amaga fins login) ===== -->
 <div id="app-root" style="display:none;">
 <style>
@@ -1028,6 +972,7 @@ function toggleQR(btn){
               <th style="padding:8px 10px;text-align:right;color:#64748b;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;">Factor</th>
               <th style="padding:8px 10px;text-align:right;color:#64748b;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;">Estab. actius</th>
               <th style="padding:8px 10px;text-align:right;color:#64748b;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;">kg / mes</th>
+              <th style="padding:8px 10px;text-align:right;color:#fb923c;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;white-space:nowrap;">Ruta Trad.</th>
               <th style="padding:8px 10px;text-align:right;color:#64748b;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;">Ingrés UCO</th>
               <th style="padding:8px 10px;text-align:right;color:#64748b;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;">− Bidons</th>
               <th style="padding:8px 10px;text-align:right;color:#64748b;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;">+ Prima CO₂</th>
@@ -1580,7 +1525,7 @@ function vRenderSeasonal() {
   }
 
   const p = vGetP();
-  let totalKg=0, totalNet=0, totalIng=0, totalBid=0, totalPrima=0, totalZero=0, totalXofer=0, totalNova=0;
+  let totalKg=0, totalNet=0, totalIng=0, totalBid=0, totalPrima=0, totalZero=0, totalXofer=0, totalNova=0, totalTrad=0;
   let bestMes='', bestNet=-Infinity, worstMes='', worstNet=Infinity;
   const netPerMes = [];
 
@@ -1600,7 +1545,7 @@ function vRenderSeasonal() {
     const net = d.res_cal + netNova;
     netPerMes.push(net);
     totalKg += volMes; totalNet += net; totalIng += d.ing;
-    totalBid += d.cb; totalPrima += d.prima; totalZero += d.cz; totalXofer += d.cx_hub; totalNova += netNova;
+    totalBid += d.cb; totalPrima += d.prima; totalZero += d.cz; totalXofer += d.cx_hub; totalNova += netNova; totalTrad += d.res_trad;
 
     if(net > bestNet) { bestNet = net; bestMes = m; }
     if(net < worstNet){ worstNet = net; worstMes = m; }
@@ -1612,6 +1557,7 @@ function vRenderSeasonal() {
       <td style="padding:7px 10px;text-align:right;font-family:monospace;color:${col};">${Math.round(factor*100)}%</td>
       <td style="padding:7px 10px;text-align:right;color:#94a3b8;">${estabMes}</td>
       <td style="padding:7px 10px;text-align:right;font-weight:700;color:#e2e8f0;">${volMes > 0 ? volMes.toLocaleString('ca-ES') : '—'}</td>
+      <td style="padding:7px 10px;text-align:right;color:#fb923c;font-weight:700;">${d.res_trad >= 0 ? '+' : ''}${Math.round(d.res_trad).toLocaleString('ca-ES')} €</td>
       <td style="padding:7px 10px;text-align:right;color:#34d399;">+${Math.round(d.ing).toLocaleString('ca-ES')} €</td>
       <td style="padding:7px 10px;text-align:right;color:#f87171;">−${Math.round(d.cb).toLocaleString('ca-ES')} €</td>
       <td style="padding:7px 10px;text-align:right;color:#86efac;">+${Math.round(d.prima).toLocaleString('ca-ES')} €</td>
@@ -1627,6 +1573,7 @@ function vRenderSeasonal() {
   if(tfoot) tfoot.innerHTML = `<tr style="background:#0d1626;border-top:2px solid rgba(168,139,250,0.3);">
     <td style="padding:9px 10px;font-weight:900;color:#a78bfa;font-size:12px;" colspan="3">TOTAL ANUAL</td>
     <td style="padding:9px 10px;text-align:right;font-weight:900;color:#e2e8f0;font-size:12px;">${totalKg.toLocaleString('ca-ES')} kg</td>
+    <td style="padding:9px 10px;text-align:right;font-weight:700;color:#fb923c;">${totalTrad >= 0 ? '+' : ''}${Math.round(totalTrad).toLocaleString('ca-ES')} €</td>
     <td style="padding:9px 10px;text-align:right;font-weight:700;color:#34d399;">+${Math.round(totalIng).toLocaleString('ca-ES')} €</td>
     <td style="padding:9px 10px;text-align:right;font-weight:700;color:#f87171;">−${Math.round(totalBid).toLocaleString('ca-ES')} €</td>
     <td style="padding:9px 10px;text-align:right;font-weight:700;color:#86efac;">+${Math.round(totalPrima).toLocaleString('ca-ES')} €</td>
