@@ -61,7 +61,7 @@
              style="height:48px;object-fit:contain;max-width:160px;"
              onerror="this.parentElement.innerHTML='<span style=\'color:#0f172a;font-weight:900;font-size:18px;font-style:italic;\'>F. ESPINOSA</span>'">
       </div>
-      <div style="color:#e2e8f0;font-size:22px;font-weight:900;letter-spacing:0.3px;margin-top:2px;">Espinosa Olis</div>
+      <div style="color:#e2e8f0;font-size:22px;font-weight:900;letter-spacing:0.3px;margin-top:2px;">amb col·laborador autoritzat Z-Ero CO₂</div>
       <div style="color:#60a5fa;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;margin-top:5px;">Plataforma de gestió · UCO</div>
     </div>
 
@@ -1717,7 +1717,7 @@ let db = null;
 let auth = null;
 let currentUser = null;
 let currentRol = null;
-const isLocalFile = window.location.protocol === 'file:';
+const isLocalFile = window.location.protocol === 'file:' || window.location.protocol === 'http:';
 try {
 firebase.initializeApp(FIREBASE_CONFIG);
 db   = firebase.database();
@@ -1812,8 +1812,8 @@ showErr('❌ Error inesperat: ' + ex.message);
 function enterApp(userInfo) {
 currentUser = userInfo;
 currentRol  = userInfo.rol;
-document.getElementById('nav-user-name').innerText = userInfo.nom;
-document.getElementById('nav-user-rol').innerText  = userInfo.rol.toUpperCase();
+const navName = document.getElementById('nav-user-name'); if(navName) navName.innerText = userInfo.nom;
+const navRol  = document.getElementById('nav-user-rol');  if(navRol)  navRol.innerText  = userInfo.rol.toUpperCase();
 const allTabs = ['operador','establiments','transport','espinosa','volums'];
 allTabs.forEach(t => {
 const tab = document.getElementById('tab-' + t);
@@ -4179,4 +4179,4 @@ function vClearSearch(who) {
 
 </script>
 </body>
-</html>
+</html>l>
