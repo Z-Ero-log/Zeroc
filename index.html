@@ -63,7 +63,7 @@
              style="height:48px;object-fit:contain;max-width:160px;"
              onerror="this.parentElement.innerHTML='<span style=\'color:#0f172a;font-weight:900;font-size:18px;font-style:italic;\'>F. ESPINOSA</span>'">
       </div>
-      <div style="color:#e2e8f0;font-size:22px;font-weight:900;letter-spacing:0.3px;margin-top:2px;">Col·laborador Autoritzat Logística Z-Ero CO₂ · Milla Verda S.L.</div>
+      <div style="color:#e2e8f0;font-size:22px;font-weight:900;letter-spacing:0.3px;margin-top:2px;">Espinosa Olis</div>
       <div style="color:#60a5fa;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;margin-top:5px;">Plataforma de gestió · UCO</div>
     </div>
 
@@ -1032,6 +1032,7 @@ function toggleQR(btn){
               <th style="padding:8px 10px;text-align:right;color:#64748b;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;">+ Prima CO₂</th>
               <th style="padding:8px 10px;text-align:right;color:#64748b;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;">− Z-Ero</th>
               <th style="padding:8px 10px;text-align:right;color:#64748b;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;">− Xofer hub</th>
+              <th style="padding:8px 10px;text-align:right;color:#a78bfa;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;white-space:nowrap;">+ Nova Ruta</th>
               <th style="padding:8px 10px;text-align:right;color:#64748b;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;white-space:nowrap;">Resultat net</th>
             </tr>
           </thead>
@@ -1578,7 +1579,7 @@ function vRenderSeasonal() {
   }
 
   const p = vGetP();
-  let totalKg=0, totalNet=0, totalIng=0, totalBid=0, totalPrima=0, totalZero=0, totalXofer=0;
+  let totalKg=0, totalNet=0, totalIng=0, totalBid=0, totalPrima=0, totalZero=0, totalXofer=0, totalNova=0;
   let bestMes='', bestNet=-Infinity, worstMes='', worstNet=Infinity;
   const netPerMes = [];
 
@@ -1593,10 +1594,12 @@ function vRenderSeasonal() {
     const seasOvr = { NUM_ESTAB: estabMes };
     const d = volMes > 0 ? vCalc(volMes, undefined, seasOvr) : {res_cal:0,ing:0,cb:0,prima:0,cz:0,cx_hub:0,b:0};
 
-    const net = d.res_cal;
+    const novaRuta = volMes > 0 ? (()=>{try{return vNovaRutaCalc(volMes, V_MES_RAMPA);}catch(e){return{net:0};}})() : {net:0};
+    const netNova = novaRuta.net;
+    const net = d.res_cal + netNova;
     netPerMes.push(net);
     totalKg += volMes; totalNet += net; totalIng += d.ing;
-    totalBid += d.cb; totalPrima += d.prima; totalZero += d.cz; totalXofer += d.cx_hub;
+    totalBid += d.cb; totalPrima += d.prima; totalZero += d.cz; totalXofer += d.cx_hub; totalNova += netNova;
 
     if(net > bestNet) { bestNet = net; bestMes = m; }
     if(net < worstNet){ worstNet = net; worstMes = m; }
@@ -1613,6 +1616,7 @@ function vRenderSeasonal() {
       <td style="padding:7px 10px;text-align:right;color:#86efac;">+${Math.round(d.prima).toLocaleString('ca-ES')} €</td>
       <td style="padding:7px 10px;text-align:right;color:#f87171;">−${Math.round(d.cz).toLocaleString('ca-ES')} €</td>
       <td style="padding:7px 10px;text-align:right;color:#f87171;">−${Math.round(d.cx_hub).toLocaleString('ca-ES')} €</td>
+      <td style="padding:7px 10px;text-align:right;font-weight:700;color:#a78bfa;">${netNova >= 0 ? '+' : ''}${Math.round(netNova).toLocaleString('ca-ES')} €</td>
       <td style="padding:7px 10px;text-align:right;font-weight:900;font-size:12px;color:${netCol};">${net >= 0 ? '+' : ''}${Math.round(net).toLocaleString('ca-ES')} €</td>
     </tr>`);
   });
@@ -1627,6 +1631,7 @@ function vRenderSeasonal() {
     <td style="padding:9px 10px;text-align:right;font-weight:700;color:#86efac;">+${Math.round(totalPrima).toLocaleString('ca-ES')} €</td>
     <td style="padding:9px 10px;text-align:right;font-weight:700;color:#f87171;">−${Math.round(totalZero).toLocaleString('ca-ES')} €</td>
     <td style="padding:9px 10px;text-align:right;font-weight:700;color:#f87171;">−${Math.round(totalXofer).toLocaleString('ca-ES')} €</td>
+    <td style="padding:9px 10px;text-align:right;font-weight:700;color:#a78bfa;">${totalNova >= 0 ? '+' : ''}${Math.round(totalNova).toLocaleString('ca-ES')} €</td>
     <td style="padding:9px 10px;text-align:right;font-weight:900;font-size:14px;color:${totalNetCol};">${totalNet >= 0 ? '+' : ''}${Math.round(totalNet).toLocaleString('ca-ES')} €</td>
   </tr>`;
 
