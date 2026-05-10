@@ -63,8 +63,7 @@
              style="height:48px;object-fit:contain;max-width:160px;"
              onerror="this.parentElement.innerHTML='<span style=\'color:#0f172a;font-weight:900;font-size:18px;font-style:italic;\'>F. ESPINOSA</span>'">
       </div>
-      <div style="color:#e2e8f0;font-size:22px;font-weight:900;letter-spacing:0.3px;margin-top:2px;">Col·laborador Autoritzat</div>
-      <div style="color:#e2e8f0;font-size:22px;font-weight:900;letter-spacing:0.3px;margin-top:2px;">Logística Z-Ero CO₂ · Milla Verda S.L.</div>
+      <div style="color:#e2e8f0;font-size:22px;font-weight:900;letter-spacing:0.3px;margin-top:2px;">Espinosa Olis</div>
       <div style="color:#60a5fa;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;margin-top:5px;">Plataforma de gestió · UCO</div>
     </div>
 
@@ -215,7 +214,7 @@ function toggleQR(btn){
         </div>
         <button onclick="doLogout()" style="background:#dc2626;color:white;border:none;border-radius:6px;padding:3px 8px;font-size:9px;font-weight:700;cursor:pointer;margin-left:4px;">Sortir</button>
       </div>
-      <div id="v-badge" style="background:#1e293b;border:1px solid #334155;border-radius:6px;padding:3px 8px;font-size:8px;font-weight:800;color:#475569;letter-spacing:0.5px;flex-shrink:0;">v39</div>
+      <div id="v-badge" style="background:#1e293b;border:1px solid #334155;border-radius:6px;padding:3px 8px;font-size:8px;font-weight:800;color:#475569;letter-spacing:0.5px;flex-shrink:0;">v40</div> <!-- BUG10 FIX: versio sincronitzada -->
       <div id="offline-badge" onclick="_flushOfflineQueue()" title="Clic per reintantar sincronització" style="display:none;background:#f59e0b;color:white;border-radius:8px;padding:5px 10px;font-size:9px;font-weight:800;cursor:pointer;align-items:center;white-space:nowrap;max-width:200px;">⚠ Offline</div>
       <div style="background:white;border-radius:8px;padding:4px 8px;display:flex;align-items:center;height:46px;flex-shrink:0;max-width:110px;overflow:hidden;">
         <img src="https://fespinosa.eu/wp-content/uploads/2021/01/logo-fespinosa.jpg"
@@ -1028,13 +1027,11 @@ function toggleQR(btn){
               <th style="padding:8px 10px;text-align:right;color:#64748b;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;">Factor</th>
               <th style="padding:8px 10px;text-align:right;color:#64748b;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;">Estab. actius</th>
               <th style="padding:8px 10px;text-align:right;color:#64748b;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;">kg / mes</th>
-              <th style="padding:8px 10px;text-align:right;color:#fb923c;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;white-space:nowrap;">Ruta Trad.</th>
               <th style="padding:8px 10px;text-align:right;color:#64748b;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;">Ingrés UCO</th>
               <th style="padding:8px 10px;text-align:right;color:#64748b;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;">− Bidons</th>
               <th style="padding:8px 10px;text-align:right;color:#64748b;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;">+ Prima CO₂</th>
               <th style="padding:8px 10px;text-align:right;color:#64748b;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;">− Z-Ero</th>
               <th style="padding:8px 10px;text-align:right;color:#64748b;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;">− Xofer hub</th>
-              <th style="padding:8px 10px;text-align:right;color:#a78bfa;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;white-space:nowrap;">+ Nova Ruta</th>
               <th style="padding:8px 10px;text-align:right;color:#64748b;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;white-space:nowrap;">Resultat net</th>
             </tr>
           </thead>
@@ -1581,7 +1578,7 @@ function vRenderSeasonal() {
   }
 
   const p = vGetP();
-  let totalKg=0, totalNet=0, totalIng=0, totalBid=0, totalPrima=0, totalZero=0, totalXofer=0, totalNova=0, totalTrad=0;
+  let totalKg=0, totalNet=0, totalIng=0, totalBid=0, totalPrima=0, totalZero=0, totalXofer=0;
   let bestMes='', bestNet=-Infinity, worstMes='', worstNet=Infinity;
   const netPerMes = [];
 
@@ -1596,12 +1593,10 @@ function vRenderSeasonal() {
     const seasOvr = { NUM_ESTAB: estabMes };
     const d = volMes > 0 ? vCalc(volMes, undefined, seasOvr) : {res_cal:0,ing:0,cb:0,prima:0,cz:0,cx_hub:0,b:0};
 
-    const novaRuta = volMes > 0 ? (()=>{try{return vNovaRutaCalc(volMes, V_MES_RAMPA);}catch(e){return{net:0};}})() : {net:0};
-    const netNova = novaRuta.net;
-    const net = d.res_cal + netNova;
+    const net = d.res_cal;
     netPerMes.push(net);
     totalKg += volMes; totalNet += net; totalIng += d.ing;
-    totalBid += d.cb; totalPrima += d.prima; totalZero += d.cz; totalXofer += d.cx_hub; totalNova += netNova; totalTrad += d.res_trad;
+    totalBid += d.cb; totalPrima += d.prima; totalZero += d.cz; totalXofer += d.cx_hub;
 
     if(net > bestNet) { bestNet = net; bestMes = m; }
     if(net < worstNet){ worstNet = net; worstMes = m; }
@@ -1613,13 +1608,11 @@ function vRenderSeasonal() {
       <td style="padding:7px 10px;text-align:right;font-family:monospace;color:${col};">${Math.round(factor*100)}%</td>
       <td style="padding:7px 10px;text-align:right;color:#94a3b8;">${estabMes}</td>
       <td style="padding:7px 10px;text-align:right;font-weight:700;color:#e2e8f0;">${volMes > 0 ? volMes.toLocaleString('ca-ES') : '—'}</td>
-      <td style="padding:7px 10px;text-align:right;color:#fb923c;font-weight:700;">${d.res_trad >= 0 ? '+' : ''}${Math.round(d.res_trad).toLocaleString('ca-ES')} €</td>
       <td style="padding:7px 10px;text-align:right;color:#34d399;">+${Math.round(d.ing).toLocaleString('ca-ES')} €</td>
       <td style="padding:7px 10px;text-align:right;color:#f87171;">−${Math.round(d.cb).toLocaleString('ca-ES')} €</td>
       <td style="padding:7px 10px;text-align:right;color:#86efac;">+${Math.round(d.prima).toLocaleString('ca-ES')} €</td>
       <td style="padding:7px 10px;text-align:right;color:#f87171;">−${Math.round(d.cz).toLocaleString('ca-ES')} €</td>
       <td style="padding:7px 10px;text-align:right;color:#f87171;">−${Math.round(d.cx_hub).toLocaleString('ca-ES')} €</td>
-      <td style="padding:7px 10px;text-align:right;font-weight:700;color:#a78bfa;">${netNova >= 0 ? '+' : ''}${Math.round(netNova).toLocaleString('ca-ES')} €</td>
       <td style="padding:7px 10px;text-align:right;font-weight:900;font-size:12px;color:${netCol};">${net >= 0 ? '+' : ''}${Math.round(net).toLocaleString('ca-ES')} €</td>
     </tr>`);
   });
@@ -1629,13 +1622,11 @@ function vRenderSeasonal() {
   if(tfoot) tfoot.innerHTML = `<tr style="background:#0d1626;border-top:2px solid rgba(168,139,250,0.3);">
     <td style="padding:9px 10px;font-weight:900;color:#a78bfa;font-size:12px;" colspan="3">TOTAL ANUAL</td>
     <td style="padding:9px 10px;text-align:right;font-weight:900;color:#e2e8f0;font-size:12px;">${totalKg.toLocaleString('ca-ES')} kg</td>
-    <td style="padding:9px 10px;text-align:right;font-weight:700;color:#fb923c;">${totalTrad >= 0 ? '+' : ''}${Math.round(totalTrad).toLocaleString('ca-ES')} €</td>
     <td style="padding:9px 10px;text-align:right;font-weight:700;color:#34d399;">+${Math.round(totalIng).toLocaleString('ca-ES')} €</td>
     <td style="padding:9px 10px;text-align:right;font-weight:700;color:#f87171;">−${Math.round(totalBid).toLocaleString('ca-ES')} €</td>
     <td style="padding:9px 10px;text-align:right;font-weight:700;color:#86efac;">+${Math.round(totalPrima).toLocaleString('ca-ES')} €</td>
     <td style="padding:9px 10px;text-align:right;font-weight:700;color:#f87171;">−${Math.round(totalZero).toLocaleString('ca-ES')} €</td>
     <td style="padding:9px 10px;text-align:right;font-weight:700;color:#f87171;">−${Math.round(totalXofer).toLocaleString('ca-ES')} €</td>
-    <td style="padding:9px 10px;text-align:right;font-weight:700;color:#a78bfa;">${totalNova >= 0 ? '+' : ''}${Math.round(totalNova).toLocaleString('ca-ES')} €</td>
     <td style="padding:9px 10px;text-align:right;font-weight:900;font-size:14px;color:${totalNetCol};">${totalNet >= 0 ? '+' : ''}${Math.round(totalNet).toLocaleString('ca-ES')} €</td>
   </tr>`;
 
@@ -1796,7 +1787,7 @@ console.warn('Firebase no configurat, mode local actiu:', e.message);
 }
 const DB_DEFAULTS = {};
 let DB = {};
-let hubLiters = 0, hubCap = 8000, hubBidonsRestants = 0, totalRec = 0, seq = 1;
+let hubLiters = 0, hubCap = 8000, hubBidonsRestants = 0, totalRec = 0, seq = 0; // BUG5 FIX: seq inicial 0 -> primera ref 001
 let todayRec = 0, scannedEst = null;
 function doLogin() {
 const email = document.getElementById('login-email').value.trim();
@@ -1902,6 +1893,10 @@ document.getElementById('app-root').style.display = 'none';
 document.getElementById('login-email').value = '';
 document.getElementById('login-pass').value = '';
 currentUser = null; currentRol = null;
+// BUG7 FIX: esborra estat en memoria per evitar filtracio de dades entre sessions
+_allRecs = {}; _pendingRecs = {};
+hubLiters = 0; hubCap = 8000; hubBidonsRestants = 0; totalRec = 0; seq = 0; todayRec = 0;
+DB = {};
 // Desconnectem listeners de Firebase per alliberar recursos d'aquesta pestanya
 if (fbReady && db) {
 db.ref('hub').off();
@@ -1974,7 +1969,7 @@ async function getNextSeq() {
   if (fbReady && db) {
     return new Promise((resolve) => {
       db.ref('hub/seq').transaction(current => {
-        return (current || 1) + 1;
+        return (current || 0) + 1; // BUG5 FIX: inicia a 0 perque la primera ref sigui 001
       }, (error, committed, snap) => {
         if (!error && committed) {
           seq = snap.val(); // sincronitza local
@@ -2011,16 +2006,29 @@ const opTbody  = document.getElementById('op-tbody');
 const espTbody = document.getElementById('esp-tbody');
 if (!opTbody || !espTbody) return;
 const allEntries = Object.entries(data).sort((a,b) => b[0].localeCompare(a[0]));
-if (!allEntries.length) return;
+// BUG2+BUG3 FIX: neteja taules sempre (fins i tot si buit) i usa paginacio independent per a cada taula
 if (resetPage) { _opPage = 1; _espPage = 1; }
-const entries = allEntries.slice(0, _opPage * PAGE_SIZE);
+if (!allEntries.length) {
+  opTbody.innerHTML  = '<tr><td colspan="10" style="text-align:center;color:#94a3b8;padding:20px;font-size:12px;">Sense recollides registrades avui</td></tr>';
+  espTbody.innerHTML = '<tr><td colspan="9"  style="text-align:center;color:#94a3b8;padding:20px;font-size:12px;">Sense recollides registrades</td></tr>';
+  updatePendingRecsCache({});
+  _allRecs = {};
+  todayRec = 0;
+  const elC = document.getElementById('op-count'); if(elC) elC.innerText = '0 recollides avui';
+  const el2C = document.getElementById('op-today-count'); if(el2C) el2C.innerText = '0';
+  recalcHub(); updateHub(); saveHub();
+  if (currentRol === 'gestor') espPoblaSelectorRefs();
+  return;
+}
+const entries    = allEntries.slice(0, _opPage  * PAGE_SIZE);
 const espEntries = allEntries.slice(0, _espPage * PAGE_SIZE);
-const hasMoreOp  = allEntries.length > _opPage * PAGE_SIZE;
+const hasMoreOp  = allEntries.length > _opPage  * PAGE_SIZE;
 const hasMoreEsp = allEntries.length > _espPage * PAGE_SIZE;
 const todayStr = new Date().toLocaleDateString('ca-ES');
 let countAvui = 0;
 opTbody.innerHTML  = '';
 espTbody.innerHTML = '';
+// -- Operador (entries, _opPage) --
 entries.forEach(([key, d]) => {
 if (!d || !d.ref) return;
 const isTransp = d.id === 'TRANSP' || d.transportistaOk === true;
@@ -2094,15 +2102,23 @@ Cancel·lar
 </div>
 </td>
 </tr>` : ''}`);
+});
+// BUG2 FIX: Espinosa usa espEntries (paginacio independent de _espPage)
+espEntries.forEach(([key, d]) => {
+if (!d || !d.ref) return;
+const isTransp2 = d.id === 'TRANSP' || d.transportistaOk === true;
+const estatBadge2 = (d.estat||'').startsWith('Net') ? 'bg-green' : (d.estat||'').startsWith('Degradat') ? 'bg-red' : (d.estat||'').startsWith('Pendent') ? 'bg-gray' : 'bg-yellow';
+const estatCurt2  = (d.estat||'Net').startsWith('Pendent') ? 'Pendent' : (d.estat||'Net').split(' ')[0];
+const refKey2 = d.ref.replace(/\./g,'-').replace(/\s/g,'_');
 espTbody.insertAdjacentHTML('beforeend', `<tr>
 <td class="mono">${d.ref}</td>
 <td><strong>${d.nom}</strong></td>
 <td style="font-weight:800;">${d.pes > 0 ? d.pes+' kg' : '—'}</td>
 <td style="font-size:11px;">${d.plens}P / ${d.buits}B</td>
-<td><span class="badge ${estatBadge}">${estatCurt}</span></td>
+<td><span class="badge ${estatBadge2}">${estatCurt2}</span></td>
 <td>${d.transportistaOk ? '<span class="badge bg-green">Confirmat</span>' : '<span class="badge bg-gray">Pendent</span>'}</td>
 <td style="font-family:monospace;font-size:10px;color:#94a3b8;">${d.dataHora||''}<br>GPS: ${d.gps||'validat'}</td>
-<td id="esp-annot-cell-${refKey}" style="font-size:11px;color:#475569;max-width:180px;">${d.anotacioGestor ? '<span style="background:#fef9c3;border:1px solid #fde68a;border-radius:6px;padding:2px 8px;font-size:10px;color:#854d0e;font-weight:600;">📝 '+d.anotacioGestor+'</span>' : '<span style="color:#e2e8f0;font-size:10px;">—</span>'}</td>
+<td id="esp-annot-cell-${refKey2}" style="font-size:11px;color:#475569;max-width:180px;">${d.anotacioGestor ? '<span style="background:#fef9c3;border:1px solid #fde68a;border-radius:6px;padding:2px 8px;font-size:10px;color:#854d0e;font-weight:600;">\u{1F4DD} '+d.anotacioGestor+'</span>' : '<span style="color:#e2e8f0;font-size:10px;">—</span>'}</td>
 <td><span class="dot" style="background:#22c55e;"></span></td>
 </tr>`);
 });
@@ -2280,7 +2296,7 @@ alert('Introdueix el pes en kg abans de confirmar.');
 return;
 }
 const estat    = document.getElementById('inline-estat-' + rk)?.value || 'Net / Filtrat';
-const incidencia = document.getElementById('inline-inc-'  + rk)?.value.trim() || 'Cap incidència';
+const incidencia = document.getElementById('inline-inc-'  + rk)?.value.trim() || 'Cap incidencia'; // BUG12 FIX: normalitzat sense accent
 const rec = _pendingRecs[ref.toUpperCase()];
 if (!rec) { alert('No s\'han trobat les dades originals. Utilitza el formulari manual.'); return; }
 const nom      = rec.nom || ref;
@@ -3264,7 +3280,7 @@ if (!id && !refTransp) { alert("Introdueix el codi d'establiment o la referènci
 const plens     = document.getElementById('inp-plens').value || '0';
 const buits     = document.getElementById('inp-buits').value || '0';
 const estat     = document.getElementById('inp-estat').value;
-const incidencia= document.getElementById('inp-incidencia').value || 'Cap incidència';
+const incidencia= document.getElementById('inp-incidencia').value || 'Cap incidencia'; // BUG12 FIX
 const precinte  = document.getElementById('inp-precinte')?.value?.trim() || '—';
 const isUpdate = !!refTransp && !!_pendingRecs[refTransp];
 const existingRec = isUpdate ? _pendingRecs[refTransp] : null;
@@ -3284,7 +3300,7 @@ totalRec++; todayRec++;
 }
 updateHub();
 if (!isUpdate) {
-document.getElementById('next-id').innerText = 'ID: Z-08370-' + String(seq+1).padStart(3,'0');
+document.getElementById('next-id').innerText = 'ID: Z-08370-' + String(seq+1).padStart(3,'0'); // BUG8: seq sincronitzat per getNextSeq(); el proper ID es aproximat si hi ha acces concurrent
 document.getElementById('op-count').innerText = todayRec + ' recollides';
 }
 const estatBadge = estat.startsWith('Net') ? 'bg-green' : estat.startsWith('Degradat') ? 'bg-red' : 'bg-yellow';
@@ -3458,7 +3474,7 @@ function closeCamioModal() { document.getElementById('camio-modal-overlay').styl
 function calcCamioResta() {
 const emporta=parseInt(document.getElementById('camio-emporta').value)||0;
 const bidonsResten=parseInt(document.getElementById('camio-bidons-resten').value)||0;
-const litresBido=parseInt(document.getElementById('camio-litres-bido').value)||20;
+// BUG11 FIX: litresBido eliminat (variable morta - l'element no existeix al modal)
 const resum=document.getElementById('camio-resum');
 if(emporta<=0){ resum.innerText="Emplena els litres que s'emporta el camió"; return; }
 if(emporta>hubLiters){ resum.innerText='⚠ Supera el hub actual ('+hubLiters+' L)'; resum.style.cssText='background:#fee2e2;border-color:#fca5a5;color:#991b1b;'; return; }
@@ -3479,6 +3495,8 @@ const camioRec = { ref: camioKey, _esCamio: true, emportat: emporta, nom: 'Cami�
 // Actualitza bidons restants al hub
 hubBidonsRestants=bidonsResten;
 // Guarda a Firebase/localStorage
+// BUG1 FIX: _allRecs s'actualitza sempre (Firebase i local) abans de recalcHub()
+_allRecs[camioKey] = camioRec;
 if (fbReady && db) {
   db.ref('recollides/'+camioKey).set(camioRec);
 } else {
@@ -3486,7 +3504,6 @@ if (fbReady && db) {
     const recs = JSON.parse(localStorage.getItem('zeroc_recs') || '{}');
     recs[camioKey] = camioRec;
     localStorage.setItem('zeroc_recs', JSON.stringify(recs));
-    _allRecs[camioKey] = camioRec;
   } catch(e) {}
 }
 // Recalcula hub automàticament
@@ -3628,7 +3645,9 @@ const lDiesel = (km / 100) * tc;
 const costFuel= lDiesel * dp;
 const co2     = lDiesel * 2.64;
 const recsPerPDF = _filterRecsByPeriod(who); const hPerPDF = calcHoresAlliberades(recsPerPDF); const hCondPDF = km / av; const hores = hPerPDF.horesAlliberades + hCondPDF;
-const estalviTotal = hubLiters * (typeof vGetP==='function'?vGetP().PRECIO_UCO:1.00);
+// BUG9 FIX: estalviTotal usa kg reals del periode filtrat, no el stock actual del hub
+const pesPerPDF = recsPerPDF.reduce((s,d) => s + (parseFloat(d.pes)||0), 0);
+const estalviTotal = pesPerPDF * (typeof vGetP==='function'?vGetP().PRECIO_UCO:1.00);
 const fmt     = n => n.toFixed(2).replace('.',',') + ' €';
 if(typeof window.jspdf==='undefined'&&typeof jspdf==='undefined'){alert('jsPDF no carregat.');return;}
 const {jsPDF}=window.jspdf||jspdf;
@@ -3863,8 +3882,9 @@ const dataHora= now.toLocaleDateString('ca-ES') + ' ' + now.getHours().toString(
 const gpsEl   = document.getElementById('t-gps-coords');
 const gps     = gpsEl ? gpsEl.innerText : '41.6143, 2.6621';
 document.getElementById('t-modal-overlay').style.display = 'none';
-totalRec++; todayRec++;
+// BUG4 FIX: incrementa comptadors despres de getNextSeq per evitar desincronitzacio si falla
 const nextSeq = await getNextSeq();
+totalRec++; todayRec++;
 const ref     = 'Z-08370-' + String(nextSeq).padStart(3,'0');
 const recData = { ref, id: codi || 'TRANSP', nom, pes: 0, plens, buits, estat, incidencia: incid, precinte: prec, dataHora, transportistaOk: true, operadorOk: false, gps, dni: dni || '', signatura: signDataUrl || '' };
 saveRecollida(ref, recData); // saveRecollida ja actualitza _pendingRecs
@@ -3875,7 +3895,7 @@ const opCountEl = document.getElementById('op-count');
 if(opCountEl) opCountEl.innerText = todayRec + ' recollides';
 const todayCountEl = document.getElementById('op-today-count');
 if(todayCountEl) todayCountEl.innerText = todayRec;
-document.getElementById('next-id').innerText = 'ID: Z-08370-' + String(seq+1).padStart(3,'0');
+document.getElementById('next-id').innerText = 'ID: Z-08370-' + String(seq+1).padStart(3,'0'); // BUG8: seq sincronitzat per getNextSeq(); el proper ID es aproximat si hi ha acces concurrent
 const opTbody = document.getElementById('op-tbody');
 if(opTbody) {
 if(opTbody.querySelector('td[colspan]')) opTbody.innerHTML = '';
@@ -4092,7 +4112,7 @@ if (!confirm('🎯 RESET PRESENTACIÓ\n\nAixò esborrarà:\n• Totes les recoll
 hubLiters = 0; hubBidonsRestants = 0; totalRec = 0; seq = 1; todayRec = 0;
 _allRecs = {}; _pendingRecs = {};
 
-const hubData = { hubLiters: 0, hubCap: hubCap, hubBidonsRestants: 0, totalRec: 0, seq: 1 };
+const hubData = { hubLiters: 0, hubCap: hubCap, hubBidonsRestants: 0, totalRec: 0, seq: 0 }; // BUG5 FIX
 
 if (fbReady && db) {
   // Esborra recollides i camió de Firebase, reinicia hub
