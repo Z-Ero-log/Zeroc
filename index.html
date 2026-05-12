@@ -1746,7 +1746,6 @@ btn.innerText = 'Entrar al sistema';
 }
 function loginLocal() {
 const roleInfo = USER_ROLES[email.toLowerCase()];
-// BUG FIX: en mode local/offline cal verificar la contrasenya real, no sols la longitud
 const LOCAL_PASSWORDS = { 'zerocarbonlogistic@gmail.com': 'zeroc2024', 'fespinosaruiz@yahoo.es': 'espinosa24' };
 const passOk = LOCAL_PASSWORDS[email.toLowerCase()] === pass;
 if (roleInfo && passOk) {
@@ -1951,7 +1950,6 @@ const d = snap.val();
 if (d) { renderCamioHistorial(d); showCamioAlertOp(d); }
 });
 } else {
-// BUG FIX: localStorage.getItem + JSON.parse sense try/catch — si les dades estan corruptes l'app peta
 try {
 const saved = localStorage.getItem('zeroc_db');
 if(saved) Object.assign(DB, JSON.parse(saved));
@@ -2327,7 +2325,6 @@ const plens    = rec.plens || '0';
 const buits    = rec.buits || '0';
 const precinte = rec.precinte || '—';
 const id       = rec.id || 'TRANSP';
-// BUG FIX: si id és TRANSP o no existeix a DB, busca per nom o per codi d'establiment
 const emailDest= (id !== 'TRANSP' && DB[id]?.email)
   ? DB[id].email
   : (DB[Object.keys(DB).find(k => DB[k].nom === nom)]?.email || '');
@@ -2399,10 +2396,8 @@ const emailParams = {
   signatura_html:   signHtmlBlock, // HTML complet (compatibilitat enrere)
   html_body:        htmlBody       // tot el cos complet via buildAlbaraHTML
 };
-// BUG FIX: declara inlineBtn correctament abans del await
 const inlineBtn = document.querySelector(`#panel-${rk} button[onclick^="confirmarInline"]`) || null;
 if (inlineBtn) { inlineBtn.disabled = true; inlineBtn.textContent = 'Enviant...'; }
-// BUG FIX: avisa si emailDest és buit per evitar silenci
 if (!emailDest) {
   zAlert('⚠️ No s\'ha trobat l\'adreça de correu per a "' + nom + '". Comprova que l\'establiment té email configurat.', 'warn');
 }
@@ -3319,7 +3314,6 @@ const precinte  = document.getElementById('inp-precinte')?.value?.trim() || '—
 const isUpdate = !!refTransp && !!_pendingRecs[refTransp];
 const existingRec = isUpdate ? _pendingRecs[refTransp] : null;
 const nom       = existingRec?.nom || DB[id]?.nom || id;
-// BUG FIX: igual que confirmarInline — si id és 'TRANSP' o no existeix a DB, busca per nom
 const emailDest = (id && id !== 'TRANSP' && DB[id]?.email)
   ? DB[id].email
   : (DB[Object.keys(DB).find(k=>DB[k].nom===(existingRec?.nom||nom))]?.email || '');
@@ -3332,7 +3326,6 @@ if(btn){ btn.disabled=true; btn.innerText='Enviant...'; }
 if (isUpdate) {
 // hub es recalcularà automàticament via recalcHub()
 } else {
-// BUG FIX: totalRec i todayRec s'incrementen correctament — confirmació, no nova recollida si isUpdate
 totalRec++; todayRec++;
 // seq ja incrementat per getNextSeq()
 }
@@ -3678,6 +3671,48 @@ const today   = new Date().toLocaleDateString('ca-ES');
 const dp      = parseFloat(document.getElementById('diesel-p')?.value || 1.65);
 const tc      = parseFloat(document.getElementById('truck-c')?.value || 28);
 const av      = parseFloat(document.getElementById('avg-v')?.value || 55);
+
+// BUG FIX: calcular el rang de dates a partir del selector de tipus, independentment del picker visual
+function _getDateRangeForTipus(tipus) {
+  const now = new Date();
+  const from = new Date(), to = new Date();
+  if (tipus.includes('diari') || tipus.includes('Resum diari')) {
+    from.setHours(0,0,0,0); to.setHours(23,59,59,999);
+  } else if (tipus.includes('setmanal')) {
+    const day = now.getDay() === 0 ? 6 : now.getDay() - 1; // dilluns=0
+    from.setDate(now.getDate() - day); from.setHours(0,0,0,0);
+    to.setHours(23,59,59,999);
+  } else if (tipus.includes('mensual')) {
+    from.setDate(1); from.setHours(0,0,0,0);
+    to.setHours(23,59,59,999);
+  } else if (tipus.includes('trimestral')) {
+    const q = Math.floor(now.getMonth() / 3);
+    from.setMonth(q * 3, 1); from.setHours(0,0,0,0);
+    to.setHours(23,59,59,999);
+  } else if (tipus.includes('semestral')) {
+    from.setMonth(now.getMonth() < 6 ? 0 : 6, 1); from.setHours(0,0,0,0);
+    to.setHours(23,59,59,999);
+  } else if (tipus.includes('anual')) {
+    from.setMonth(0, 1); from.setHours(0,0,0,0);
+    to.setHours(23,59,59,999);
+  } else {
+    return null; // total acumulat
+  }
+  return { from, to };
+}
+function _filterRecsByTipus(tipus) {
+  const range = _getDateRangeForTipus(tipus);
+  const entries = Object.values(_allRecs).filter(d => d && !d._esCamio);
+  if (!range) return entries;
+  return entries.filter(d => {
+    if (!d || !d.dataHora) return false;
+    const parts = d.dataHora.split(' ')[0].split('/');
+    if (parts.length < 3) return false;
+    const recDate = new Date(parseInt(parts[2]), parseInt(parts[1])-1, parseInt(parts[0]));
+    return recDate >= range.from && recDate <= range.to;
+  });
+}
+
 // Càlcul km correcte (async)
 const [resKm, kmZero] = await Promise.all([getKmTradicio(who), getKmZero(who)]);
 const kmTrad  = resKm.km || 0;
@@ -3685,7 +3720,7 @@ const km      = Math.max(0, kmTrad - kmZero);
 const lDiesel = (km / 100) * tc;
 const costFuel= lDiesel * dp;
 const co2     = lDiesel * 2.64;
-const recsPerPDF = _filterRecsByPeriod(who); const hPerPDF = calcHoresAlliberades(recsPerPDF); const hCondPDF = km / av; const hores = hPerPDF.horesAlliberades + hCondPDF;
+const recsPerPDF = _filterRecsByTipus(tipus); const hPerPDF = calcHoresAlliberades(recsPerPDF); const hCondPDF = km / av; const hores = hPerPDF.horesAlliberades + hCondPDF;
 // BUG9 FIX: estalviTotal usa kg reals del periode filtrat, no el stock actual del hub
 const pesPerPDF = recsPerPDF.reduce((s,d) => s + (parseFloat(d.pes)||0), 0);
 const estalviTotal = pesPerPDF * (typeof vGetP==='function'?vGetP().PRECIO_UCO:1.00);
@@ -3772,8 +3807,8 @@ doc.setFontSize(6.5);doc.setFont('helvetica','bold');doc.setTextColor(255,255,25
 const cols=['Codi RED II','Establiment','Pes','Barrils','Estat oli','Transportista','Data'];
 const cw=[28,48,16,18,24,18,30];let cx=16;
 cols.forEach((c,i)=>{doc.text(c,cx,yOff+5.5);cx+=cw[i];});
-// PDF llegeix directament de _allRecs filtrat (no del DOM)
-const recsPerPDFData = _filterRecsByPeriod(who)
+// PDF llegeix directament de _allRecs filtrat per tipus (no del DOM ni del picker visual)
+const recsPerPDFData = _filterRecsByTipus(tipus)
   .filter(d => d && d.ref && !d._esCamio)
   .sort((a,b) => (b.dataHora||'').localeCompare(a.dataHora||''));
 let y=yOff+8;
@@ -4198,7 +4233,6 @@ zAlert('Reset completat! Firebase net: Recollides 0 · Hub 0 Kg · Seq 1. Els es
 // onAuthStateChanged eliminat intencionadament:
 // Cada dispositiu/pestanya gestiona la seva pròpia sessió de forma independent.
 // L'autenticació es valida a doLogin() i no s'ha de propagar entre sessions.
-// BUG FIX: inicialitza EmailJS de forma segura un cop els scripts estan carregats
 (function initEmailJSSafe() {
   if (typeof emailjs !== 'undefined') {
     emailjs.init(EMAILJS_PUBLIC_KEY);
