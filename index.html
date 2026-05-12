@@ -28,7 +28,7 @@
       </div>
       <div style="color:#e2e8f0;font-size:22px;font-weight:900;letter-spacing:0.3px;margin-top:2px;">Col·laborador Autoritzat</div>
       <div style="color:#e2e8f0;font-size:22px;font-weight:900;letter-spacing:0.3px;margin-top:2px;">Logística Z-Ero CO₂ · Milla Verda S.L.</div>
-      <div style="color:#60a5fa;font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;margin-top:5px;">Plataforma de gestió · UCO</div>
+      <div style="color:#60a5fa;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;margin-top:5px;">Plataforma de gestió · UCO</div>
     </div>
 
     <!-- ── CARD LOGIN ── -->
@@ -2315,7 +2315,10 @@ const plens    = rec.plens || '0';
 const buits    = rec.buits || '0';
 const precinte = rec.precinte || '—';
 const id       = rec.id || 'TRANSP';
-const emailDest= DB[id]?.email || DB[Object.keys(DB).find(k=>DB[k].nom===nom)]?.email || '';
+// BUG FIX: si id és TRANSP o no existeix a DB, busca per nom o per codi d'establiment
+const emailDest= (id !== 'TRANSP' && DB[id]?.email)
+  ? DB[id].email
+  : (DB[Object.keys(DB).find(k => DB[k].nom === nom)]?.email || '');
 const now      = new Date();
 const dataHora = now.toLocaleDateString('ca-ES') + ' ' + now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
 const pesPrevio = rec.pes || 0;
@@ -2384,6 +2387,13 @@ const emailParams = {
   signatura_html:   signHtmlBlock, // HTML complet (compatibilitat enrere)
   html_body:        htmlBody       // tot el cos complet via buildAlbaraHTML
 };
+// BUG FIX: declara inlineBtn correctament abans del await
+const inlineBtn = document.querySelector(`#panel-${rk} button[onclick^="confirmarInline"]`) || null;
+if (inlineBtn) { inlineBtn.disabled = true; inlineBtn.textContent = 'Enviant...'; }
+// BUG FIX: avisa si emailDest és buit per evitar silenci
+if (!emailDest) {
+  zAlert('⚠️ No s\'ha trobat l\'adreça de correu per a "' + nom + '". Comprova que l\'establiment té email configurat.', 'warn');
+}
 const result = await sendEmailJS(emailDest, nom, emailParams);
 if (inlineBtn) { inlineBtn.disabled = false; inlineBtn.textContent = '✓ Confirmar i enviar correu'; }
 if (result.ok) zAlert('✓ Recollida ' + ref + ' confirmada. Albarà enviat a ' + (emailDest || nom) + '.', 'ok');
@@ -4172,7 +4182,24 @@ zAlert('Reset completat! Firebase net: Recollides 0 · Hub 0 Kg · Seq 1. Els es
 // onAuthStateChanged eliminat intencionadament:
 // Cada dispositiu/pestanya gestiona la seva pròpia sessió de forma independent.
 // L'autenticació es valida a doLogin() i no s'ha de propagar entre sessions.
-if(typeof emailjs!=='undefined') emailjs.init(EMAILJS_PUBLIC_KEY);
+// BUG FIX: inicialitza EmailJS de forma segura un cop els scripts estan carregats
+(function initEmailJSSafe() {
+  if (typeof emailjs !== 'undefined') {
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+  } else {
+    let attempts = 0;
+    const retry = setInterval(() => {
+      attempts++;
+      if (typeof emailjs !== 'undefined') {
+        emailjs.init(EMAILJS_PUBLIC_KEY);
+        clearInterval(retry);
+      } else if (attempts >= 10) {
+        clearInterval(retry);
+        console.warn('EmailJS no s\'ha pogut inicialitzar.');
+      }
+    }, 300);
+  }
+})();
 function resetSessio() {
   zConfirm(
     'Iniciar nova sessió del dia?\nAixò buidarà el registre visual d\'avui però NO s\'esborraran les dades.',
