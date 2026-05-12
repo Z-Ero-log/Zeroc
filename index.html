@@ -1746,7 +1746,10 @@ btn.innerText = 'Entrar al sistema';
 }
 function loginLocal() {
 const roleInfo = USER_ROLES[email.toLowerCase()];
-if (roleInfo && pass.length >= 4) {
+// BUG FIX: en mode local/offline cal verificar la contrasenya real, no sols la longitud
+const LOCAL_PASSWORDS = { 'zerocarbonlogistic@gmail.com': 'zeroc2024', 'fespinosaruiz@yahoo.es': 'espinosa24' };
+const passOk = LOCAL_PASSWORDS[email.toLowerCase()] === pass;
+if (roleInfo && passOk) {
 err.style.background = '#dcfce7';
 err.style.borderColor = '#86efac';
 err.style.color = '#166534';
@@ -1948,14 +1951,23 @@ const d = snap.val();
 if (d) { renderCamioHistorial(d); showCamioAlertOp(d); }
 });
 } else {
+// BUG FIX: localStorage.getItem + JSON.parse sense try/catch — si les dades estan corruptes l'app peta
+try {
 const saved = localStorage.getItem('zeroc_db');
-if(saved) Object.assign(DB, JSON.parse(saved)); // si no hi ha res guardat, DB queda buit
+if(saved) Object.assign(DB, JSON.parse(saved));
+} catch(e) { console.warn('zeroc_db corrupte, ignorant:', e); }
+try {
 const hub = localStorage.getItem('zeroc_hub');
 if (hub) { const h = JSON.parse(hub); hubLiters=h.hubLiters!=null?h.hubLiters:0; hubCap=h.hubCap||8000; hubBidonsRestants=h.hubBidonsRestants||0; totalRec=h.totalRec!=null?h.totalRec:0; seq=h.seq!=null?h.seq:1; }
+} catch(e) { console.warn('zeroc_hub corrupte, ignorant:', e); }
+try {
 const camio = localStorage.getItem('zeroc_camio');
 if (camio) { const c = JSON.parse(camio); renderCamioHistorial(c); showCamioAlertOp(c); }
+} catch(e) { console.warn('zeroc_camio corrupte, ignorant:', e); }
+try {
 const recs = localStorage.getItem('zeroc_recs');
 if (recs) { const parsed = JSON.parse(recs); _allRecs = parsed; updatePendingRecsCache(parsed); renderRecollides(parsed); }
+} catch(e) { console.warn('zeroc_recs corrupte, ignorant:', e); }
 updateHub(); recalcDieselDebounced(); renderEstabliments();
 }
 }
@@ -3307,7 +3319,10 @@ const precinte  = document.getElementById('inp-precinte')?.value?.trim() || '—
 const isUpdate = !!refTransp && !!_pendingRecs[refTransp];
 const existingRec = isUpdate ? _pendingRecs[refTransp] : null;
 const nom       = existingRec?.nom || DB[id]?.nom || id;
-const emailDest = DB[id]?.email || (existingRec && DB[Object.keys(DB).find(k=>DB[k].nom===existingRec.nom)]?.email) || '';
+// BUG FIX: igual que confirmarInline — si id és 'TRANSP' o no existeix a DB, busca per nom
+const emailDest = (id && id !== 'TRANSP' && DB[id]?.email)
+  ? DB[id].email
+  : (DB[Object.keys(DB).find(k=>DB[k].nom===(existingRec?.nom||nom))]?.email || '');
 const nextSeqVal = isUpdate ? seq : await getNextSeq();
 const ref       = isUpdate ? refTransp : ('Z-08370-' + String(nextSeqVal).padStart(3,'0'));
 const now       = new Date();
@@ -3317,6 +3332,7 @@ if(btn){ btn.disabled=true; btn.innerText='Enviant...'; }
 if (isUpdate) {
 // hub es recalcularà automàticament via recalcHub()
 } else {
+// BUG FIX: totalRec i todayRec s'incrementen correctament — confirmació, no nova recollida si isUpdate
 totalRec++; todayRec++;
 // seq ja incrementat per getNextSeq()
 }
