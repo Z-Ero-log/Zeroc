@@ -308,18 +308,11 @@
       <div><div class="lbl">Velocitat mitjana ruta (km/h)</div><input class="inp" type="number" id="avg-v" value="55" step="5" oninput="recalcDieselDebounced()"></div>
       <div class="info-pill" id="route-pill">Calculant ruta des de Maçanet de la Selva...</div>
     </div>
-    <div class="card card-dark" style="border-top:3px solid #1e40af;border-radius:0 0 20px 20px;">
-      <div class="card-h" style="border-bottom-color:#1e293b;"><span class="card-label" style="color:#60a5fa;">Estalvi total projectat</span></div>
-      <div>
-        <div class="lbl" style="color:#475569;">Valor UCO recollit (període)</div>
-        <div style="font-size:28px;font-weight:900;color:white;margin-top:4px;" id="op-total-estalvi">—</div>
-        <div style="font-size:10px;color:#475569;margin-top:4px;">Ingrés brut UCO · preu i paràmetres taula viabilitat v23</div>
-        <div class="lbl" style="color:#475569;">Projecció hub acumulat</div>
-        <div style="font-size:24px;font-weight:900;color:#60a5fa;margin-top:4px;" id="op-estalvi-total-eur">—</div>
-        <div style="font-size:10px;color:#475569;margin-top:4px;" id="op-estalvi-note">Resultat net model Z-Ero v23</div>
-      </div>
-    </div>
   </div>
+  <!-- Camps ocults per compatibilitat JS (op-total-estalvi, op-estalvi-total-eur) -->
+  <span id="op-total-estalvi" style="display:none;"></span>
+  <span id="op-estalvi-total-eur" style="display:none;"></span>
+  <span id="op-estalvi-note" style="display:none;"></span>
   <!-- op-co2-detail: camp ocult per compatibilitat JS -->
   <span id="op-co2-detail" style="display:none;"></span>
   <div class="table-wrap">
@@ -3022,6 +3015,9 @@ async function recalcDiesel() {
   // alimentada amb els kg reals de les recollides confirmades del període
   vInjectEconomics('op',  pesOp,  countOp);
   vInjectEconomics('esp', pesEsp, countEsp);
+  // Panells adaptats per transportista i establiments
+  if (typeof vInjectEconomicsTransp === 'function') vInjectEconomicsTransp(pesOp, countOp);
+  if (typeof vInjectEconomicsEstab  === 'function') vInjectEconomicsEstab(pesOp,  countOp);
 }
 
 /**
@@ -3143,6 +3139,137 @@ function vInjectEconomics(who, vol, nRec) {
     const noteEl = s('op-estalvi-total-eur')?.nextElementSibling;
     if (noteEl) noteEl.innerText = 'Resultat net model Z-Ero v23 (mateixos paràmetres que la taula de viabilitat)';
   }
+}
+
+/**
+ * Injecta el panell V23 adaptat per TRANSPORTISTA.
+ * Mostra: Xofer Hub + Incidències (costos que afecten directament el seu servei)
+ * S'insereix al final de #sec-transport, dins .transport-wrap
+ */
+function vInjectEconomicsTransp(vol, nRec) {
+  const s = id => document.getElementById(id);
+  if (typeof vCalc !== 'function') return;
+  const containerId = 'transp-v23-economics';
+  let el = document.getElementById(containerId);
+  if (!el) {
+    el = document.createElement('div');
+    el.id = containerId;
+    el.style.cssText = 'margin:16px 0 0 0;';
+    const wrap = document.querySelector('#sec-transport .transport-wrap');
+    if (wrap) wrap.appendChild(el);
+    else { const sec = s('sec-transport'); if (sec) sec.appendChild(el); }
+  }
+  if (vol <= 0 || nRec === 0) {
+    el.innerHTML = `<div style="background:#131c2e;border:1px solid #1e2d45;border-radius:14px;padding:14px 18px;font-size:11px;color:#475569;font-weight:600;">
+      📊 <strong style="color:#64748b;">Resum econòmic del teu servei</strong> — Sense recollides al període · Els valors apareixeran amb kg confirmats.</div>`;
+    return;
+  }
+  const d = vCalc(vol);
+  const p = d.p;
+  const fmtE = n => typeof n === 'number' && !isNaN(n) ? n.toLocaleString('ca-ES', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' €' : '—';
+  const fmtN = n => typeof n === 'number' && !isNaN(n) ? n.toLocaleString('ca-ES') : '—';
+  const costXofer  = d.cx_hub;
+  const costIncid  = d.incid;
+  const totalServ  = (costXofer || 0) + (costIncid || 0);
+
+  el.innerHTML = `
+  <div style="background:#0c1220;border:1px solid rgba(251,191,36,0.2);border-radius:14px;padding:18px 20px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(251,191,36,0.12);flex-wrap:wrap;gap:8px;">
+      <div style="font-size:10px;font-weight:800;color:#fbbf24;text-transform:uppercase;letter-spacing:2px;">📊 Resum econòmic del teu servei · v23</div>
+      <div style="font-size:10px;color:#475569;font-weight:600;">${fmtN(vol)} kg confirmats · ${nRec} recollides</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-bottom:14px;">
+      <div style="background:#0f172a;border-radius:10px;padding:12px 14px;border:1px solid #1e2d45;">
+        <div style="font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;">Cost xofer hub</div>
+        <div style="font-size:17px;font-weight:900;color:#f87171;">${fmtE(costXofer)}</div>
+        <div style="font-size:9px;color:#475569;margin-top:3px;">${fmtN(d.viat)} viatges · ${p.MIN_TRAJECTE_HUB+p.MIN_DESC_HUB} min/viat.</div>
+      </div>
+      <div style="background:#0f172a;border-radius:10px;padding:12px 14px;border:1px solid #1e2d45;">
+        <div style="font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;">Incidències</div>
+        <div style="font-size:17px;font-weight:900;color:#f87171;">${fmtE(costIncid)}</div>
+        <div style="font-size:9px;color:#475569;margin-top:3px;">${fmtN(vol)} kg × 0,012 €/kg</div>
+      </div>
+    </div>
+    <div style="background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.25);border-radius:10px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+      <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;">Total cost servei · període</div>
+      <div style="font-size:22px;font-weight:900;color:#fbbf24;">${fmtE(totalServ)}</div>
+    </div>
+  </div>`;
+}
+
+/**
+ * Injecta el panell V23 adaptat per ESTABLIMENTS.
+ * Mostra: Ingrés UCO + Bidons pagats + Prima 0CO₂ (els que els afecten directament)
+ * S'insereix al final de #sec-establiments
+ */
+function vInjectEconomicsEstab(vol, nRec) {
+  const s = id => document.getElementById(id);
+  if (typeof vCalc !== 'function') return;
+  const ids = Object.keys(typeof DB !== 'undefined' ? DB : {});
+  const totalVolEstim = ids.reduce((acc, id) => acc + ((typeof DB !== 'undefined' && DB[id]?.volum) || 0), 0);
+  const volCalc = vol > 0 ? vol : totalVolEstim;
+  const nRecCalc = nRec > 0 ? nRec : ids.length;
+
+  const containerId = 'estab-v23-economics';
+  let el = document.getElementById(containerId);
+  if (!el) {
+    el = document.createElement('div');
+    el.id = containerId;
+    el.style.cssText = 'margin:16px 0;';
+    const tableWrap = s('sec-establiments')?.querySelector('.table-wrap');
+    if (tableWrap) tableWrap.insertAdjacentElement('beforebegin', el);
+    else { const sec = s('sec-establiments'); if (sec) sec.appendChild(el); }
+  }
+  if (volCalc <= 0) {
+    el.innerHTML = `<div style="background:#131c2e;border:1px solid #1e2d45;border-radius:14px;padding:14px 18px;font-size:11px;color:#475569;font-weight:600;">
+      📊 <strong style="color:#64748b;">Resultat econòmic establiments</strong> — Afegeix establiments amb volum per veure el càlcul.</div>`;
+    return;
+  }
+  const d = vCalc(volCalc);
+  const p = d.p;
+  const bp = d.bp;
+  const fmtE = (n, sign=false) => typeof n === 'number' && !isNaN(n) ? (sign && n > 0 ? '+' : '') + n.toLocaleString('ca-ES', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' €' : '—';
+  const fmtN = n => typeof n === 'number' && !isNaN(n) ? n.toLocaleString('ca-ES') : '—';
+  const ingUCO    = d.ing;
+  const costBid   = d.cb;
+  const primaC02  = d.prima;
+  const netEstab  = (ingUCO || 0) - (costBid || 0) + (primaC02 || 0);
+  const netColor  = netEstab >= 0 ? '#34d399' : '#f87171';
+  const netBg     = netEstab >= 0 ? 'rgba(52,211,153,0.06)' : 'rgba(248,113,113,0.06)';
+  const netBorder = netEstab >= 0 ? 'rgba(52,211,153,0.3)' : 'rgba(248,113,113,0.3)';
+  const label = vol > 0 ? `${fmtN(vol)} kg reals · ${nRec} recollides` : `${fmtN(totalVolEstim)} kg estimats · ${ids.length} establiments`;
+
+  el.innerHTML = `
+  <div style="background:#0c1220;border:1px solid rgba(147,197,253,0.18);border-radius:14px;padding:18px 20px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(147,197,253,0.1);flex-wrap:wrap;gap:8px;">
+      <div style="font-size:10px;font-weight:800;color:#93c5fd;text-transform:uppercase;letter-spacing:2px;">📊 Resultat econòmic establiments · v23</div>
+      <div style="font-size:10px;color:#475569;font-weight:600;">${label} · preu UCO ${p.PRECIO_UCO.toFixed(2)} €/kg · bidó ${bp} €</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:14px;">
+      <div style="background:#0f172a;border-radius:10px;padding:12px 14px;border:1px solid #1e2d45;">
+        <div style="font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;">Ingrés UCO</div>
+        <div style="font-size:17px;font-weight:900;color:#34d399;">${fmtE(ingUCO)}</div>
+        <div style="font-size:9px;color:#475569;margin-top:3px;">${fmtN(volCalc)} kg × ${p.PRECIO_UCO.toFixed(2)} €/kg</div>
+      </div>
+      <div style="background:#0f172a;border-radius:10px;padding:12px 14px;border:1px solid #1e2d45;">
+        <div style="font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;">− Bidons pagats</div>
+        <div style="font-size:17px;font-weight:900;color:#f87171;">${fmtE(costBid)}</div>
+        <div style="font-size:9px;color:#475569;margin-top:3px;">${fmtN(d.b)} bidons × ${bp} €</div>
+      </div>
+      <div style="background:#0f172a;border-radius:10px;padding:12px 14px;border:1px solid rgba(134,239,172,0.15);">
+        <div style="font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;">+ Prima 0CO₂</div>
+        <div style="font-size:17px;font-weight:900;color:#86efac;">${fmtE(primaC02)}</div>
+        <div style="font-size:9px;color:#475569;margin-top:3px;">${fmtN(volCalc)} kg × ${p.PRIMA_CO2.toFixed(3)} €/kg</div>
+      </div>
+    </div>
+    <div style="background:${netBg};border:1px solid ${netBorder};border-radius:10px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+      <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;">Net establiments (sense costos logística)</div>
+      <div style="font-size:22px;font-weight:900;color:${netColor};">${fmtE(netEstab, true)}</div>
+    </div>
+    <div style="margin-top:10px;font-size:10px;color:#334155;text-align:right;">
+      ⚙ Paràmetres editables a la pestanya <strong style="color:#93c5fd;cursor:pointer;" onclick="switchView('volums')">Taula de Volums i Viabilitat →</strong>
+    </div>
+  </div>`;
 }
 
 // Mostra avís d'establiments sense GPS sota les stats
@@ -3583,6 +3710,8 @@ return `<div class="est-row">
 </div>`;
 }).join('');
 tPopulateEstSelect();
+// Panell V23 adaptat per establiments (usa kg estimats de la DB)
+if (typeof vInjectEconomicsEstab === 'function') vInjectEconomicsEstab(0, 0);
 }
 function openModal(prefill) {
   document.getElementById('modal-overlay').classList.add('show');
