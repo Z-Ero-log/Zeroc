@@ -396,6 +396,38 @@
       <span>Establiments registrats</span>
       <span id="est-count-badge" style="color:#60a5fa;">3 actius</span>
     </div>
+    <!-- Barra de cerca establiments -->
+    <div style="background:#0d1626;padding:12px 16px;border-bottom:1px solid #1e2d45;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+      <div style="position:relative;flex:2;min-width:180px;">
+        <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:13px;color:#475569;pointer-events:none;">🔍</span>
+        <input id="est-search-text" type="text" placeholder="Cerca per nom, codi, adreça..."
+          oninput="estFilterList()"
+          style="width:100%;background:#131c2e;border:1.5px solid #1e2d45;border-radius:9px;padding:7px 10px 7px 32px;font-size:12px;color:#e2e8f0;font-family:inherit;outline:none;transition:border-color 0.2s;box-sizing:border-box;"
+          onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#1e2d45'">
+      </div>
+      <select id="est-search-tipus" onchange="estFilterList()"
+        style="background:#131c2e;border:1.5px solid #1e2d45;border-radius:9px;padding:7px 10px;font-size:12px;color:#e2e8f0;font-family:inherit;outline:none;flex-shrink:0;cursor:pointer;"
+        onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#1e2d45'">
+        <option value="">Tots els tipus</option>
+        <option value="Hotel">Hotel</option>
+        <option value="Restaurant">Restaurant</option>
+        <option value="Bar / Cafeteria">Bar / Cafeteria</option>
+        <option value="Rostisseria">Rostisseria</option>
+        <option value="Escola / Campings">Escola / Campings</option>
+        <option value="Altre">Altre</option>
+      </select>
+      <select id="est-search-estat" onchange="estFilterList()"
+        style="background:#131c2e;border:1.5px solid #1e2d45;border-radius:9px;padding:7px 10px;font-size:12px;color:#e2e8f0;font-family:inherit;outline:none;flex-shrink:0;cursor:pointer;"
+        onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#1e2d45'">
+        <option value="">Tots els estats</option>
+        <option value="verificat">Verificats RED II</option>
+        <option value="pendent">Pendents</option>
+      </select>
+      <button onclick="estClearSearch()" title="Netejar filtres"
+        style="background:transparent;border:1.5px solid #1e2d45;border-radius:9px;padding:7px 12px;font-size:11px;color:#64748b;cursor:pointer;font-family:inherit;flex-shrink:0;white-space:nowrap;"
+        onmouseover="this.style.borderColor='#dc2626';this.style.color='#f87171'" onmouseout="this.style.borderColor='#1e2d45';this.style.color='#64748b'">✕ Netejar</button>
+      <span id="est-search-count" style="font-size:11px;color:#475569;font-weight:600;flex-shrink:0;white-space:nowrap;"></span>
+    </div>
     <div id="est-list"></div>
   </div>
   <div class="modal-overlay" id="modal-overlay">
@@ -2798,11 +2830,11 @@ if(!list) return;
 list.innerHTML=ids.map(id=>{
 const e=DB[id]; const pct=Math.min((e.volum/600)*100,100);
 const gpsBadge = e.lat && e.lng ? '<span class="badge" style="background:#dcfce7;color:#15803d;margin-left:4px;">📍 GPS</span>' : '<span class="badge" style="background:#fee2e2;color:#dc2626;margin-left:4px;">⚠ Sense GPS</span>';
-return `<div class="est-row">
+return `<div class="est-row" data-est-id="${id}">
 <div style="display:flex;align-items:center;gap:14px;flex:1;">
 <div style="width:40px;height:40px;border-radius:12px;background:${e.valid?'#dcfce7':'#fef9c3'};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:${e.valid?'#15803d':'#854d0e'};flex-shrink:0;">${id.split('-')[0]}</div>
 <div style="flex:1;min-width:0;">
-<div class="est-name">${e.nom} <span class="badge ${e.valid?'bg-green':'bg-yellow'}" style="margin-left:6px;">${e.valid?'Verificat':'Pendent'}</span>${gpsBadge}</div>
+<div class="est-name">${e.nom} <span class="badge ${e.valid?'bg-green':'bg-yellow'}" style="margin-left:6px;">${e.valid?'Verificat':'Pendent'}</span>${gpsBadge}<span class="badge" style="background:#1e2d45;color:#93c5fd;margin-left:4px;font-size:9px;">${e.tipus||'Altre'}</span></div>
 <div class="est-meta">${e.adreca||'—'}</div>
 <div class="est-meta">${e.tel||'—'} · ${e.email||'—'}</div>
 <div style="margin-top:6px;display:flex;align-items:center;gap:8px;">
@@ -2822,7 +2854,56 @@ return `<div class="est-row">
 tPopulateEstSelect();
 // Panell V23 adaptat per establiments (usa kg estimats de la DB)
 if (typeof vInjectEconomicsEstab === 'function') vInjectEconomicsEstab(0, 0);
+// Aplica filtre actiu si n'hi ha
+estFilterList();
 }
+
+function estFilterList() {
+  const txt    = (document.getElementById('est-search-text')?.value || '').toLowerCase().trim();
+  const tipus  = (document.getElementById('est-search-tipus')?.value || '');
+  const estat  = (document.getElementById('est-search-estat')?.value || '');
+  const rows   = document.querySelectorAll('#est-list .est-row');
+  let visible  = 0;
+  const total  = rows.length;
+
+  rows.forEach(row => {
+    const id  = row.dataset.estId || '';
+    const e   = DB[id];
+    if (!e) { row.style.display = 'none'; return; }
+    const searchText = (id + ' ' + (e.nom||'') + ' ' + (e.adreca||'') + ' ' + (e.tipus||'') + ' ' + (e.tel||'') + ' ' + (e.email||'')).toLowerCase();
+    const passTxt   = !txt   || searchText.includes(txt);
+    const passTipus = !tipus || (e.tipus || '') === tipus;
+    const passEstat = !estat || (estat === 'verificat' ? e.valid === true : e.valid !== true);
+    const show = passTxt && passTipus && passEstat;
+    row.style.display = show ? '' : 'none';
+    if (show) visible++;
+  });
+
+  const countEl = document.getElementById('est-search-count');
+  if (countEl) {
+    const isFiltering = txt || tipus || estat;
+    if (!isFiltering) {
+      countEl.textContent = '';
+    } else if (visible === 0) {
+      countEl.textContent = 'Cap resultat';
+      countEl.style.color = '#f87171';
+    } else {
+      countEl.textContent = visible + ' de ' + total + ' establiments';
+      countEl.style.color = '#4ade80';
+    }
+  }
+}
+
+function estClearSearch() {
+  const txt = document.getElementById('est-search-text');
+  const tip = document.getElementById('est-search-tipus');
+  const est = document.getElementById('est-search-estat');
+  if (txt) txt.value = '';
+  if (tip) tip.value = '';
+  if (est) est.value = '';
+  estFilterList();
+}
+
 function openModal(prefill) {
   document.getElementById('modal-overlay').classList.add('show');
 
