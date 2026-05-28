@@ -158,13 +158,21 @@
     </div>
   </div>
   <div class="nav-tabs" id="nav-tabs">
-    <button class="tab on" id="tab-operador" onclick="switchView('operador')">Operador Z-Ero</button>
-    <button class="tab" id="tab-establiments" onclick="switchView('establiments')">Establiments</button>
-    <button class="tab transport-tab" id="tab-transport" onclick="switchView('transport')">Transportista</button>
-    <button class="tab" id="tab-quatra" onclick="switchView('quatra')">Gestor Quatra</button>
-    <button class="tab" id="tab-volums" onclick="window.open('volums-viabilitat.html','_blank')" style="color:#a78bfa;">📊 Volums</button>
+    <button class="tab on" id="tab-operador" onclick="switchView('operador')" data-i18n="tab_operador">Operador Z-Ero</button>
+    <button class="tab" id="tab-establiments" onclick="switchView('establiments')" data-i18n="tab_establiments">Establiments</button>
+    <button class="tab transport-tab" id="tab-transport" onclick="switchView('transport')" data-i18n="tab_transport">Transportista</button>
+    <button class="tab" id="tab-quatra" onclick="switchView('quatra')" data-i18n="tab_quatra">Gestor Quatra</button>
+    <button class="tab" id="tab-volums" onclick="switchView('volums')" data-i18n="tab_volums">📊 Taula de Volums</button>
   </div>
   <div class="nav-right">
+  <div style="display:flex;gap:7px;align-items:center;margin-right:12px;">
+    <button id="flag-ca" onclick="setLang('ca')" title="Català" style="border:none;background:none;padding:0;cursor:pointer;border-radius:5px;outline:2px solid transparent;line-height:0;transition:all .15s;">
+      <svg width="26" height="18" viewBox="0 0 9 6" style="border-radius:4px;display:block;box-shadow:0 1px 3px rgba(0,0,0,.45);"><rect width="9" height="6" fill="#FCDD09"/><rect y="0.95" width="9" height="0.55" fill="#DA121A"/><rect y="2.15" width="9" height="0.55" fill="#DA121A"/><rect y="3.35" width="9" height="0.55" fill="#DA121A"/><rect y="4.55" width="9" height="0.55" fill="#DA121A"/></svg>
+    </button>
+    <button id="flag-es" onclick="setLang('es')" title="Castellano" style="border:none;background:none;padding:0;cursor:pointer;border-radius:5px;outline:2px solid transparent;line-height:0;transition:all .15s;">
+      <svg width="26" height="18" viewBox="0 0 9 6" style="border-radius:4px;display:block;box-shadow:0 1px 3px rgba(0,0,0,.45);"><rect width="9" height="6" fill="#AA151B"/><rect y="1.5" width="9" height="3" fill="#F1BF00"/></svg>
+    </button>
+  </div>
     <div style="display:flex;align-items:center;gap:8px;">
       <!-- Usuari actual -->
       <div id="nav-user-info" style="background:#1b3325;border:1px solid #335043;border-radius:8px;padding:5px 10px;display:flex;align-items:center;gap:8px;">
@@ -198,8 +206,8 @@
 <section id="sec-operador" class="sec on">
   <div class="top-bar">
     <div>
-      <div class="page-title">Centre Operatiu: Z-Ero CO₂</div>
-      <div class="page-sub">Hub Calella</div>
+      <div class="page-title" data-i18n="pt_operador">Centre Operatiu: Z-Ero CO₂</div>
+      <div class="page-sub" data-i18n="ps_operador">Hub Calella</div>
     </div>
     <div class="top-actions">
       <select class="inp" id="op-pdf-sel" style="width:auto;font-size:11px;font-weight:700;">
@@ -369,8 +377,8 @@
 <section id="sec-establiments" class="sec">
   <div class="top-bar">
     <div>
-      <div class="page-title">Base de dades d'establiments</div>
-      <div class="page-sub">Hotels · Restaurants · Bars · Indústria alimentària · Campings . Rostisseria</div>
+      <div class="page-title" data-i18n="pt_establiments">Base de dades d'establiments</div>
+      <div class="page-sub" data-i18n="ps_establiments">Hotels · Restaurants · Bars · Indústria alimentària · Campings . Rostisseria</div>
     </div>
     <button class="btn btn-green" onclick="openModal()">+ Afegir establiment</button>
   </div>
@@ -612,9 +620,9 @@
 <section id="sec-quatra" class="sec">
   <div class="top-bar">
     <div>
-      <div class="page-title" style="font-style:italic;">Dashboard gestor autoritzat</div>
-      <div class="page-sub">Quatra Iberia · Maçanet de la Selva</div>
-      <div class="page-sub">Col·laborador Autoritzat: Logística Z-Ero CO₂ Milla Verda S.L.</div>
+      <div class="page-title" data-i18n="pt_quatra" style="font-style:italic;">Dashboard gestor autoritzat</div>
+      <div class="page-sub" data-i18n="ps_quatra">Quatra Iberia · Maçanet de la Selva</div>
+      <div class="page-sub" data-i18n="ps_collab">Col·laborador Autoritzat: Logística Z-Ero CO₂ Milla Verda S.L.</div>
     </div>
     <div class="top-actions">
       <select class="inp" id="esp-pdf-sel" style="width:auto;font-size:11px;font-weight:700;">
@@ -767,6 +775,34 @@
   </div>
 </section>
 
+<!-- ======= TAULA DE VOLUMS I VIABILITAT ======= -->
+<section id="sec-volums" class="sec">
+  <div class="top-bar">
+    <div>
+      <div class="page-title" data-i18n="vol_title">Taula de Volums i Viabilitat</div>
+      <div class="page-sub" data-i18n="vol_sub">Càlcul editable per tipus d'establiment</div>
+    </div>
+    <div class="top-actions">
+      <button class="btn btn-green" data-volsave onclick="volumsSave()" data-i18n="vol_save">💾 Desar</button>
+      <button class="btn btn-ghost" onclick="volumsReset()" data-i18n="vol_reset">↺ Restablir</button>
+    </div>
+  </div>
+
+  <div class="card" style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-end;">
+    <div><div class="lbl" data-i18n="vol_eurobido">€ per bidó</div><input class="inp" id="vol-euro" type="number" min="0" step="any" value="15" style="width:110px;" oninput="volumsRecalc()"></div>
+    <div><div class="lbl" data-i18n="vol_kgbido">Kg per bidó</div><input class="inp" id="vol-kg" type="number" min="1" step="any" value="58" style="width:110px;" oninput="volumsRecalc()"></div>
+    <div style="flex:1;min-width:230px;font-size:11px;color:#94a3b8;font-weight:700;line-height:1.5;" data-i18n="vol_formula">Ingressos = (Kg ÷ Kg·bidó) × €/bidó   ·   Net = Ingressos − Costos</div>
+  </div>
+
+  <div class="nav-tabs" id="vol-subtabs" style="margin:16px 0;flex-wrap:wrap;"></div>
+  <div id="vol-editor"></div>
+
+  <div class="table-wrap" style="margin-top:16px;">
+    <div class="table-bar"><span data-i18n="vol_resum">Resum per tipus</span><span id="vol-net-total"></span></div>
+    <div style="overflow-x:auto;"><table id="vol-table"></table></div>
+  </div>
+</section>
+
 <div id="hub-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(13,26,18,0.65);z-index:300;align-items:center;justify-content:center;" onclick="if(event.target===this)closeHubModal()">
   <div style="background:white;border-radius:20px;padding:28px;width:90%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
     <div style="font-size:16px;font-weight:900;color:#0d1a12;margin-bottom:6px;">⚙ Editar Hub</div>
@@ -832,8 +868,8 @@ messagingSenderId: "1027500466158",
 appId:             "1:1027500466158:web:ae5298fbcf6fa9635b38ff"
 };
 const USER_ROLES = {
-"zerocarbonlogistic@gmail.com": { rol: "operador",     nom: "Z-Ero CO₂ · Logística Milla Verda, S.L. · Operador & Transportista", tabs: ["operador","establiments","transport"] },
-"quatra.iberia@quatra.com":      { rol: "gestor",        nom: "Quatra Iberia",                    tabs: ["quatra","establiments"] }
+"zerocarbonlogistic@gmail.com": { rol: "operador",     nom: "Z-Ero CO₂ · Logística Milla Verda, S.L. · Operador & Transportista", tabs: ["operador","establiments","transport","volums"] },
+"quatra.iberia@quatra.com":      { rol: "gestor",        nom: "Quatra Iberia",                    tabs: ["quatra","establiments","volums"] }
 };
 const EMAILJS_PUBLIC_KEY  = '-FHqxMOs0uW0675ql';
 const EMAILJS_SERVICE_ID  = 'service_5uf68zq';
@@ -947,7 +983,7 @@ currentUser = userInfo;
 currentRol  = userInfo.rol;
 const navName = document.getElementById('nav-user-name'); if(navName) navName.innerText = userInfo.nom;
 const navRol  = document.getElementById('nav-user-rol');  if(navRol)  navRol.innerText  = userInfo.rol.toUpperCase();
-const allTabs = ['operador','establiments','transport','quatra'];
+const allTabs = ['operador','establiments','transport','quatra','volums'];
 allTabs.forEach(t => {
 const tab = document.getElementById('tab-' + t);
 if (tab) tab.style.display = userInfo.tabs.includes(t) ? '' : 'none';
@@ -1593,13 +1629,15 @@ try { const d = JSON.parse(localStorage.getItem('zeroc_camio')||'null'); if(d){d
 }
 }
 function switchView(v) {
-['operador','establiments','transport','quatra'].forEach(s => {
+['operador','establiments','transport','quatra','volums'].forEach(s => {
 document.getElementById('sec-' + s).classList.toggle('on', s === v);
 const t = document.getElementById('tab-' + s);
 if (t) t.classList.toggle('on', s === v);
 });
 if (v === 'establiments') renderEstabliments();
 if (v === 'quatra') { recalcDieselDebounced(); espPoblaSelectorRefs(); }
+if (v === 'volums' && typeof volumsRender==='function') volumsRender();
+if (typeof applyI18n==='function') applyI18n();
 }
 // ── DATE RANGE PICKER ────────────────────────────────────────────────────────
 let _allRecs = {};
@@ -3686,6 +3724,276 @@ function vClearSearch(who) {
   }
   vFilterTable(who);
 }
+
+</script>
+<script>
+/* ============================================================
+   Z-Ero · Add-on: Taula de Volums i Viabilitat + i18n (CA/ES)
+   ============================================================ */
+
+/* ---------- i18n ---------- */
+window.LANG = (function(){ try { return localStorage.getItem('zero_lang') || 'ca'; } catch(e){ return 'ca'; } })();
+
+const I18N = {
+  // Navegació
+  tab_operador:{ca:'Operador Z-Ero',es:'Operador Z-Ero'},
+  tab_establiments:{ca:'Establiments',es:'Establecimientos'},
+  tab_transport:{ca:'Transportista',es:'Transportista'},
+  tab_quatra:{ca:'Gestor Quatra',es:'Gestor Quatra'},
+  tab_volums:{ca:'📊 Taula de Volums',es:'📊 Tabla de Volúmenes'},
+  // Títols / subtítols de seccions
+  pt_operador:{ca:'Centre Operatiu: Z-Ero CO₂',es:'Centro Operativo: Z-Ero CO₂'},
+  ps_operador:{ca:'Hub Calella',es:'Hub Calella'},
+  pt_establiments:{ca:"Base de dades d'establiments",es:'Base de datos de establecimientos'},
+  ps_establiments:{ca:'Hotels · Restaurants · Bars · Indústria alimentària · Campings . Rostisseria',es:'Hoteles · Restaurantes · Bares · Industria alimentaria · Campings · Rosticería'},
+  pt_quatra:{ca:'Dashboard gestor autoritzat',es:'Panel gestor autorizado'},
+  ps_quatra:{ca:'Quatra Iberia · Maçanet de la Selva',es:'Quatra Iberia · Maçanet de la Selva'},
+  ps_collab:{ca:'Col·laborador Autoritzat: Logística Z-Ero CO₂ Milla Verda S.L.',es:'Colaborador Autorizado: Logística Z-Ero CO₂ Milla Verda S.L.'},
+  // Taula de Volums
+  vol_title:{ca:'Taula de Volums i Viabilitat',es:'Tabla de Volúmenes y Viabilidad'},
+  vol_sub:{ca:"Càlcul editable per tipus d'establiment",es:'Cálculo editable por tipo de establecimiento'},
+  vol_save:{ca:'💾 Desar',es:'💾 Guardar'},
+  vol_reset:{ca:'↺ Restablir',es:'↺ Restablecer'},
+  vol_eurobido:{ca:'€ per bidó',es:'€ por bidón'},
+  vol_kgbido:{ca:'Kg per bidó',es:'Kg por bidón'},
+  vol_formula:{ca:'Ingressos = (Kg ÷ Kg·bidó) × €/bidó   ·   Net = Ingressos − Costos',es:'Ingresos = (Kg ÷ Kg·bidón) × €/bidón   ·   Neto = Ingresos − Costes'},
+  vol_resum:{ca:'Resum per tipus',es:'Resumen por tipo'},
+  vol_nettot:{ca:'Net total:',es:'Neto total:'},
+  vol_saved:{ca:'✓ Desat',es:'✓ Guardado'},
+  vol_help:{ca:'Edita els valors del tipus seleccionat. Es desa automàticament.',es:'Edita los valores del tipo seleccionado. Se guarda automáticamente.'},
+  // Tipus d'establiment
+  vt_hotels:{ca:'Hotels',es:'Hoteles'},
+  vt_restaurants:{ca:'Restaurants',es:'Restaurantes'},
+  vt_camping:{ca:'Camping',es:'Camping'},
+  vt_grans:{ca:'Grans Restaurants',es:'Grandes Restaurantes'},
+  vt_rostisseria:{ca:'Rostisseria',es:'Rosticería'},
+  vt_altres:{ca:'Altres',es:'Otros'},
+  vt_total:{ca:'TOTAL',es:'TOTAL'},
+  vt_tipus:{ca:'Tipus',es:'Tipo'},
+  // Camps editables
+  vf_n:{ca:'Nº establiments',es:'Nº establecimientos'},
+  vf_kg:{ca:'Kg / mes',es:'Kg / mes'},
+  vf_km:{ca:'Km',es:'Km'},
+  vf_diesel:{ca:'Dièsel €',es:'Diésel €'},
+  vf_hores:{ca:'Hores xòfer €',es:'Horas chófer €'},
+  vf_desgast:{ca:'Desgast vehicle €',es:'Desgaste vehículo €'},
+  vf_incid:{ca:'Incidències €',es:'Incidencias €'},
+  // Camps calculats
+  vc_bidons:{ca:'Bidons',es:'Bidones'},
+  vc_ingressos:{ca:'Ingressos €',es:'Ingresos €'},
+  vc_costos:{ca:'Costos €',es:'Costes €'},
+  vc_net:{ca:'Net €',es:'Neto €'}
+};
+
+function T(k){ const e=I18N[k]; return e ? (e[window.LANG]||e.ca) : k; }
+
+/* Diccionari de frases addicionals (etiquetes/botons comuns) per cobrir més UI */
+window.__PH = {
+  'Generar PDF':'Generar PDF',
+  'Buidar Hub':'Vaciar Hub',
+  'Exportar':'Exportar',
+  'Cancel·lar':'Cancelar',
+  'Desar':'Guardar',
+  'Filtres':'Filtros',
+  'Tots els tipus':'Todos los tipos',
+  'Tots els estats':'Todos los estados',
+  'Hotel':'Hotel','Restaurant':'Restaurante','Bar / Cafeteria':'Bar / Cafetería',
+  'Rostisseria':'Rosticería','Escola / Campings':'Escuela / Campings','Altre':'Otro',
+  'Resum diari':'Resumen diario','Resum setmanal':'Resumen semanal',
+  'Informe mensual RED II':'Informe mensual RED II','Informe trimestral':'Informe trimestral',
+  'Informe semestral':'Informe semestral','Informe anual':'Informe anual',
+  'Verificat':'Verificado','Pendent':'Pendiente','Net / Filtrat':'Limpio / Filtrado',
+  'Brut / Residus':'Sucio / Residuos','Degradat':'Degradado',
+  'Correu electrònic':'Correo electrónico','Contrasenya':'Contraseña',
+  'Capacitat Hub Z-Ero · Calella':'Capacidad Hub Z-Ero · Calella',
+  'Manteniment Flota':'Mantenimiento Flota',
+  'Configuració de càlcul d\u2019estalvi':'Configuración de cálculo de ahorro',
+  'Base de dades d\u2019establiments':'Base de datos de establecimientos'
+};
+
+function applyI18n(){
+  // 1) elements amb data-i18n
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k=el.getAttribute('data-i18n'); if(I18N[k]) el.textContent=T(k);
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
+    const k=el.getAttribute('data-i18n-ph'); if(I18N[k]) el.setAttribute('placeholder',T(k));
+  });
+  // 2) frases comunes (només fulles, conserva l'original a data-o)
+  const PH=window.__PH||{};
+  document.querySelectorAll('.lbl,.card-label,.stat-label,.badge,.hub-pill,.info-pill,.table-bar span,option').forEach(el=>{
+    if(el.tagName!=='OPTION' && el.children.length>0) return;
+    if(el.hasAttribute('data-i18n')) return;
+    if(el.dataset.o===undefined) el.dataset.o=el.textContent;
+    const o=(el.dataset.o||'').trim();
+    el.textContent = (window.LANG==='es' && PH[o]) ? PH[o] : el.dataset.o;
+  });
+  // 3) secció volums dinàmica
+  if(document.getElementById('sec-volums')) volumsRender();
+  updateFlags();
+}
+
+function setLang(l){ window.LANG=l; try{localStorage.setItem('zero_lang',l);}catch(e){} applyI18n(); }
+
+function updateFlags(){
+  ['ca','es'].forEach(l=>{
+    const b=document.getElementById('flag-'+l); if(!b) return;
+    const on = window.LANG===l;
+    b.style.opacity = on?'1':'0.4';
+    b.style.outline = on?'2px solid #4ade80':'2px solid transparent';
+    b.style.transform = on?'scale(1.05)':'scale(1)';
+  });
+}
+
+/* ---------- Taula de Volums i Viabilitat ---------- */
+const VOL_TYPES=[['hotels','vt_hotels'],['restaurants','vt_restaurants'],['camping','vt_camping'],['grans','vt_grans'],['rostisseria','vt_rostisseria'],['altres','vt_altres']];
+const VOL_F=[['n','vf_n'],['kg','vf_kg'],['km','vf_km'],['diesel','vf_diesel'],['hores','vf_hores'],['desgast','vf_desgast'],['incidencies','vf_incid']];
+let VOL_CUR='hotels';
+
+function volDefault(){ const o={}; VOL_TYPES.forEach(t=>o[t[0]]={n:0,kg:0,km:0,diesel:0,hores:0,desgast:0,incidencies:0}); return o; }
+let VOL_DATA = volLoad();
+function volLoad(){
+  try{ const r=localStorage.getItem('zero_volums'); if(r){ const d=JSON.parse(r); const b=volDefault(); VOL_TYPES.forEach(t=>{ if(d[t[0]]) Object.assign(b[t[0]],d[t[0]]); }); return b; } }catch(e){}
+  return volDefault();
+}
+function volPersist(){ try{ localStorage.setItem('zero_volums',JSON.stringify(VOL_DATA)); }catch(e){} }
+function volParams(){
+  const kgb=Math.max(0.0001, parseFloat((document.getElementById('vol-kg')||{}).value)||58);
+  const eb=parseFloat((document.getElementById('vol-euro')||{}).value)||15;
+  return {kgb,eb};
+}
+function volComp(d){
+  const {kgb,eb}=volParams();
+  const kg=+d.kg||0;
+  const bidons=kg/kgb;
+  const ingressos=bidons*eb;
+  const costos=(+d.diesel||0)+(+d.hores||0)+(+d.desgast||0)+(+d.incidencies||0);
+  return {bidons,ingressos,costos,net:ingressos-costos};
+}
+function volLocale(){ return window.LANG==='es'?'es-ES':'ca-ES'; }
+function nf(n,dec){ return (Number(n)||0).toLocaleString(volLocale(),{minimumFractionDigits:dec||0,maximumFractionDigits:dec||0}); }
+function eur(n){ return nf(n,2)+' €'; }
+
+function volSubtabs(){
+  const c=document.getElementById('vol-subtabs'); if(!c) return;
+  c.innerHTML = VOL_TYPES.map(t=>`<button class="tab ${VOL_CUR===t[0]?'on':''}" onclick="volTab('${t[0]}')">${T(t[1])}</button>`).join('');
+}
+function volTab(k){ VOL_CUR=k; volSubtabs(); volEditor(); }
+
+function volEditor(){
+  const ed=document.getElementById('vol-editor'); if(!ed) return;
+  const d=VOL_DATA[VOL_CUR];
+  const tName = T('vt_'+VOL_CUR.replace('hotels','hotels')) || VOL_CUR;
+  const inputs = VOL_F.map(f=>`
+    <div>
+      <div class="lbl">${T(f[1])}</div>
+      <input class="inp" type="number" min="0" step="any" value="${d[f[0]]||0}"
+        oninput="volSet('${f[0]}',this.value)">
+    </div>`).join('');
+  ed.innerHTML=`
+   <div class="card card-bt-green">
+     <div class="card-h">
+       <div class="card-label">${tName}</div>
+       <span class="hub-pill pill-green">${T('vf_n')}: <strong style="margin-left:5px">${nf(d.n)}</strong></span>
+     </div>
+     <div class="g4" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));">${inputs}</div>
+     <div id="vol-results" style="margin-top:16px;">${volResultsHTML(d)}</div>
+     <div style="font-size:10px;color:#94a3b8;font-weight:700;margin-top:10px;">${T('vol_help')}</div>
+   </div>`;
+}
+function volResultsHTML(d){
+  const c=volComp(d);
+  const cell=(label,val,color)=>`
+    <div class="stat-card" style="padding:14px;">
+      <div class="stat-label">${label}</div>
+      <div style="font-size:22px;font-weight:900;color:${color||'#e2e8f0'};line-height:1;margin-top:6px;">${val}</div>
+    </div>`;
+  return `<div class="g-stats" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-bottom:0;">
+     ${cell(T('vc_bidons'), nf(c.bidons,1))}
+     ${cell(T('vc_ingressos'), eur(c.ingressos), '#4ade80')}
+     ${cell(T('vc_costos'), eur(c.costos), '#fbbf24')}
+     ${cell(T('vc_net'), eur(c.net), c.net>=0?'#16a34a':'#f87171')}
+   </div>`;
+}
+function volSet(f,v){
+  VOL_DATA[VOL_CUR][f]=parseFloat(v)||0;
+  volPersist();
+  // actualitza només resultats + capçalera + taula (no re-pinta inputs -> no perd el focus)
+  const r=document.getElementById('vol-results'); if(r) r.innerHTML=volResultsHTML(VOL_DATA[VOL_CUR]);
+  const pill=document.querySelector('#vol-editor .hub-pill strong'); if(pill) pill.textContent=nf(VOL_DATA[VOL_CUR].n);
+  volTable();
+}
+
+function volTable(){
+  const tb=document.getElementById('vol-table'); if(!tb) return;
+  const cols=[T('vt_tipus'),T('vf_n'),T('vf_kg'),T('vc_bidons'),T('vc_ingressos'),T('vf_diesel'),T('vf_hores'),T('vf_desgast'),T('vf_incid'),T('vc_costos'),T('vc_net')];
+  let head='<thead><tr>'+cols.map((c,i)=>`<th style="${i>0?'text-align:right;':''}">${c}</th>`).join('')+'</tr></thead>';
+  const tot={n:0,kg:0,bidons:0,ingressos:0,diesel:0,hores:0,desgast:0,incidencies:0,costos:0,net:0};
+  let rows='';
+  VOL_TYPES.forEach(t=>{
+    const d=VOL_DATA[t[0]]; const c=volComp(d);
+    tot.n+=+d.n||0; tot.kg+=+d.kg||0; tot.bidons+=c.bidons; tot.ingressos+=c.ingressos;
+    tot.diesel+=+d.diesel||0; tot.hores+=+d.hores||0; tot.desgast+=+d.desgast||0; tot.incidencies+=+d.incidencies||0;
+    tot.costos+=c.costos; tot.net+=c.net;
+    const netc = c.net>=0?'#16a34a':'#f87171';
+    rows+=`<tr style="cursor:pointer;" onclick="volTab('${t[0]}')">
+      <td><strong>${T(t[1])}</strong></td>
+      <td style="text-align:right;">${nf(d.n)}</td>
+      <td style="text-align:right;">${nf(d.kg)}</td>
+      <td style="text-align:right;">${nf(c.bidons,1)}</td>
+      <td style="text-align:right;color:#4ade80;font-weight:700;">${eur(c.ingressos)}</td>
+      <td style="text-align:right;">${eur(d.diesel)}</td>
+      <td style="text-align:right;">${eur(d.hores)}</td>
+      <td style="text-align:right;">${eur(d.desgast)}</td>
+      <td style="text-align:right;">${eur(d.incidencies)}</td>
+      <td style="text-align:right;color:#fbbf24;">${eur(c.costos)}</td>
+      <td style="text-align:right;font-weight:800;color:${netc};">${eur(c.net)}</td>
+    </tr>`;
+  });
+  const netc = tot.net>=0?'#16a34a':'#f87171';
+  rows+=`<tr style="background:#244632;">
+      <td><strong>${T('vt_total')}</strong></td>
+      <td style="text-align:right;font-weight:800;">${nf(tot.n)}</td>
+      <td style="text-align:right;font-weight:800;">${nf(tot.kg)}</td>
+      <td style="text-align:right;font-weight:800;">${nf(tot.bidons,1)}</td>
+      <td style="text-align:right;font-weight:800;color:#4ade80;">${eur(tot.ingressos)}</td>
+      <td style="text-align:right;font-weight:800;">${eur(tot.diesel)}</td>
+      <td style="text-align:right;font-weight:800;">${eur(tot.hores)}</td>
+      <td style="text-align:right;font-weight:800;">${eur(tot.desgast)}</td>
+      <td style="text-align:right;font-weight:800;">${eur(tot.incidencies)}</td>
+      <td style="text-align:right;font-weight:800;color:#fbbf24;">${eur(tot.costos)}</td>
+      <td style="text-align:right;font-weight:900;color:${netc};">${eur(tot.net)}</td>
+    </tr>`;
+  tb.innerHTML=head+'<tbody>'+rows+'</tbody>';
+  const nt=document.getElementById('vol-net-total'); if(nt) nt.innerHTML=`${T('vol_nettot')} <strong style="color:${netc};margin-left:4px;">${eur(tot.net)}</strong>`;
+}
+
+function volumsRecalc(){ // quan canvien €/bidó o kg/bidó
+  try{ localStorage.setItem('zero_vol_p', JSON.stringify(volParams())); }catch(e){}
+  const r=document.getElementById('vol-results'); const d=VOL_DATA[VOL_CUR];
+  if(r&&d) r.innerHTML=volResultsHTML(d);
+  volTable();
+}
+function volumsRender(){
+  // carrega params desats
+  try{ const p=JSON.parse(localStorage.getItem('zero_vol_p')||'null'); if(p){ const e=document.getElementById('vol-euro'); const k=document.getElementById('vol-kg'); if(e)e.value=p.eb; if(k)k.value=p.kgb; } }catch(e){}
+  volSubtabs(); volEditor(); volTable();
+}
+function volumsSave(){
+  volPersist();
+  try{ localStorage.setItem('zero_vol_p', JSON.stringify(volParams())); }catch(e){}
+  const btn=document.querySelector('[data-volsave]');
+  if(btn){ const o=btn.textContent; btn.textContent=T('vol_saved'); setTimeout(()=>{ btn.textContent=T('vol_save'); },1200); }
+}
+function volumsReset(){
+  const msg = window.LANG==='es' ? '¿Restablecer todos los valores de la tabla de volúmenes a cero?' : 'Restablir tots els valors de la taula de volums a zero?';
+  const go=()=>{ VOL_DATA=volDefault(); volPersist(); volumsRender(); };
+  if(typeof zConfirm==='function'){ zConfirm(msg, go); } else if(confirm(msg)){ go(); }
+}
+
+/* ---------- Inicialització ---------- */
+document.addEventListener('DOMContentLoaded', function(){ try{ applyI18n(); }catch(e){} });
+window.addEventListener('load', function(){ try{ applyI18n(); }catch(e){} });
 
 </script>
 </body>
