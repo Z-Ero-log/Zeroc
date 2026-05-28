@@ -138,7 +138,7 @@
         '<div class="z-toast-msg" style="margin-bottom:10px;">' + htmlMsg + '</div>' +
         '<div style="display:flex;gap:8px;">' +
           '<button class="z-confirm-yes" style="padding:6px 16px;border-radius:8px;font-weight:800;font-size:12px;border:none;cursor:pointer;background:' + colors[type] + ';color:#fff;font-family:inherit;">Confirmar</button>' +
-          '<button class="z-confirm-no" style="padding:6px 14px;border-radius:8px;font-weight:700;font-size:12px;border:none;cursor:pointer;background:#1c3a2a;color:#94a3b8;font-family:inherit;">Cancel·lar</button>' +
+          '<button class="z-confirm-no" style="padding:6px 14px;border-radius:8px;font-weight:700;font-size:12px;border:none;cursor:pointer;background:#335043;color:#94a3b8;font-family:inherit;">Cancel·lar</button>' +
         '</div>' +
       '</div>';
     toast._hide = function() {
@@ -257,7 +257,7 @@
   <!-- Date range picker Operador -->
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;position:relative;">
     <span style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;">Període:</span>
-    <button id="op-picker-btn" onclick="openPicker('op')" style="display:flex;align-items:center;gap:8px;background:#111f16;border:1.5px solid #1c3a2a;border-radius:10px;padding:7px 14px;cursor:pointer;font-family:inherit;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#16a34a'" onmouseout="this.style.borderColor='#1c3a2a'">
+    <button id="op-picker-btn" onclick="openPicker('op')" style="display:flex;align-items:center;gap:8px;background:#1b3325;border:1.5px solid #335043;border-radius:10px;padding:7px 14px;cursor:pointer;font-family:inherit;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#16a34a'" onmouseout="this.style.borderColor='#335043'">
       <span style="font-size:16px;line-height:1;">📅</span>
       <span id="op-picker-label" style="font-size:11px;font-weight:700;color:#e2e8f0;">Avui</span>
       <span style="font-size:9px;color:#94a3b8;">▼</span>
@@ -322,30 +322,30 @@
       </div>
     </div>
     <!-- Barra de cerca operador -->
-    <div style="background:#0b1810;padding:12px 16px;border-bottom:1px solid #1c3a2a;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+    <div style="background:#0d1a12;padding:12px 16px;border-bottom:1px solid #335043;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
       <div style="position:relative;flex:2;min-width:160px;">
         <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:13px;color:#475569;pointer-events:none;">🔍</span>
         <input id="op-search-text" type="text" placeholder="Ref., establiment, incidència..." oninput="vFilterTable('op')"
-          style="width:100%;background:#111f16;border:1.5px solid #1c3a2a;border-radius:9px;padding:7px 10px 7px 32px;font-size:12px;color:#e2e8f0;font-family:inherit;outline:none;transition:border-color 0.2s;"
-          onfocus="this.style.borderColor='#16a34a'" onblur="this.style.borderColor='#1c3a2a'">
+          style="width:100%;background:#1b3325;border:1.5px solid #335043;border-radius:9px;padding:7px 10px 7px 32px;font-size:12px;color:#e2e8f0;font-family:inherit;outline:none;transition:border-color 0.2s;"
+          onfocus="this.style.borderColor='#16a34a'" onblur="this.style.borderColor='#335043'">
       </div>
       <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
         <span style="font-size:10px;color:#475569;font-weight:700;white-space:nowrap;">Kg min</span>
         <input id="op-search-kg-min" type="number" min="0" placeholder="0" oninput="vFilterTable('op')"
-          style="width:64px;background:#111f16;border:1.5px solid #1c3a2a;border-radius:9px;padding:7px 8px;font-size:12px;color:#86efac;font-family:inherit;outline:none;text-align:center;"
-          onfocus="this.style.borderColor='#16a34a'" onblur="this.style.borderColor='#1c3a2a'">
+          style="width:64px;background:#1b3325;border:1.5px solid #335043;border-radius:9px;padding:7px 8px;font-size:12px;color:#86efac;font-family:inherit;outline:none;text-align:center;"
+          onfocus="this.style.borderColor='#16a34a'" onblur="this.style.borderColor='#335043'">
       </div>
       <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
         <span style="font-size:10px;color:#475569;font-weight:700;white-space:nowrap;">Kg màx</span>
         <input id="op-search-kg-max" type="number" min="0" placeholder="∞" oninput="vFilterTable('op')"
-          style="width:64px;background:#111f16;border:1.5px solid #1c3a2a;border-radius:9px;padding:7px 8px;font-size:12px;color:#86efac;font-family:inherit;outline:none;text-align:center;"
-          onfocus="this.style.borderColor='#16a34a'" onblur="this.style.borderColor='#1c3a2a'">
+          style="width:64px;background:#1b3325;border:1.5px solid #335043;border-radius:9px;padding:7px 8px;font-size:12px;color:#86efac;font-family:inherit;outline:none;text-align:center;"
+          onfocus="this.style.borderColor='#16a34a'" onblur="this.style.borderColor='#335043'">
       </div>
       <input id="op-search-date" type="date" oninput="vFilterTable('op')"
-        style="background:#111f16;border:1.5px solid #1c3a2a;border-radius:9px;padding:7px 10px;font-size:12px;color:#fbbf24;font-family:inherit;outline:none;flex-shrink:0;"
-        onfocus="this.style.borderColor='#16a34a'" onblur="this.style.borderColor='#1c3a2a'">
+        style="background:#1b3325;border:1.5px solid #335043;border-radius:9px;padding:7px 10px;font-size:12px;color:#fbbf24;font-family:inherit;outline:none;flex-shrink:0;"
+        onfocus="this.style.borderColor='#16a34a'" onblur="this.style.borderColor='#335043'">
       <select id="op-search-estat" onchange="vFilterTable('op')"
-        style="background:#111f16;border:1.5px solid #1c3a2a;border-radius:9px;padding:7px 10px;font-size:12px;color:#e2e8f0;font-family:inherit;outline:none;flex-shrink:0;cursor:pointer;">
+        style="background:#1b3325;border:1.5px solid #335043;border-radius:9px;padding:7px 10px;font-size:12px;color:#e2e8f0;font-family:inherit;outline:none;flex-shrink:0;cursor:pointer;">
         <option value="">Tots els estats</option>
         <option value="net">Net / Filtrat</option>
         <option value="brut">Brut / Residus</option>
@@ -353,8 +353,8 @@
         <option value="pendent">Pendent</option>
       </select>
       <button onclick="vClearSearch('op')" title="Netejar filtres"
-        style="background:transparent;border:1.5px solid #1c3a2a;border-radius:9px;padding:7px 12px;font-size:11px;color:#64748b;cursor:pointer;font-family:inherit;flex-shrink:0;white-space:nowrap;"
-        onmouseover="this.style.borderColor='#dc2626';this.style.color='#f87171'" onmouseout="this.style.borderColor='#1c3a2a';this.style.color='#64748b'">✕ Netejar</button>
+        style="background:transparent;border:1.5px solid #335043;border-radius:9px;padding:7px 12px;font-size:11px;color:#64748b;cursor:pointer;font-family:inherit;flex-shrink:0;white-space:nowrap;"
+        onmouseover="this.style.borderColor='#dc2626';this.style.color='#f87171'" onmouseout="this.style.borderColor='#335043';this.style.color='#64748b'">✕ Netejar</button>
       <span id="op-search-count" style="font-size:11px;color:#475569;font-weight:600;flex-shrink:0;white-space:nowrap;"></span>
     </div>
     <table>
@@ -397,17 +397,17 @@
       <span id="est-count-badge" style="color:#4ade80;">3 actius</span>
     </div>
     <!-- Barra de cerca establiments -->
-    <div style="background:#0b1810;padding:12px 16px;border-bottom:1px solid #1c3a2a;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+    <div style="background:#0d1a12;padding:12px 16px;border-bottom:1px solid #335043;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
       <div style="position:relative;flex:2;min-width:180px;">
         <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:13px;color:#475569;pointer-events:none;">🔍</span>
         <input id="est-search-text" type="text" placeholder="Cerca per nom, codi, adreça..."
           oninput="estFilterList()"
-          style="width:100%;background:#111f16;border:1.5px solid #1c3a2a;border-radius:9px;padding:7px 10px 7px 32px;font-size:12px;color:#e2e8f0;font-family:inherit;outline:none;transition:border-color 0.2s;box-sizing:border-box;"
-          onfocus="this.style.borderColor='#16a34a'" onblur="this.style.borderColor='#1c3a2a'">
+          style="width:100%;background:#1b3325;border:1.5px solid #335043;border-radius:9px;padding:7px 10px 7px 32px;font-size:12px;color:#e2e8f0;font-family:inherit;outline:none;transition:border-color 0.2s;box-sizing:border-box;"
+          onfocus="this.style.borderColor='#16a34a'" onblur="this.style.borderColor='#335043'">
       </div>
       <select id="est-search-tipus" onchange="estFilterList()"
-        style="background:#111f16;border:1.5px solid #1c3a2a;border-radius:9px;padding:7px 10px;font-size:12px;color:#e2e8f0;font-family:inherit;outline:none;flex-shrink:0;cursor:pointer;"
-        onfocus="this.style.borderColor='#16a34a'" onblur="this.style.borderColor='#1c3a2a'">
+        style="background:#1b3325;border:1.5px solid #335043;border-radius:9px;padding:7px 10px;font-size:12px;color:#e2e8f0;font-family:inherit;outline:none;flex-shrink:0;cursor:pointer;"
+        onfocus="this.style.borderColor='#16a34a'" onblur="this.style.borderColor='#335043'">
         <option value="">Tots els tipus</option>
         <option value="Hotel">Hotel</option>
         <option value="Restaurant">Restaurant</option>
@@ -417,15 +417,15 @@
         <option value="Altre">Altre</option>
       </select>
       <select id="est-search-estat" onchange="estFilterList()"
-        style="background:#111f16;border:1.5px solid #1c3a2a;border-radius:9px;padding:7px 10px;font-size:12px;color:#e2e8f0;font-family:inherit;outline:none;flex-shrink:0;cursor:pointer;"
-        onfocus="this.style.borderColor='#16a34a'" onblur="this.style.borderColor='#1c3a2a'">
+        style="background:#1b3325;border:1.5px solid #335043;border-radius:9px;padding:7px 10px;font-size:12px;color:#e2e8f0;font-family:inherit;outline:none;flex-shrink:0;cursor:pointer;"
+        onfocus="this.style.borderColor='#16a34a'" onblur="this.style.borderColor='#335043'">
         <option value="">Tots els estats</option>
         <option value="verificat">Verificats RED II</option>
         <option value="pendent">Pendents</option>
       </select>
       <button onclick="estClearSearch()" title="Netejar filtres"
-        style="background:transparent;border:1.5px solid #1c3a2a;border-radius:9px;padding:7px 12px;font-size:11px;color:#64748b;cursor:pointer;font-family:inherit;flex-shrink:0;white-space:nowrap;"
-        onmouseover="this.style.borderColor='#dc2626';this.style.color='#f87171'" onmouseout="this.style.borderColor='#1c3a2a';this.style.color='#64748b'">✕ Netejar</button>
+        style="background:transparent;border:1.5px solid #335043;border-radius:9px;padding:7px 12px;font-size:11px;color:#64748b;cursor:pointer;font-family:inherit;flex-shrink:0;white-space:nowrap;"
+        onmouseover="this.style.borderColor='#dc2626';this.style.color='#f87171'" onmouseout="this.style.borderColor='#335043';this.style.color='#64748b'">✕ Netejar</button>
       <span id="est-search-count" style="font-size:11px;color:#475569;font-weight:600;flex-shrink:0;white-space:nowrap;"></span>
     </div>
     <div id="est-list"></div>
@@ -556,7 +556,7 @@
         <!-- Signatura digital -->
         <div style="margin-bottom:18px;">
           <div class="lbl">Signatura del responsable <span style="color:#dc2626;">*</span></div>
-          <div style="background:#0b1810;border:1.5px solid #1c3a2a;border-radius:12px;overflow:hidden;position:relative;">
+          <div style="background:#0d1a12;border:1.5px solid #335043;border-radius:12px;overflow:hidden;position:relative;">
             <canvas id="t-sign-canvas" width="400" height="140"
               style="width:100%;height:140px;display:block;cursor:crosshair;touch-action:none;"
               onmousedown="signStart(event,'t-sign-canvas')" onmousemove="signDraw(event,'t-sign-canvas')" onmouseup="signEnd('t-sign-canvas')" onmouseleave="signEnd('t-sign-canvas')"
@@ -631,7 +631,7 @@
   <!-- Date range picker Quatra Iberia -->
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;position:relative;">
     <span style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;">Període:</span>
-    <button id="esp-picker-btn" onclick="openPicker('esp')" style="display:flex;align-items:center;gap:8px;background:#111f16;border:1.5px solid #1c3a2a;border-radius:10px;padding:7px 14px;cursor:pointer;font-family:inherit;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#16a34a'" onmouseout="this.style.borderColor='#1c3a2a'">
+    <button id="esp-picker-btn" onclick="openPicker('esp')" style="display:flex;align-items:center;gap:8px;background:#1b3325;border:1.5px solid #335043;border-radius:10px;padding:7px 14px;cursor:pointer;font-family:inherit;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#16a34a'" onmouseout="this.style.borderColor='#335043'">
       <span style="font-size:16px;line-height:1;">📅</span>
       <span id="esp-picker-label" style="font-size:11px;font-weight:700;color:#e2e8f0;">Avui</span>
       <span style="font-size:9px;color:#94a3b8;">▼</span>
@@ -717,30 +717,30 @@
       </div>
     </div>
     <!-- Barra de cerca gestor -->
-    <div style="background:#0b1810;padding:12px 16px;border-bottom:1px solid #1c3a2a;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+    <div style="background:#0d1a12;padding:12px 16px;border-bottom:1px solid #335043;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
       <div style="position:relative;flex:2;min-width:160px;">
         <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:13px;color:#475569;pointer-events:none;">🔍</span>
         <input id="esp-search-text" type="text" placeholder="Ref. RED II, establiment, anotació..." oninput="vFilterTable('esp')"
-          style="width:100%;background:#111f16;border:1.5px solid #1c3a2a;border-radius:9px;padding:7px 10px 7px 32px;font-size:12px;color:#e2e8f0;font-family:inherit;outline:none;transition:border-color 0.2s;"
-          onfocus="this.style.borderColor='#7c3aed'" onblur="this.style.borderColor='#1c3a2a'">
+          style="width:100%;background:#1b3325;border:1.5px solid #335043;border-radius:9px;padding:7px 10px 7px 32px;font-size:12px;color:#e2e8f0;font-family:inherit;outline:none;transition:border-color 0.2s;"
+          onfocus="this.style.borderColor='#7c3aed'" onblur="this.style.borderColor='#335043'">
       </div>
       <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
         <span style="font-size:10px;color:#475569;font-weight:700;white-space:nowrap;">Kg min</span>
         <input id="esp-search-kg-min" type="number" min="0" placeholder="0" oninput="vFilterTable('esp')"
-          style="width:64px;background:#111f16;border:1.5px solid #1c3a2a;border-radius:9px;padding:7px 8px;font-size:12px;color:#86efac;font-family:inherit;outline:none;text-align:center;"
-          onfocus="this.style.borderColor='#7c3aed'" onblur="this.style.borderColor='#1c3a2a'">
+          style="width:64px;background:#1b3325;border:1.5px solid #335043;border-radius:9px;padding:7px 8px;font-size:12px;color:#86efac;font-family:inherit;outline:none;text-align:center;"
+          onfocus="this.style.borderColor='#7c3aed'" onblur="this.style.borderColor='#335043'">
       </div>
       <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
         <span style="font-size:10px;color:#475569;font-weight:700;white-space:nowrap;">Kg màx</span>
         <input id="esp-search-kg-max" type="number" min="0" placeholder="∞" oninput="vFilterTable('esp')"
-          style="width:64px;background:#111f16;border:1.5px solid #1c3a2a;border-radius:9px;padding:7px 8px;font-size:12px;color:#86efac;font-family:inherit;outline:none;text-align:center;"
-          onfocus="this.style.borderColor='#7c3aed'" onblur="this.style.borderColor='#1c3a2a'">
+          style="width:64px;background:#1b3325;border:1.5px solid #335043;border-radius:9px;padding:7px 8px;font-size:12px;color:#86efac;font-family:inherit;outline:none;text-align:center;"
+          onfocus="this.style.borderColor='#7c3aed'" onblur="this.style.borderColor='#335043'">
       </div>
       <input id="esp-search-date" type="date" oninput="vFilterTable('esp')"
-        style="background:#111f16;border:1.5px solid #1c3a2a;border-radius:9px;padding:7px 10px;font-size:12px;color:#fbbf24;font-family:inherit;outline:none;flex-shrink:0;"
-        onfocus="this.style.borderColor='#7c3aed'" onblur="this.style.borderColor='#1c3a2a'">
+        style="background:#1b3325;border:1.5px solid #335043;border-radius:9px;padding:7px 10px;font-size:12px;color:#fbbf24;font-family:inherit;outline:none;flex-shrink:0;"
+        onfocus="this.style.borderColor='#7c3aed'" onblur="this.style.borderColor='#335043'">
       <select id="esp-search-estat" onchange="vFilterTable('esp')"
-        style="background:#111f16;border:1.5px solid #1c3a2a;border-radius:9px;padding:7px 10px;font-size:12px;color:#e2e8f0;font-family:inherit;outline:none;flex-shrink:0;cursor:pointer;">
+        style="background:#1b3325;border:1.5px solid #335043;border-radius:9px;padding:7px 10px;font-size:12px;color:#e2e8f0;font-family:inherit;outline:none;flex-shrink:0;cursor:pointer;">
         <option value="">Tots els estats</option>
         <option value="net">Net / Filtrat</option>
         <option value="brut">Brut / Residus</option>
@@ -748,14 +748,14 @@
         <option value="pendent">Pendent</option>
       </select>
       <select id="esp-search-origen" onchange="vFilterTable('esp')"
-        style="background:#111f16;border:1.5px solid #1c3a2a;border-radius:9px;padding:7px 10px;font-size:12px;color:#e2e8f0;font-family:inherit;outline:none;flex-shrink:0;cursor:pointer;">
+        style="background:#1b3325;border:1.5px solid #335043;border-radius:9px;padding:7px 10px;font-size:12px;color:#e2e8f0;font-family:inherit;outline:none;flex-shrink:0;cursor:pointer;">
         <option value="">Tots els orígens</option>
         <option value="transp">Transportista</option>
         <option value="operador">Operador</option>
       </select>
       <button onclick="vClearSearch('esp')" title="Netejar filtres"
-        style="background:transparent;border:1.5px solid #1c3a2a;border-radius:9px;padding:7px 12px;font-size:11px;color:#64748b;cursor:pointer;font-family:inherit;flex-shrink:0;white-space:nowrap;"
-        onmouseover="this.style.borderColor='#dc2626';this.style.color='#f87171'" onmouseout="this.style.borderColor='#1c3a2a';this.style.color='#64748b'">✕ Netejar</button>
+        style="background:transparent;border:1.5px solid #335043;border-radius:9px;padding:7px 12px;font-size:11px;color:#64748b;cursor:pointer;font-family:inherit;flex-shrink:0;white-space:nowrap;"
+        onmouseover="this.style.borderColor='#dc2626';this.style.color='#f87171'" onmouseout="this.style.borderColor='#335043';this.style.color='#64748b'">✕ Netejar</button>
       <span id="esp-search-count" style="font-size:11px;color:#475569;font-weight:600;flex-shrink:0;white-space:nowrap;"></span>
     </div>
     <table>
@@ -2200,7 +2200,7 @@ function vInjectEconomics(who, vol, nRec) {
   }
 
   if (vol <= 0 || nRec === 0) {
-    el.innerHTML = `<div style="background:#111f16;border:1px solid #1c3a2a;border-radius:14px;padding:14px 18px;font-size:11px;color:#475569;font-weight:600;">
+    el.innerHTML = `<div style="background:#1b3325;border:1px solid #335043;border-radius:14px;padding:14px 18px;font-size:11px;color:#475569;font-weight:600;">
       📊 <strong style="color:#64748b;">Resultats econòmics v23</strong> — Sense recollides al període seleccionat · Els càlculs apareixeran amb kg confirmats.</div>`;
     return;
   }
@@ -2225,12 +2225,12 @@ function vInjectEconomics(who, vol, nRec) {
       <div style="font-size:10px;color:#475569;font-weight:600;">${fmtN(vol)} kg reals · ${nRec} recollides · preu UCO ${p.PRECIO_UCO.toFixed(2)} €/kg · bidó ${bp} €</div>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:14px;">
-      <div style="background:#0d1a12;border-radius:10px;padding:12px 14px;border:1px solid #1c3a2a;">
+      <div style="background:#0d1a12;border-radius:10px;padding:12px 14px;border:1px solid #335043;">
         <div style="font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;">Ingrés UCO</div>
         <div style="font-size:17px;font-weight:900;color:#34d399;">${fmtE(ingUCO)}</div>
         <div style="font-size:9px;color:#475569;margin-top:3px;">${fmtN(vol)} kg × ${p.PRECIO_UCO.toFixed(2)} €/kg</div>
       </div>
-      <div style="background:#0d1a12;border-radius:10px;padding:12px 14px;border:1px solid #1c3a2a;">
+      <div style="background:#0d1a12;border-radius:10px;padding:12px 14px;border:1px solid #335043;">
         <div style="font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;">− Bidons pagats</div>
         <div style="font-size:17px;font-weight:900;color:#f87171;">${fmtE(costBidons)}</div>
         <div style="font-size:9px;color:#475569;margin-top:3px;">${fmtN(d.b)} bidons × ${bp} €</div>
@@ -2240,17 +2240,17 @@ function vInjectEconomics(who, vol, nRec) {
         <div style="font-size:17px;font-weight:900;color:#86efac;">${fmtE(primaC02)}</div>
         <div style="font-size:9px;color:#475569;margin-top:3px;">${fmtN(vol)} kg × ${p.PRIMA_CO2.toFixed(3)} €/kg</div>
       </div>
-      <div style="background:#0d1a12;border-radius:10px;padding:12px 14px;border:1px solid #1c3a2a;">
+      <div style="background:#0d1a12;border-radius:10px;padding:12px 14px;border:1px solid #335043;">
         <div style="font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;">− Servei Z-Ero</div>
         <div style="font-size:17px;font-weight:900;color:#f87171;">${fmtE(costZero)}</div>
         <div style="font-size:9px;color:#475569;margin-top:3px;">${p.FIX_ZERO} € fix + var.</div>
       </div>
-      <div style="background:#0d1a12;border-radius:10px;padding:12px 14px;border:1px solid #1c3a2a;">
+      <div style="background:#0d1a12;border-radius:10px;padding:12px 14px;border:1px solid #335043;">
         <div style="font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;">− Xofer hub</div>
         <div style="font-size:17px;font-weight:900;color:#f87171;">${fmtE(costXofer)}</div>
         <div style="font-size:9px;color:#475569;margin-top:3px;">${fmtN(d.viat)} viatges · ${p.MIN_TRAJECTE_HUB+p.MIN_DESC_HUB} min/viat.</div>
       </div>
-      <div style="background:#0d1a12;border-radius:10px;padding:12px 14px;border:1px solid #1c3a2a;">
+      <div style="background:#0d1a12;border-radius:10px;padding:12px 14px;border:1px solid #335043;">
         <div style="font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;">− Incidències</div>
         <div style="font-size:17px;font-weight:900;color:#f87171;">${fmtE(costIncid)}</div>
         <div style="font-size:9px;color:#475569;margin-top:3px;">${fmtN(vol)} kg × 0,012 €/kg</div>
@@ -2303,7 +2303,7 @@ function vInjectEconomicsTransp(vol, nRec) {
     else { const sec = s('sec-transport'); if (sec) sec.appendChild(el); }
   }
   if (vol <= 0 || nRec === 0) {
-    el.innerHTML = `<div style="background:#111f16;border:1px solid #1c3a2a;border-radius:14px;padding:14px 18px;font-size:11px;color:#475569;font-weight:600;">
+    el.innerHTML = `<div style="background:#1b3325;border:1px solid #335043;border-radius:14px;padding:14px 18px;font-size:11px;color:#475569;font-weight:600;">
       📊 <strong style="color:#64748b;">Resum econòmic del teu servei</strong> — Sense recollides al període · Els valors apareixeran amb kg confirmats.</div>`;
     return;
   }
@@ -2322,12 +2322,12 @@ function vInjectEconomicsTransp(vol, nRec) {
       <div style="font-size:10px;color:#475569;font-weight:600;">${fmtN(vol)} kg confirmats · ${nRec} recollides</div>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-bottom:14px;">
-      <div style="background:#0d1a12;border-radius:10px;padding:12px 14px;border:1px solid #1c3a2a;">
+      <div style="background:#0d1a12;border-radius:10px;padding:12px 14px;border:1px solid #335043;">
         <div style="font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;">Cost xofer hub</div>
         <div style="font-size:17px;font-weight:900;color:#f87171;">${fmtE(costXofer)}</div>
         <div style="font-size:9px;color:#475569;margin-top:3px;">${fmtN(d.viat)} viatges · ${p.MIN_TRAJECTE_HUB+p.MIN_DESC_HUB} min/viat.</div>
       </div>
-      <div style="background:#0d1a12;border-radius:10px;padding:12px 14px;border:1px solid #1c3a2a;">
+      <div style="background:#0d1a12;border-radius:10px;padding:12px 14px;border:1px solid #335043;">
         <div style="font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;">Incidències</div>
         <div style="font-size:17px;font-weight:900;color:#f87171;">${fmtE(costIncid)}</div>
         <div style="font-size:9px;color:#475569;margin-top:3px;">${fmtN(vol)} kg × 0,012 €/kg</div>
@@ -2364,7 +2364,7 @@ function vInjectEconomicsEstab(vol, nRec) {
     else { const sec = s('sec-establiments'); if (sec) sec.appendChild(el); }
   }
   if (volCalc <= 0) {
-    el.innerHTML = `<div style="background:#111f16;border:1px solid #1c3a2a;border-radius:14px;padding:14px 18px;font-size:11px;color:#475569;font-weight:600;">
+    el.innerHTML = `<div style="background:#1b3325;border:1px solid #335043;border-radius:14px;padding:14px 18px;font-size:11px;color:#475569;font-weight:600;">
       📊 <strong style="color:#64748b;">Resultat econòmic establiments</strong> — Afegeix establiments amb volum per veure el càlcul.</div>`;
     return;
   }
@@ -2389,12 +2389,12 @@ function vInjectEconomicsEstab(vol, nRec) {
       <div style="font-size:10px;color:#475569;font-weight:600;">${label} · preu UCO ${p.PRECIO_UCO.toFixed(2)} €/kg · bidó ${bp} €</div>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:14px;">
-      <div style="background:#0d1a12;border-radius:10px;padding:12px 14px;border:1px solid #1c3a2a;">
+      <div style="background:#0d1a12;border-radius:10px;padding:12px 14px;border:1px solid #335043;">
         <div style="font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;">Ingrés UCO</div>
         <div style="font-size:17px;font-weight:900;color:#34d399;">${fmtE(ingUCO)}</div>
         <div style="font-size:9px;color:#475569;margin-top:3px;">${fmtN(volCalc)} kg × ${p.PRECIO_UCO.toFixed(2)} €/kg</div>
       </div>
-      <div style="background:#0d1a12;border-radius:10px;padding:12px 14px;border:1px solid #1c3a2a;">
+      <div style="background:#0d1a12;border-radius:10px;padding:12px 14px;border:1px solid #335043;">
         <div style="font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;">− Bidons pagats</div>
         <div style="font-size:17px;font-weight:900;color:#f87171;">${fmtE(costBid)}</div>
         <div style="font-size:9px;color:#475569;margin-top:3px;">${fmtN(d.b)} bidons × ${bp} €</div>
@@ -2835,7 +2835,7 @@ return `<div class="est-row" data-est-id="${id}">
 <div style="display:flex;align-items:center;gap:14px;flex:1;">
 <div style="width:40px;height:40px;border-radius:12px;background:${e.valid?'#dcfce7':'#fef9c3'};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:${e.valid?'#15803d':'#854d0e'};flex-shrink:0;">${id.split('-')[0]}</div>
 <div style="flex:1;min-width:0;">
-<div class="est-name">${e.nom} <span class="badge ${e.valid?'bg-green':'bg-yellow'}" style="margin-left:6px;">${e.valid?'Verificat':'Pendent'}</span>${gpsBadge}<span class="badge" style="background:#1c3a2a;color:#86efac;margin-left:4px;font-size:9px;">${e.tipus||'Altre'}</span></div>
+<div class="est-name">${e.nom} <span class="badge ${e.valid?'bg-green':'bg-yellow'}" style="margin-left:6px;">${e.valid?'Verificat':'Pendent'}</span>${gpsBadge}<span class="badge" style="background:#335043;color:#86efac;margin-left:4px;font-size:9px;">${e.tipus||'Altre'}</span></div>
 <div class="est-meta">${e.adreca||'—'}</div>
 <div class="est-meta">${e.tel||'—'} · ${e.email||'—'}</div>
 <div style="margin-top:6px;display:flex;align-items:center;gap:8px;">
@@ -3248,7 +3248,7 @@ resum.innerHTML = '<div style="display:flex;flex-direction:column;gap:8px;">'
 + '<div style="display:flex;justify-content:space-between;"><span style="color:#94a3b8;">Precinte</span><strong style="font-family:monospace;">' + prec + '</strong></div>'
 + '<div style="display:flex;justify-content:space-between;"><span style="color:#94a3b8;">DNI/NIF responsable</span><strong style="font-family:monospace;color:#15803d;">✓ ' + dni + '</strong></div>'
 + (incid && incid !== 'Cap incidencia' ? '<div style="display:flex;justify-content:space-between;"><span style="color:#94a3b8;">Incidència</span><strong style="color:#dc2626;">⚠ ' + incid + '</strong></div>' : '')
-+ (signDataUrl ? '<div style="background:#f8fafc;border-radius:8px;padding:8px;margin-top:4px;"><div style="font-size:10px;color:#94a3b8;font-weight:700;margin-bottom:4px;">SIGNATURA DEL RESPONSABLE</div><img src="'+signDataUrl+'" style="width:100%;max-height:70px;object-fit:contain;border-radius:6px;background:#0b1810;"></div>' : '')
++ (signDataUrl ? '<div style="background:#f8fafc;border-radius:8px;padding:8px;margin-top:4px;"><div style="font-size:10px;color:#94a3b8;font-weight:700;margin-bottom:4px;">SIGNATURA DEL RESPONSABLE</div><img src="'+signDataUrl+'" style="width:100%;max-height:70px;object-fit:contain;border-radius:6px;background:#0d1a12;"></div>' : '')
 + '<div style="margin-top:8px;padding:10px;background:#fef3c7;border-radius:8px;font-size:11px;color:#92400e;font-weight:700;">ℹ El pes es determina a la bàscula homologada del hub</div>'
 + '</div>';
 // Guarda signatura per a l'enviament
