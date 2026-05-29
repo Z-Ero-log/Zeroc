@@ -4155,7 +4155,8 @@ function volTable(g){
   const totKg=g.kg||0, totH=g.horesPP||0; let rows='';
   VOL_TYPES.forEach(t=>{ const d=VOL_DATA[t[0]]; const c=typeComp(d);
     const share=totKg>0?(+d.kg||0)/totKg:0;
-    const oport_t=totH>0? g.oportunitat*((c.horesPP||0)/totH) : 0;   // hores alliberades repartides
+    const wH=totH>0?((c.horesPP||0)/totH):(totKg>0?(+d.kg||0)/totKg:(1/VOL_TYPES.length));
+    const oport_t=g.oportunitat*wH;   // hores alliberades repartides (per hores; si manual o sense hores, per kg)
     const costQ_t=g.costViatge*share + (VOL_G.fixMes*share + c.facturaVar);
     const benefQ_t=c.estalvi+oport_t+c.estalviOli-costQ_t;
     const netZ_t=(VOL_G.fixMes*share + c.facturaVar)-c.costMillaZero;
