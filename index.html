@@ -3948,7 +3948,17 @@ const I18N = {
   vol_grid_title:{ca:"Dades per tipus d'establiment",es:'Datos por tipo de establecimiento',fr:"Données par type d'établissement"},
   gp_horesall:{ca:'Hores alliberades / mes (0 = auto)',es:'Horas liberadas / mes (0 = auto)',fr:'Heures libérées / mois (0 = auto)'},
   lbl_auto:{ca:'auto',es:'auto',fr:'auto'},
-  lbl_manual:{ca:'manual',es:'manual',fr:'manuel'}
+  lbl_manual:{ca:'manual',es:'manual',fr:'manuel'},
+  gp_venda_title:{ca:"Venda de l'UCO (Quatra → Repsol)",es:'Venta del UCO (Quatra → Repsol)',fr:"Vente de l'UCO (Quatra → Repsol)"},
+  gp_preuvenda:{ca:'Preu venda UCO (€/kg)',es:'Precio venta UCO (€/kg)',fr:'Prix vente UCO (€/kg)'},
+  gp_prima:{ca:'Prima 0 emissions (€/kg)',es:'Prima 0 emisiones (€/kg)',fr:'Prime 0 émission (€/kg)'},
+  q_primatitle:{ca:'Prima 0 emissions (recollida elèctrica)',es:'Prima 0 emisiones (recogida eléctrica)',fr:'Prime 0 émission (collecte électrique)'},
+  q_prima:{ca:'Prima per 0 emissions',es:'Prima por 0 emisiones',fr:'Prime pour 0 émission'},
+  ctx_title:{ca:"Negoci de l'UCO (context · no se suma)",es:'Negocio del UCO (contexto · no se suma)',fr:'Activité UCO (contexte · non additionné)'},
+  ctx_venda:{ca:"Venda de l'UCO (a Repsol, etc.)",es:'Venta del UCO (a Repsol, etc.)',fr:"Vente de l'UCO (à Repsol, etc.)"},
+  ctx_compra:{ca:'Compra als establiments',es:'Compra a los establecimientos',fr:'Achat aux établissements'},
+  ctx_marge:{ca:"Marge brut de Quatra sobre l'UCO",es:'Margen bruto de Quatra sobre el UCO',fr:"Marge brute de Quatra sur l'UCO"},
+  ctx_nota:{ca:"Aquest marge el té igualment, amb o sense Z-Ero. Z-Ero aporta la prima 0 emissions, l'albarà digital i l'estalvi logístic.",es:'Este margen lo tiene igualmente, con o sin Z-Ero. Z-Ero aporta la prima 0 emisiones, el albarán digital y el ahorro logístico.',fr:"Cette marge existe de toute façon, avec ou sans Z-Ero. Z-Ero apporte la prime 0 émission, le bon numérique et l'économie logistique."}
 };
 function T(k){ const e=I18N[k]; return e ? (e[window.LANG]||e.ca) : k; }
 
@@ -4014,7 +4024,7 @@ const VOL_PF=[['n','vf_n'],['kg','vf_kg'],['kmpp','pf_kmpp'],['horespp','pf_hore
 let VOL_CUR='hotels';
 
 /* Paràmetres globals (editables, desats) */
-const VG_DEF={fixMes:0, varKg:0.10, eurHora:35, preuDiesel:1.65, consum:28, desgastSG:0.30, desgastDir:0.20, elecKm:0, desgastFurgo:0.10, kmHub:60, viatgesMes:4, preuBido:15, preuBidoAbans:20, kgBido:58, horesAllMan:0};
+const VG_DEF={fixMes:0, varKg:0.10, eurHora:35, preuDiesel:1.65, consum:28, desgastSG:0.30, desgastDir:0.20, elecKm:0, desgastFurgo:0.10, kmHub:60, viatgesMes:4, preuBido:15, preuBidoAbans:20, kgBido:58, horesAllMan:0, preuVendaUco:1.00, primaEmissions:0.03};
 let VOL_G=vgLoad();
 function vgLoad(){ try{ const r=localStorage.getItem('zero_vol_g'); if(r){ return Object.assign({},VG_DEF,JSON.parse(r)); } }catch(e){} return Object.assign({},VG_DEF); }
 function vgPersist(){ try{ localStorage.setItem('zero_vol_g',JSON.stringify(VOL_G)); }catch(e){} }
@@ -4049,13 +4059,17 @@ function typeComp(d){
   const incid=+d.incidencies||0;
   const costMillaZero=elecWear+incid;
   const facturaVar=kg*VOL_G.varKg;
-  return {bidons,estalvi,horesPP,estalviOli,elecWear,incid,costMillaZero,facturaVar,preuDespres,preuAbans};
+  // Negoci de l'UCO (Quatra revèn a Repsol, etc.)
+  const prima=VOL_G.primaEmissions*kg;            // prima 0 emissions (atribuïble a Z-Ero)
+  const vendaUco=VOL_G.preuVendaUco*kg;           // venda base (igual amb o sense Z-Ero)
+  const compraUco=bidons*preuDespres;             // compra als establiments (context)
+  return {bidons,estalvi,horesPP,estalviOli,elecWear,incid,costMillaZero,facturaVar,preuDespres,preuAbans,prima,vendaUco,compraUco};
 }
 /* Totals globals */
 function globalComp(){
-  const tot={n:0,kg:0,bidons:0,estalvi:0,horesPP:0,estalviOli:0,elecWear:0,incid:0,costMillaZero:0,facturaVar:0};
+  const tot={n:0,kg:0,bidons:0,estalvi:0,horesPP:0,estalviOli:0,elecWear:0,incid:0,costMillaZero:0,facturaVar:0,prima:0,vendaUco:0,compraUco:0};
   VOL_TYPES.forEach(t=>{ const d=VOL_DATA[t[0]]; const c=typeComp(d);
-    tot.n+=+d.n||0; tot.kg+=+d.kg||0; tot.bidons+=c.bidons; tot.estalvi+=c.estalvi; tot.horesPP+=c.horesPP; tot.estalviOli+=c.estalviOli; tot.elecWear+=c.elecWear; tot.incid+=c.incid; tot.costMillaZero+=c.costMillaZero; tot.facturaVar+=c.facturaVar; });
+    tot.n+=+d.n||0; tot.kg+=+d.kg||0; tot.bidons+=c.bidons; tot.estalvi+=c.estalvi; tot.horesPP+=c.horesPP; tot.estalviOli+=c.estalviOli; tot.elecWear+=c.elecWear; tot.incid+=c.incid; tot.costMillaZero+=c.costMillaZero; tot.facturaVar+=c.facturaVar; tot.prima+=c.prima; tot.vendaUco+=c.vendaUco; tot.compraUco+=c.compraUco; });
   // Viatge Maçanet<->Calella (Quatra ve a buidar el hub, directe) — SENSE cost de xofer
   const kmTot=VOL_G.kmHub*VOL_G.viatgesMes;
   const dieselViatge=(kmTot/100)*VOL_G.consum*VOL_G.preuDiesel;
@@ -4068,11 +4082,12 @@ function globalComp(){
   const facturacioZero=VOL_G.fixMes+tot.facturaVar;
   const costQuatra=costViatge+facturacioZero;
   // Benefici Quatra = estalvi(dièsel+desgast) + oportunitat(hores) + estalvi oli(albarà) − cost del servei
-  const beneficiQuatra=tot.estalvi+oportunitat+tot.estalviOli-costQuatra;
+  const beneficiQuatra=tot.estalvi+oportunitat+tot.estalviOli+tot.prima-costQuatra;
+  const margeBrutUco=(tot.vendaUco+tot.prima)-tot.compraUco;   // context (no se suma al benefici diferencial)
   // Compte Z-Ero (el meu guany): facturació − cost última milla elèctrica (sense oli, sense mà d'obra pròpia)
   const ingressosZero=facturacioZero;
   const netZero=ingressosZero-tot.costMillaZero;
-  return Object.assign(tot,{dieselViatge,desgastViatge,horesViatge,horesAuto,horesAlliberades,oportunitat,costViatge,facturacioZero,costQuatra,beneficiQuatra,ingressosZero,netZero,kmTot});
+  return Object.assign(tot,{dieselViatge,desgastViatge,horesViatge,horesAuto,horesAlliberades,oportunitat,costViatge,facturacioZero,costQuatra,beneficiQuatra,margeBrutUco,ingressosZero,netZero,kmTot});
 }
 
 /* ---- Render ---- */
@@ -4091,6 +4106,8 @@ function volGlobals(){
      <div class="g4">${inp('kmHub',T('gp_kmht'))}${inp('viatgesMes',T('gp_viatges'))}${inp('kgBido',T('vol_kgbido'))}${inp('preuBidoAbans',T('gp_preuabans'),'0.01')}</div>
      <div class="vsec-title" style="margin-top:18px;">${T('gp_oli')}</div>
      <div class="g3">${inp('preuBido',T('gp_preudespres'),'0.01')}</div>
+     <div class="vsec-title" style="margin-top:18px;">${T('gp_venda_title')}</div>
+     <div class="g2">${inp('preuVendaUco',T('gp_preuvenda'),'0.01')}${inp('primaEmissions',T('gp_prima'),'0.01')}</div>
      <div style="font-size:10px;color:#94a3b8;font-weight:700;margin-top:12px;line-height:1.5;">${T('vol_help')}</div>
    </div>`;
 }
@@ -4123,11 +4140,20 @@ function panelQuatra(g){
     ${line(T('q_refact')+' ('+nf(g.horesAlliberades,1)+' h · '+(VOL_G.horesAllMan>0?T('lbl_manual'):T('lbl_auto'))+')', '+ '+eur(g.oportunitat), 'pos')}
     <div style="font-size:10px;font-weight:800;color:#34d399;text-transform:uppercase;letter-spacing:1px;margin:12px 0 6px;">${T('q_albara')}</div>
     ${line(T('q_oliestalvi'), '+ '+eur(g.estalviOli), 'pos')}
+    <div style="font-size:10px;font-weight:800;color:#34d399;text-transform:uppercase;letter-spacing:1px;margin:12px 0 6px;">${T('q_primatitle')}</div>
+    ${line(T('q_prima'), '+ '+eur(g.prima), 'pos')}
     <div style="font-size:10px;font-weight:800;color:#fbbf24;text-transform:uppercase;letter-spacing:1px;margin:12px 0 6px;">${T('q_cost')}</div>
     ${line(T('q_viatge'), '− '+eur(g.costViatge), 'neg')}
     ${line(T('q_factura'), '− '+eur(g.facturacioZero), 'neg')}
     <div class="vsubtotal"><span>${T('q_net')}</span><span class="vline-val ${netc}">${eur(g.beneficiQuatra)}</span></div>
     <div class="vsubtotal" style="border-top:none;padding-top:2px;"><span style="font-size:10px;color:#64748b;">${T('q_anual')}</span><span class="vline-val ${netc}" style="font-size:13px;">${eur(g.beneficiQuatra*12)}</span></div>
+    <div style="margin-top:16px;padding-top:12px;border-top:1px dashed #475569;">
+      <div style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">${T('ctx_title')}</div>
+      ${line(T('ctx_venda'), eur(g.vendaUco+g.prima))}
+      ${line(T('ctx_compra'), '− '+eur(g.compraUco))}
+      ${line(T('ctx_marge'), eur(g.margeBrutUco), g.margeBrutUco>=0?'pos':'neg')}
+      <div style="font-size:9px;color:#64748b;margin-top:6px;line-height:1.4;">${T('ctx_nota')}</div>
+    </div>
   </div>`;
 }
 function panelZero(g){
@@ -4158,7 +4184,7 @@ function volTable(g){
     const wH=totH>0?((c.horesPP||0)/totH):(totKg>0?(+d.kg||0)/totKg:(1/VOL_TYPES.length));
     const oport_t=g.oportunitat*wH;   // hores alliberades repartides (per hores; si manual o sense hores, per kg)
     const costQ_t=g.costViatge*share + (VOL_G.fixMes*share + c.facturaVar);
-    const benefQ_t=c.estalvi+oport_t+c.estalviOli-costQ_t;
+    const benefQ_t=c.estalvi+oport_t+c.estalviOli+c.prima-costQ_t;
     const netZ_t=(VOL_G.fixMes*share + c.facturaVar)-c.costMillaZero;
     const bq=benefQ_t>=0?'#16a34a':'#f87171', nz=netZ_t>=0?'#16a34a':'#f87171';
     rows+=`<tr><td><strong>${T(t[1])}</strong></td>
