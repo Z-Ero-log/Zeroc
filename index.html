@@ -6,7 +6,8 @@
   <title>Logística Z-Ero CO₂ · Milla Verda S.L. · Hub Calella · ♻ RED II · v40</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesh/* ============================================================
+  <style>
+/* ============================================================
    Z-Ero CO₂ · Logística Milla Verda S.L. · Hub Calella
    styles.css — v6.9
    ============================================================ */
@@ -133,7 +134,8 @@
 .vseasbtn{font-size:11px;font-family:inherit;padding:6px 14px;border-radius:20px;border:1px solid rgba(168,139,250,0.2);background:transparent;color:#64748b;cursor:pointer;transition:all 0.15s;font-weight:600;}
 .vseasbtn:hover{border-color:rgba(168,139,250,0.5);color:#a78bfa;}
 .vseasbtn.vseasbtn-on{background:#7c3aed;color:white;border-color:#7c3aed;font-weight:700;}
-eet" href="styles.css">
+
+</style>
   <!-- Firebase v9 compat -->
   <!-- Google Maps: només Geocoding API via fetch, sense widget complex -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -3943,7 +3945,10 @@ const I18N = {
   q_albara:{ca:'Albarà digital (rebaixa preu oli)',es:'Albarán digital (rebaja precio aceite)',fr:'Bon numérique (réduction prix huile)'},
   q_oliestalvi:{ca:"Estalvi en el preu de l'oli",es:'Ahorro en el precio del aceite',fr:"Économie sur le prix de l'huile"},
   z_incid:{ca:'Incidències',es:'Incidencias',fr:'Incidents'},
-  vol_grid_title:{ca:"Dades per tipus d'establiment",es:'Datos por tipo de establecimiento',fr:"Données par type d'établissement"}
+  vol_grid_title:{ca:"Dades per tipus d'establiment",es:'Datos por tipo de establecimiento',fr:"Données par type d'établissement"},
+  gp_horesall:{ca:'Hores alliberades / mes (0 = auto)',es:'Horas liberadas / mes (0 = auto)',fr:'Heures libérées / mois (0 = auto)'},
+  lbl_auto:{ca:'auto',es:'auto',fr:'auto'},
+  lbl_manual:{ca:'manual',es:'manual',fr:'manuel'}
 };
 function T(k){ const e=I18N[k]; return e ? (e[window.LANG]||e.ca) : k; }
 
@@ -4009,7 +4014,7 @@ const VOL_PF=[['n','vf_n'],['kg','vf_kg'],['kmpp','pf_kmpp'],['horespp','pf_hore
 let VOL_CUR='hotels';
 
 /* Paràmetres globals (editables, desats) */
-const VG_DEF={fixMes:0, varKg:0.10, eurHora:35, preuDiesel:1.65, consum:28, desgastSG:0.30, desgastDir:0.20, elecKm:0, desgastFurgo:0.10, kmHub:60, viatgesMes:4, preuBido:15, preuBidoAbans:20, kgBido:58};
+const VG_DEF={fixMes:0, varKg:0.10, eurHora:35, preuDiesel:1.65, consum:28, desgastSG:0.30, desgastDir:0.20, elecKm:0, desgastFurgo:0.10, kmHub:60, viatgesMes:4, preuBido:15, preuBidoAbans:20, kgBido:58, horesAllMan:0};
 let VOL_G=vgLoad();
 function vgLoad(){ try{ const r=localStorage.getItem('zero_vol_g'); if(r){ return Object.assign({},VG_DEF,JSON.parse(r)); } }catch(e){} return Object.assign({},VG_DEF); }
 function vgPersist(){ try{ localStorage.setItem('zero_vol_g',JSON.stringify(VOL_G)); }catch(e){} }
@@ -4057,7 +4062,8 @@ function globalComp(){
   const desgastViatge=kmTot*VOL_G.desgastDir;               // desgast baix (directe)
   const costViatge=dieselViatge+desgastViatge;
   const horesViatge=(kmTot/55)+(tot.bidons/23);             // conducció + càrrega hub
-  const horesAlliberades=Math.max(0,tot.horesPP-horesViatge);
+  const horesAuto=Math.max(0,tot.horesPP-horesViatge);
+  const horesAlliberades=(VOL_G.horesAllMan>0)?VOL_G.horesAllMan:horesAuto;
   const oportunitat=horesAlliberades*VOL_G.eurHora;          // hores de flota a re-facturar
   const facturacioZero=VOL_G.fixMes+tot.facturaVar;
   const costQuatra=costViatge+facturacioZero;
@@ -4066,7 +4072,7 @@ function globalComp(){
   // Compte Z-Ero (el meu guany): facturació − cost última milla elèctrica (sense oli, sense mà d'obra pròpia)
   const ingressosZero=facturacioZero;
   const netZero=ingressosZero-tot.costMillaZero;
-  return Object.assign(tot,{dieselViatge,desgastViatge,horesViatge,horesAlliberades,oportunitat,costViatge,facturacioZero,costQuatra,beneficiQuatra,ingressosZero,netZero,kmTot});
+  return Object.assign(tot,{dieselViatge,desgastViatge,horesViatge,horesAuto,horesAlliberades,oportunitat,costViatge,facturacioZero,costQuatra,beneficiQuatra,ingressosZero,netZero,kmTot});
 }
 
 /* ---- Render ---- */
@@ -4076,7 +4082,7 @@ function volGlobals(){
   c.innerHTML=`
    <div class="card">
      <div class="vsec-title">${T('gp_tarifes')}</div>
-     <div class="g3">${inp('fixMes',T('gp_fixmes'))}${inp('varKg',T('gp_varkg'),'0.01')}${inp('eurHora',T('gp_cap'))}</div>
+     <div class="g4">${inp('fixMes',T('gp_fixmes'))}${inp('varKg',T('gp_varkg'),'0.01')}${inp('eurHora',T('gp_cap'))}${inp('horesAllMan',T('gp_horesall'))}</div>
      <div class="vsec-title" style="margin-top:18px;">${T('gp_camio')}</div>
      <div class="g4">${inp('preuDiesel',T('gp_diesel'),'0.01')}${inp('consum',T('gp_consum'))}${inp('desgastSG',T('gp_desgastsg'),'0.01')}${inp('desgastDir',T('gp_desgastdir'),'0.01')}</div>
      <div class="vsec-title" style="margin-top:18px;">${T('gp_furgo')}</div>
@@ -4114,7 +4120,7 @@ function panelQuatra(g){
     <div style="font-size:10px;font-weight:800;color:#34d399;text-transform:uppercase;letter-spacing:1px;margin:4px 0 6px;">${T('q_estalvi')}</div>
     ${line(T('q_dieseldesg'), '+ '+eur(g.estalvi), 'pos')}
     <div style="font-size:10px;font-weight:800;color:#86efac;text-transform:uppercase;letter-spacing:1px;margin:12px 0 6px;">${T('q_oportunitat')}</div>
-    ${line(T('q_refact')+' ('+nf(g.horesAlliberades,1)+' h)', '+ '+eur(g.oportunitat), 'pos')}
+    ${line(T('q_refact')+' ('+nf(g.horesAlliberades,1)+' h · '+(VOL_G.horesAllMan>0?T('lbl_manual'):T('lbl_auto'))+')', '+ '+eur(g.oportunitat), 'pos')}
     <div style="font-size:10px;font-weight:800;color:#34d399;text-transform:uppercase;letter-spacing:1px;margin:12px 0 6px;">${T('q_albara')}</div>
     ${line(T('q_oliestalvi'), '+ '+eur(g.estalviOli), 'pos')}
     <div style="font-size:10px;font-weight:800;color:#fbbf24;text-transform:uppercase;letter-spacing:1px;margin:12px 0 6px;">${T('q_cost')}</div>
