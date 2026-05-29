@@ -172,6 +172,9 @@
     <button id="flag-es" onclick="setLang('es')" title="Castellano" style="border:none;background:none;padding:0;cursor:pointer;border-radius:5px;outline:2px solid transparent;line-height:0;transition:all .15s;">
       <svg width="26" height="18" viewBox="0 0 9 6" style="border-radius:4px;display:block;box-shadow:0 1px 3px rgba(0,0,0,.45);"><rect width="9" height="6" fill="#AA151B"/><rect y="1.5" width="9" height="3" fill="#F1BF00"/></svg>
     </button>
+    <button id="flag-fr" onclick="setLang('fr')" title="Français (Belgique)" style="border:none;background:none;padding:0;cursor:pointer;border-radius:5px;outline:2px solid transparent;line-height:0;transition:all .15s;">
+      <svg width="26" height="18" viewBox="0 0 9 6" style="border-radius:4px;display:block;box-shadow:0 1px 3px rgba(0,0,0,.45);"><rect width="3" height="6" fill="#000000"/><rect x="3" width="3" height="6" fill="#FAE042"/><rect x="6" width="3" height="6" fill="#ED2939"/></svg>
+    </button>
   </div>
     <div style="display:flex;align-items:center;gap:8px;">
       <!-- Usuari actual -->
@@ -618,6 +621,7 @@
 </div>
 <!-- ======= QUATRA IBERIA ======= -->
 <section id="sec-quatra" class="sec">
+  <div id="vol-quatra-dash"></div>
   <div class="top-bar">
     <div>
       <div class="page-title" data-i18n="pt_quatra" style="font-style:italic;">Dashboard gestor autoritzat</div>
@@ -780,23 +784,20 @@
   <div class="top-bar">
     <div>
       <div class="page-title" data-i18n="vol_title">Taula de Volums i Viabilitat</div>
-      <div class="page-sub" data-i18n="vol_sub">Càlcul editable per tipus d'establiment</div>
+      <div class="page-sub" data-i18n="vol_sub">Càlcul editable: estalvi i cost per a Quatra · compte propi Z-Ero</div>
     </div>
     <div class="top-actions">
       <button class="btn btn-green" data-volsave onclick="volumsSave()" data-i18n="vol_save">💾 Desar</button>
       <button class="btn btn-ghost" onclick="volumsReset()" data-i18n="vol_reset">↺ Restablir</button>
     </div>
   </div>
-
-  <div class="card" style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-end;">
-    <div><div class="lbl" data-i18n="vol_eurobido">€ per bidó</div><input class="inp" id="vol-euro" type="number" min="0" step="any" value="15" style="width:110px;" oninput="volumsRecalc()"></div>
-    <div><div class="lbl" data-i18n="vol_kgbido">Kg per bidó</div><input class="inp" id="vol-kg" type="number" min="1" step="any" value="58" style="width:110px;" oninput="volumsRecalc()"></div>
-    <div style="flex:1;min-width:230px;font-size:11px;color:#94a3b8;font-weight:700;line-height:1.5;" data-i18n="vol_formula">Ingressos = (Kg ÷ Kg·bidó) × €/bidó   ·   Net = Ingressos − Costos</div>
-  </div>
-
+  <div id="vol-globals"></div>
   <div class="nav-tabs" id="vol-subtabs" style="margin:16px 0;flex-wrap:wrap;"></div>
   <div id="vol-editor"></div>
-
+  <div class="g2" style="margin-top:16px;align-items:start;">
+    <div id="vol-panel-quatra"></div>
+    <div id="vol-panel-zero"></div>
+  </div>
   <div class="table-wrap" style="margin-top:16px;">
     <div class="table-bar"><span data-i18n="vol_resum">Resum per tipus</span><span id="vol-net-total"></span></div>
     <div style="overflow-x:auto;"><table id="vol-table"></table></div>
@@ -3728,271 +3729,340 @@ function vClearSearch(who) {
 </script>
 <script>
 /* ============================================================
-   Z-Ero · Add-on: Taula de Volums i Viabilitat + i18n (CA/ES)
+   Z-Ero · Add-on: Taula de Volums (model Quatra vs Z-Ero) + i18n (CA/ES/FR-BE)
    ============================================================ */
-
-/* ---------- i18n ---------- */
 window.LANG = (function(){ try { return localStorage.getItem('zero_lang') || 'ca'; } catch(e){ return 'ca'; } })();
 
-const I18N = {
-  // Navegació
-  tab_operador:{ca:'Operador Z-Ero',es:'Operador Z-Ero'},
-  tab_establiments:{ca:'Establiments',es:'Establecimientos'},
-  tab_transport:{ca:'Transportista',es:'Transportista'},
-  tab_quatra:{ca:'Gestor Quatra',es:'Gestor Quatra'},
-  tab_volums:{ca:'📊 Taula de Volums',es:'📊 Tabla de Volúmenes'},
-  // Títols / subtítols de seccions
-  pt_operador:{ca:'Centre Operatiu: Z-Ero CO₂',es:'Centro Operativo: Z-Ero CO₂'},
-  ps_operador:{ca:'Hub Calella',es:'Hub Calella'},
-  pt_establiments:{ca:"Base de dades d'establiments",es:'Base de datos de establecimientos'},
-  ps_establiments:{ca:'Hotels · Restaurants · Bars · Indústria alimentària · Campings . Rostisseria',es:'Hoteles · Restaurantes · Bares · Industria alimentaria · Campings · Rosticería'},
-  pt_quatra:{ca:'Dashboard gestor autoritzat',es:'Panel gestor autorizado'},
-  ps_quatra:{ca:'Quatra Iberia · Maçanet de la Selva',es:'Quatra Iberia · Maçanet de la Selva'},
-  ps_collab:{ca:'Col·laborador Autoritzat: Logística Z-Ero CO₂ Milla Verda S.L.',es:'Colaborador Autorizado: Logística Z-Ero CO₂ Milla Verda S.L.'},
-  // Taula de Volums
-  vol_title:{ca:'Taula de Volums i Viabilitat',es:'Tabla de Volúmenes y Viabilidad'},
-  vol_sub:{ca:"Càlcul editable per tipus d'establiment",es:'Cálculo editable por tipo de establecimiento'},
-  vol_save:{ca:'💾 Desar',es:'💾 Guardar'},
-  vol_reset:{ca:'↺ Restablir',es:'↺ Restablecer'},
-  vol_eurobido:{ca:'€ per bidó',es:'€ por bidón'},
-  vol_kgbido:{ca:'Kg per bidó',es:'Kg por bidón'},
-  vol_formula:{ca:'Ingressos = (Kg ÷ Kg·bidó) × €/bidó   ·   Net = Ingressos − Costos',es:'Ingresos = (Kg ÷ Kg·bidón) × €/bidón   ·   Neto = Ingresos − Costes'},
-  vol_resum:{ca:'Resum per tipus',es:'Resumen por tipo'},
-  vol_nettot:{ca:'Net total:',es:'Neto total:'},
-  vol_saved:{ca:'✓ Desat',es:'✓ Guardado'},
-  vol_help:{ca:'Edita els valors del tipus seleccionat. Es desa automàticament.',es:'Edita los valores del tipo seleccionado. Se guarda automáticamente.'},
-  // Tipus d'establiment
-  vt_hotels:{ca:'Hotels',es:'Hoteles'},
-  vt_restaurants:{ca:'Restaurants',es:'Restaurantes'},
-  vt_camping:{ca:'Camping',es:'Camping'},
-  vt_grans:{ca:'Grans Restaurants',es:'Grandes Restaurantes'},
-  vt_rostisseria:{ca:'Rostisseria',es:'Rosticería'},
-  vt_altres:{ca:'Altres',es:'Otros'},
-  vt_total:{ca:'TOTAL',es:'TOTAL'},
-  vt_tipus:{ca:'Tipus',es:'Tipo'},
-  // Camps editables
-  vf_n:{ca:'Nº establiments',es:'Nº establecimientos'},
-  vf_kg:{ca:'Kg / mes',es:'Kg / mes'},
-  vf_km:{ca:'Km',es:'Km'},
-  vf_diesel:{ca:'Dièsel €',es:'Diésel €'},
-  vf_hores:{ca:'Hores xòfer €',es:'Horas chófer €'},
-  vf_desgast:{ca:'Desgast vehicle €',es:'Desgaste vehículo €'},
-  vf_incid:{ca:'Incidències €',es:'Incidencias €'},
-  // Camps calculats
-  vc_bidons:{ca:'Bidons',es:'Bidones'},
-  vc_ingressos:{ca:'Ingressos €',es:'Ingresos €'},
-  vc_costos:{ca:'Costos €',es:'Costes €'},
-  vc_net:{ca:'Net €',es:'Neto €'}
-};
+window.__PH3 = {"(opcional)": {"es": "(opcional)", "fr": "(facultatif)"}, "+ Afegir establiment": {"es": "+ Añadir establecimiento", "fr": "+ Ajouter un établissement"}, "1. L'establiment ha signat el contracte de cessió d'UCO": {"es": "1. El establecimiento ha firmado el contrato de cesión de UCO", "fr": "1. L'établissement a signé le contrat de cession d'UCO"}, "2,64 kg CO₂ per litre dièsel evitat": {"es": "2,64 kg CO₂ por litro diésel evitado", "fr": "2,64 kg CO₂ par litre de diesel évité"}, "2. S'ha inspeccionat i els bidons compleixen el format correcte": {"es": "2. Se ha inspeccionado y los bidones cumplen el formato correcto", "fr": "2. L'inspection est faite et les bidons respectent le format correct"}, "3. El gestor autoritzat (Quatra Iberia) ha confirmat la traçabilitat": {"es": "3. El gestor autorizado (Quatra Iberia) ha confirmado la trazabilidad", "fr": "3. Le gestionnaire autorisé (Quatra Iberia) a confirmé la traçabilité"}, "4. L'establiment té codi ID Z-Ero assignat i GPS validat": {"es": "4. El establecimiento tiene código ID Z-Ero asignado y GPS validado", "fr": "4. L'établissement a un code ID Z-Ero attribué et un GPS validé"}, "Acció": {"es": "Acción", "fr": "Action"}, "Accés al sistema": {"es": "Acceso al sistema", "fr": "Accès au système"}, "Actualitzar hub": {"es": "Actualizar hub", "fr": "Actualiser le hub"}, "Adreça completa amb número": {"es": "Dirección completa con número", "fr": "Adresse complète avec numéro"}, "Afegir / editar establiment": {"es": "Añadir / editar establecimiento", "fr": "Ajouter / modifier l'établissement"}, "Ajusta la capacitat i els litres actuals del hub": {"es": "Ajusta la capacidad y los litros actuales del hub", "fr": "Ajustez la capacité et les litres actuels du hub"}, "Altre": {"es": "Otro", "fr": "Autre"}, "Anotació del gestor": {"es": "Anotación del gestor", "fr": "Note du gestionnaire"}, "Anotació gestor": {"es": "Anotación gestor", "fr": "Note gestionnaire"}, "Avui": {"es": "Hoy", "fr": "Aujourd'hui"}, "Baixar informe": {"es": "Descargar informe", "fr": "Télécharger le rapport"}, "Bar / Cafeteria": {"es": "Bar / Cafetería", "fr": "Bar / Cafétéria"}, "Barrils": {"es": "Barriles", "fr": "Fûts"}, "Barrils buits deixats": {"es": "Barriles vacíos dejados", "fr": "Fûts vides laissés"}, "Barrils plens recollits": {"es": "Barriles llenos recogidos", "fr": "Fûts pleins collectés"}, "Base de dades d'establiments": {"es": "Base de datos de establecimientos", "fr": "Base de données des établissements"}, "Bidons al hub (si el camió no s'ho ha emportat tot)": {"es": "Bidones en el hub (si el camión no se lo ha llevado todo)", "fr": "Bidons au hub (si le camion n'a pas tout emporté)"}, "Bidons plens que queden al hub": {"es": "Bidones llenos que quedan en el hub", "fr": "Bidons pleins restant au hub"}, "Brut / Amb residus": {"es": "Sucio / Con residuos", "fr": "Brut / Avec résidus"}, "Brut / Residus": {"es": "Sucio / Residuos", "fr": "Brut / Résidus"}, "Buidar Hub": {"es": "Vaciar Hub", "fr": "Vider le hub"}, "Calculant ruta des de Maçanet de la Selva...": {"es": "Calculando ruta desde Maçanet de la Selva...", "fr": "Calcul de l'itinéraire depuis Maçanet de la Selva..."}, "Calculant ruta...": {"es": "Calculando ruta...", "fr": "Calcul de l'itinéraire..."}, "Calella de la Costa — en temps real": {"es": "Calella de la Costa — en tiempo real", "fr": "Calella de la Costa — en temps réel"}, "Camió Gestor Autoritzat en ruta": {"es": "Camión gestor autorizado en ruta", "fr": "Camion gestionnaire autorisé en route"}, "Cancel·lar": {"es": "Cancelar", "fr": "Annuler"}, "Cap incidència": {"es": "Sin incidencias", "fr": "Aucun incident"}, "Capacitat Hub Z-Ero · Calella": {"es": "Capacidad Hub Z-Ero · Calella", "fr": "Capacité Hub Z-Ero · Calella"}, "Capacitat màxima (Kg)": {"es": "Capacidad máxima (Kg)", "fr": "Capacité maximale (Kg)"}, "Capacitat màxima:": {"es": "Capacidad máxima:", "fr": "Capacité maximale :"}, "Cerca per nom, codi, adreça...": {"es": "Buscar por nombre, código, dirección...", "fr": "Rechercher par nom, code, adresse..."}, "Certificat": {"es": "Certificado", "fr": "Certifié"}, "Clic per reintantar sincronització": {"es": "Clic para reintentar sincronización", "fr": "Cliquez pour réessayer la synchronisation"}, "Codi establiment": {"es": "Código establecimiento", "fr": "Code établissement"}, "Codi ID": {"es": "Código ID", "fr": "Code ID"}, "Codi RED II": {"es": "Código RED II", "fr": "Code RED II"}, "Col·laborador Autoritzat": {"es": "Colaborador Autorizado", "fr": "Collaborateur autorisé"}, "Col·laborador Autoritzat: Logística Z-Ero CO₂ Milla Verda S.L.": {"es": "Colaborador Autorizado: Logística Z-Ero CO₂ Milla Verda S.L.", "fr": "Collaborateur autorisé : Logística Z-Ero CO₂ Milla Verda S.L."}, "Com es verifica un establiment RED II:": {"es": "Cómo se verifica un establecimiento RED II:", "fr": "Comment vérifier un établissement RED II :"}, "Configuració de càlcul d'estalvi": {"es": "Configuración de cálculo de ahorro", "fr": "Configuration du calcul d'économie"}, "Confirma l'enviament del camió cap al Hub. L'operador rebrà un avís immediatament.": {"es": "Confirma el envío del camión hacia el hub. El operador recibirá un aviso inmediatamente.", "fr": "Confirmez l'envoi du camion vers le hub. L'opérateur recevra une alerte immédiatement."}, "Confirmació de recollida": {"es": "Confirmación de recogida", "fr": "Confirmation de collecte"}, "Confirmades avui": {"es": "Confirmadas hoy", "fr": "Confirmées aujourd'hui"}, "Confirmar recollida camió": {"es": "Confirmar recogida camión", "fr": "Confirmer la collecte camion"}, "Confirmar recollida i enviar a operador": {"es": "Confirmar recogida y enviar al operador", "fr": "Confirmer la collecte et envoyer à l'opérateur"}, "Consum camió (L/100km)": {"es": "Consumo camión (L/100km)", "fr": "Consommation camion (L/100km)"}, "Contrasenya": {"es": "Contraseña", "fr": "Mot de passe"}, "Correu electrònic": {"es": "Correo electrónico", "fr": "Adresse e-mail"}, "CO₂ evitat estimat": {"es": "CO₂ evitado estimado", "fr": "CO₂ évité estimé"}, "Càlcul editable per tipus d'establiment": {"es": "Cálculo editable por tipo de establecimiento", "fr": "Calcul modifiable par type d'établissement"}, "Dashboard gestor autoritzat": {"es": "Panel gestor autorizado", "fr": "Tableau de bord gestionnaire autorisé"}, "Degradat": {"es": "Degradado", "fr": "Dégradé"}, "Desar establiment": {"es": "Guardar establecimiento", "fr": "Enregistrer l'établissement"}, "Descarrega còpia de seguretat JSON": {"es": "Descarga copia de seguridad JSON", "fr": "Télécharger la sauvegarde JSON"}, "DNI / NIF del responsable que entrega": {"es": "DNI / NIF del responsable que entrega", "fr": "Numéro d'identité du responsable qui remet"}, "Editar": {"es": "Editar", "fr": "Modifier"}, "Editar hub": {"es": "Editar hub", "fr": "Modifier le hub"}, "El gestor ha confirmat l'enviament del camió": {"es": "El gestor ha confirmado el envío del camión", "fr": "Le gestionnaire a confirmé l'envoi du camion"}, "Emplena els camps per veure el resum": {"es": "Rellena los campos para ver el resumen", "fr": "Remplissez les champs pour voir le résumé"}, "Entrar al sistema": {"es": "Entrar al sistema", "fr": "Entrer dans le système"}, "entre dispositius.": {"es": "entre dispositivos.", "fr": "entre appareils."}, "Enviat": {"es": "Enviado", "fr": "Envoyé"}, "Esborra totes les recollides i posa el hub a 0 per a la presentació": {"es": "Borra todas las recogidas y pone el hub a 0 para la presentación", "fr": "Efface toutes les collectes et met le hub à 0 pour la présentation"}, "Esborrar signatura": {"es": "Borrar firma", "fr": "Effacer la signature"}, "Escola / Campings": {"es": "Escuela / Campings", "fr": "École / Campings"}, "Escriu l'adreça completa amb número i selecciona del desplegable de Google": {"es": "Escribe la dirección completa con número y selecciona del desplegable de Google", "fr": "Saisissez l'adresse complète avec le numéro et sélectionnez dans le menu Google"}, "Establiment": {"es": "Establecimiento", "fr": "Établissement"}, "Establiments": {"es": "Establecimientos", "fr": "Établissements"}, "Establiments registrats": {"es": "Establecimientos registrados", "fr": "Établissements enregistrés"}, "Estalvi combustible": {"es": "Ahorro combustible", "fr": "Économie carburant"}, "Estat oli": {"es": "Estado aceite", "fr": "État de l'huile"}, "Generar PDF": {"es": "Generar PDF", "fr": "Générer le PDF"}, "Gestor autoritzat: Quatra Iberia S.L. · RED II · ISO 14001": {"es": "Gestor autorizado: Quatra Iberia S.L. · RED II · ISO 14001", "fr": "Gestionnaire autorisé : Quatra Iberia S.L. · RED II · ISO 14001"}, "Gestor Quatra": {"es": "Gestor Quatra", "fr": "Gestionnaire Quatra"}, "GPS actiu ·": {"es": "GPS activo ·", "fr": "GPS actif ·"}, "Hora": {"es": "Hora", "fr": "Heure"}, "Hores flota alliberades": {"es": "Horas flota liberadas", "fr": "Heures de flotte libérées"}, "Hotel": {"es": "Hotel", "fr": "Hôtel"}, "Hotel Calella": {"es": "Hotel Calella", "fr": "Hôtel Calella"}, "Hotels · Restaurants · Bars · Indústria alimentària · Campings . Rostisseria": {"es": "Hoteles · Restaurantes · Bares · Industria alimentaria · Campings · Rosticería", "fr": "Hôtels · Restaurants · Bars · Industrie alimentaire · Campings · Rôtisserie"}, "Hub actual:": {"es": "Hub actual:", "fr": "Hub actuel :"}, "Hub amb càrrega suficient per recollida": {"es": "Hub con carga suficiente para recogida", "fr": "Hub avec charge suffisante pour la collecte"}, "Hub Calella": {"es": "Hub Calella", "fr": "Hub Calella"}, "Hub llest · Enviar camió": {"es": "Hub listo · Enviar camión", "fr": "Hub prêt · Envoyer le camion"}, "Incidència": {"es": "Incidencia", "fr": "Incident"}, "Incidència (opcional)": {"es": "Incidencia (opcional)", "fr": "Incident (facultatif)"}, "Informe anual": {"es": "Informe anual", "fr": "Rapport annuel"}, "Informe mensual RED II": {"es": "Informe mensual RED II", "fr": "Rapport mensuel RED II"}, "Informe semestral": {"es": "Informe semestral", "fr": "Rapport semestriel"}, "Informe trimestral": {"es": "Informe trimestral", "fr": "Rapport trimestriel"}, "Ingrés brut UCO · preu taula viabilitat v23": {"es": "Ingreso bruto UCO · precio tabla viabilidad v23", "fr": "Recette brute UCO · prix table de viabilité v23"}, "Introdueix les teves credencials": {"es": "Introduce tus credenciales", "fr": "Saisissez vos identifiants"}, "Kg estimats que porta el camió": {"es": "Kg estimados que lleva el camión", "fr": "Kg estimés transportés par le camion"}, "Kg min": {"es": "Kg mín", "fr": "Kg min"}, "Kg màx": {"es": "Kg máx", "fr": "Kg max"}, "Kg per bidó": {"es": "Kg por bidón", "fr": "Kg par bidon"}, "Kg que s'emporta el camió": {"es": "Kg que se lleva el camión", "fr": "Kg emportés par le camion"}, "Les dades": {"es": "Los datos", "fr": "Les données"}, "Logística Z-Ero CO₂ · Milla Verda S.L.": {"es": "Logística Z-Ero CO₂ · Milla Verda S.L.", "fr": "Logística Z-Ero CO₂ · Milla Verda S.L."}, "Logística Z-Ero CO₂ · Milla Verda S.L. · Hub Calella · ♻ RED II · v40": {"es": "Logística Z-Ero CO₂ · Milla Verda S.L. · Hub Calella · ♻ RED II · v40", "fr": "Logística Z-Ero CO₂ · Milla Verda S.L. · Hub Calella · ♻ RED II · v40"}, "Manteniment Flota": {"es": "Mantenimiento Flota", "fr": "Entretien de la flotte"}, "Manual": {"es": "Manual", "fr": "Manuel"}, "Marca quan l'establiment compleixi els requisits": {"es": "Marca cuando el establecimiento cumpla los requisitos", "fr": "Cochez lorsque l'établissement remplit les conditions"}, "Mode local actiu": {"es": "Modo local activo", "fr": "Mode local actif"}, "Net / Filtrat": {"es": "Limpio / Filtrado", "fr": "Propre / Filtré"}, "Netejar filtres": {"es": "Limpiar filtros", "fr": "Effacer les filtres"}, "no es compartiran": {"es": "no se compartirán", "fr": "ne seront pas partagées"}, "No sé / Pendent GESTOR": {"es": "No sé / Pendiente GESTOR", "fr": "Je ne sais pas / En attente GESTIONNAIRE"}, "Nom": {"es": "Nombre", "fr": "Nom"}, "Nota per a l'operador (opcional)": {"es": "Nota para el operador (opcional)", "fr": "Note pour l'opérateur (facultatif)"}, "Nova recollida": {"es": "Nueva recogida", "fr": "Nouvelle collecte"}, "obtenint posició...": {"es": "obteniendo posición...", "fr": "obtention de la position..."}, "Omple els camps i confirma · El pes és obligatori": {"es": "Rellena los campos y confirma · El peso es obligatorio", "fr": "Remplissez les champs et confirmez · Le poids est obligatoire"}, "Operador": {"es": "Operador", "fr": "Opérateur"}, "Operador Z-Ero": {"es": "Operador Z-Ero", "fr": "Opérateur Z-Ero"}, "Operativa estable": {"es": "Operativa estable", "fr": "Exploitation stable"}, "Origen": {"es": "Origen", "fr": "Origine"}, "Pendent": {"es": "Pendiente", "fr": "En attente"}, "Pendents": {"es": "Pendientes", "fr": "En attente"}, "Pendents:": {"es": "Pendientes:", "fr": "En attente :"}, "Per sincronitzar, puja l'arxiu a un servidor (ex: tiiny.host).": {"es": "Para sincronizar, sube el archivo a un servidor (ej: tiiny.host).", "fr": "Pour synchroniser, téléversez le fichier sur un serveur (ex : tiiny.host)."}, "Període:": {"es": "Periodo:", "fr": "Période :"}, "Pes": {"es": "Peso", "fr": "Poids"}, "Pes actual al hub (Kg)": {"es": "Peso actual en el hub (Kg)", "fr": "Poids actuel au hub (Kg)"}, "Pes real ⚖️ Hub": {"es": "Peso real ⚖ Hub", "fr": "Poids réel ⚖ Hub"}, "Pesatge certificat al Hub Calella": {"es": "Pesaje certificado en el Hub Calella", "fr": "Pesée certifiée au Hub Calella"}, "Plataforma de gestió · UCO": {"es": "Plataforma de gestión · UCO", "fr": "Plateforme de gestion · UCO"}, "Powered by Z-Ero CO₂ · Milla Verda S.L.": {"es": "Powered by Z-Ero CO₂ · Milla Verda S.L.", "fr": "Powered by Z-Ero CO₂ · Milla Verda S.L."}, "Precinte/s": {"es": "Precinto/s", "fr": "Scellé(s)"}, "Precintes": {"es": "Precintos", "fr": "Scellés"}, "Preu dièsel avui (€/L)": {"es": "Precio diésel hoy (€/L)", "fr": "Prix du diesel aujourd'hui (€/L)"}, "Pròxim servei: 500 km": {"es": "Próximo servicio: 500 km", "fr": "Prochain entretien : 500 km"}, "Punts de recollida actius": {"es": "Puntos de recogida activos", "fr": "Points de collecte actifs"}, "Quatra Iberia · Maçanet de la Selva": {"es": "Quatra Iberia · Maçanet de la Selva", "fr": "Quatra Iberia · Maçanet de la Selva"}, "Recollides avui / Total": {"es": "Recogidas hoy / Total", "fr": "Collectes aujourd'hui / Total"}, "Ref.": {"es": "Ref.", "fr": "Réf."}, "Ref. RED II, establiment, anotació...": {"es": "Ref. RED II, establecimiento, anotación...", "fr": "Réf. RED II, établissement, note..."}, "Ref., establiment, incidència...": {"es": "Ref., establecimiento, incidencia...", "fr": "Réf., établissement, incident..."}, "Referència recollida": {"es": "Referencia recogida", "fr": "Référence collecte"}, "Referència/albarà del camió (opcional)": {"es": "Referencia/albarán del camión (opcional)", "fr": "Référence/bon de livraison du camion (facultatif)"}, "Registra el que s'emporta el camió i el que queda al hub en bidons": {"es": "Registra lo que se lleva el camión y lo que queda en el hub en bidones", "fr": "Enregistrez ce que le camion emporte et ce qui reste au hub en bidons"}, "Registre complet de recollides": {"es": "Registro completo de recogidas", "fr": "Registre complet des collectes"}, "Registre operatiu": {"es": "Registro operativo", "fr": "Registre opérationnel"}, "Reiniciar dades locals": {"es": "Reiniciar datos locales", "fr": "Réinitialiser les données locales"}, "Responsable de l'establiment que entrega l'oli": {"es": "Responsable del establecimiento que entrega el aceite", "fr": "Responsable de l'établissement qui remet l'huile"}, "Restaurant": {"es": "Restaurante", "fr": "Restaurant"}, "Resum diari": {"es": "Resumen diario", "fr": "Résumé quotidien"}, "Resum per tipus": {"es": "Resumen por tipo", "fr": "Résumé par type"}, "Resum setmanal": {"es": "Resumen semanal", "fr": "Résumé hebdomadaire"}, "Revisa les dades abans d'enviar a l'operador": {"es": "Revisa los datos antes de enviar al operador", "fr": "Vérifiez les données avant d'envoyer à l'opérateur"}, "Rostisseria": {"es": "Rosticería", "fr": "Rôtisserie"}, "Segell": {"es": "Sello", "fr": "Sceau"}, "Selecciona una recollida i afegeix una anotació (incidències, qualitat de l'oli, observacions).": {"es": "Selecciona una recogida y añade una anotación (incidencias, calidad del aceite, observaciones).", "fr": "Sélectionnez une collecte et ajoutez une note (incidents, qualité de l'huile, observations)."}, "Sense recollides registrades": {"es": "Sin recogidas registradas", "fr": "Aucune collecte enregistrée"}, "Sense recollides registrades avui": {"es": "Sin recogidas registradas hoy", "fr": "Aucune collecte enregistrée aujourd'hui"}, "Si has oblidat la contrasenya, contacta l'administrador": {"es": "Si has olvidado la contraseña, contacta con el administrador", "fr": "Si vous avez oublié le mot de passe, contactez l'administrateur"}, "Signa aquí amb el dit": {"es": "Firma aquí con el dedo", "fr": "Signez ici avec le doigt"}, "Signatura del responsable": {"es": "Firma del responsable", "fr": "Signature du responsable"}, "Sortir": {"es": "Salir", "fr": "Quitter"}, "Stock Hub Calella": {"es": "Stock Hub Calella", "fr": "Stock Hub Calella"}, "Suma de tots els establiments": {"es": "Suma de todos los establecimientos", "fr": "Somme de tous les établissements"}, "Taula de Volums i Viabilitat": {"es": "Tabla de Volúmenes y Viabilidad", "fr": "Tableau des volumes et viabilité"}, "Telèfon": {"es": "Teléfono", "fr": "Téléphone"}, "Timestamp GPS": {"es": "Timestamp GPS", "fr": "Horodatage GPS"}, "Tipus": {"es": "Tipo", "fr": "Type"}, "Total acumulat:": {"es": "Total acumulado:", "fr": "Total cumulé :"}, "Total establiments": {"es": "Total establecimientos", "fr": "Total établissements"}, "Tots els estats": {"es": "Todos los estados", "fr": "Tous les états"}, "Tots els orígens": {"es": "Todos los orígenes", "fr": "Toutes les origines"}, "Tots els tipus": {"es": "Todos los tipos", "fr": "Tous les types"}, "Transportista": {"es": "Transportista", "fr": "Transporteur"}, "Valor UCO recollit": {"es": "Valor UCO recogido", "fr": "Valeur UCO collectée"}, "Velocitat mitjana ruta (km/h)": {"es": "Velocidad media ruta (km/h)", "fr": "Vitesse moyenne itinéraire (km/h)"}, "Verificat RED II ♻": {"es": "Verificado RED II ♻", "fr": "Vérifié RED II ♻"}, "Verificats RED II": {"es": "Verificados RED II", "fr": "Vérifiés RED II"}, "Visibles per l'operador": {"es": "Visibles para el operador", "fr": "Visibles pour l'opérateur"}, "Volum mensual estimat": {"es": "Volumen mensual estimado", "fr": "Volume mensuel estimé"}, "Volum mensual estimat (Kg)": {"es": "Volumen mensual estimado (Kg)", "fr": "Volume mensuel estimé (Kg)"}, "vs. recollida pròpia des de Maçanet": {"es": "vs. recogida propia desde Maçanet", "fr": "vs. collecte propre depuis Maçanet"}, "· Arxiu obert des del teu ordinador.": {"es": "· Archivo abierto desde tu ordenador.", "fr": "· Fichier ouvert depuis votre ordinateur."}, "— Selecciona l'establiment —": {"es": "— Selecciona el establecimiento —", "fr": "— Sélectionnez l'établissement —"}, "— Selecciona referència —": {"es": "— Selecciona referencia —", "fr": "— Sélectionnez la référence —"}, "€ per bidó": {"es": "€ por bidón", "fr": "€ par bidon"}, "↺ Restablir": {"es": "↺ Restablecer", "fr": "↺ Réinitialiser"}, "⚙ Editar": {"es": "⚙ Editar", "fr": "⚙ Modifier"}, "⚙ Editar Hub": {"es": "⚙ Editar hub", "fr": "⚙ Modifier le hub"}, "⚠ Cal una signatura per confirmar la recollida": {"es": "⚠ Hace falta una firma para confirmar la recogida", "fr": "⚠ Une signature est requise pour confirmer la collecte"}, "⚠ Offline": {"es": "⚠ Sin conexión", "fr": "⚠ Hors ligne"}, "⚠ Selecciona un establiment abans de continuar": {"es": "⚠ Selecciona un establecimiento antes de continuar", "fr": "⚠ Sélectionnez un établissement avant de continuer"}, "✓ Anotació desada correctament": {"es": "✓ Anotación guardada correctamente", "fr": "✓ Note enregistrée correctement"}, "✓ Enviar a operador": {"es": "✓ Enviar al operador", "fr": "✓ Envoyer à l'opérateur"}, "✓ Rebut": {"es": "✓ Recibido", "fr": "✓ Reçu"}, "✓ Recollida enviada a l'operador correctament": {"es": "✓ Recogida enviada al operador correctamente", "fr": "✓ Collecte envoyée à l'opérateur correctement"}, "✕ Netejar": {"es": "✕ Limpiar", "fr": "✕ Nettoyer"}, "🎯 Reset Presentació": {"es": "🎯 Reset presentación", "fr": "🎯 Réinitialiser la présentation"}, "💾 Backup": {"es": "💾 Backup", "fr": "💾 Sauvegarde"}, "💾 Desar": {"es": "💾 Guardar", "fr": "💾 Enregistrer"}, "💾 Desar anotació": {"es": "💾 Guardar anotación", "fr": "💾 Enregistrer la note"}, "📊 Taula de Volums": {"es": "📊 Tabla de Volúmenes", "fr": "📊 Tableau des volumes"}, "📝 Anotacions en recollides": {"es": "📝 Anotaciones en recogidas", "fr": "📝 Notes sur les collectes"}, "🔄 Nova sessió": {"es": "🔄 Nueva sesión", "fr": "🔄 Nouvelle session"}, "🚛 Confirmar enviament del camió": {"es": "🚛 Confirmar envío del camión", "fr": "🚛 Confirmer l'envoi du camion"}, "🚛 Enviar camió a Hub Calella": {"es": "🚛 Enviar camión a Hub Calella", "fr": "🚛 Envoyer le camion au Hub Calella"}, "🚛 Recollida camió Gestor Autoritzat": {"es": "🚛 Recogida camión gestor autorizado", "fr": "🚛 Collecte camion gestionnaire autorisé"}, "🚛 Registrar recollida camió Gestor Autoritzat": {"es": "🚛 Registrar recogida camión gestor autorizado", "fr": "🚛 Enregistrer la collecte camion gestionnaire autorisé"}, "Verificat": {"es": "Verificado", "fr": "Vérifié"}, "Confirmat": {"es": "Confirmado", "fr": "Confirmé"}, "Validat": {"es": "Validado", "fr": "Validé"}, "Rebut": {"es": "Recibido", "fr": "Reçu"}, "Net": {"es": "Limpio", "fr": "Propre"}, "Brut": {"es": "Sucio", "fr": "Brut"}, "Data": {"es": "Fecha", "fr": "Date"}, "Estat": {"es": "Estado", "fr": "État"}, "Volum": {"es": "Volumen", "fr": "Volume"}, "Recollides": {"es": "Recogidas", "fr": "Collectes"}, "Recollida": {"es": "Recogida", "fr": "Collecte"}, "Quatra Iberia": {"es": "Quatra Iberia", "fr": "Quatra Iberia"}, "Camió Quatra Iberia": {"es": "Camión Quatra Iberia", "fr": "Camion Quatra Iberia"}};
 
+const I18N = {
+  tab_operador:{ca:'Operador Z-Ero',es:'Operador Z-Ero',fr:'Opérateur Z-Ero'},
+  tab_establiments:{ca:'Establiments',es:'Establecimientos',fr:'Établissements'},
+  tab_transport:{ca:'Transportista',es:'Transportista',fr:'Transporteur'},
+  tab_quatra:{ca:'Gestor Quatra',es:'Gestor Quatra',fr:'Gestionnaire Quatra'},
+  tab_volums:{ca:'📊 Taula de Volums',es:'📊 Tabla de Volúmenes',fr:'📊 Tableau des volumes'},
+  pt_operador:{ca:'Centre Operatiu: Z-Ero CO₂',es:'Centro Operativo: Z-Ero CO₂',fr:'Centre opérationnel : Z-Ero CO₂'},
+  ps_operador:{ca:'Hub Calella',es:'Hub Calella',fr:'Hub Calella'},
+  pt_establiments:{ca:"Base de dades d'establiments",es:'Base de datos de establecimientos',fr:'Base de données des établissements'},
+  ps_establiments:{ca:'Hotels · Restaurants · Bars · Indústria alimentària · Campings . Rostisseria',es:'Hoteles · Restaurantes · Bares · Industria alimentaria · Campings · Rosticería',fr:'Hôtels · Restaurants · Bars · Industrie alimentaire · Campings · Rôtisserie'},
+  pt_quatra:{ca:'Dashboard gestor autoritzat',es:'Panel gestor autorizado',fr:'Tableau de bord gestionnaire autorisé'},
+  ps_quatra:{ca:'Quatra Iberia · Maçanet de la Selva',es:'Quatra Iberia · Maçanet de la Selva',fr:'Quatra Iberia · Maçanet de la Selva'},
+  ps_collab:{ca:'Col·laborador Autoritzat: Logística Z-Ero CO₂ Milla Verda S.L.',es:'Colaborador Autorizado: Logística Z-Ero CO₂ Milla Verda S.L.',fr:'Collaborateur autorisé : Logística Z-Ero CO₂ Milla Verda S.L.'},
+  vol_title:{ca:'Taula de Volums i Viabilitat',es:'Tabla de Volúmenes y Viabilidad',fr:'Tableau des volumes et viabilité'},
+  vol_sub:{ca:"Càlcul editable: estalvi i cost per a Quatra · compte propi Z-Ero",es:'Cálculo editable: ahorro y coste para Quatra · cuenta propia Z-Ero',fr:'Calcul modifiable : économie et coût pour Quatra · compte propre Z-Ero'},
+  vol_save:{ca:'💾 Desar',es:'💾 Guardar',fr:'💾 Enregistrer'},
+  vol_reset:{ca:'↺ Restablir',es:'↺ Restablecer',fr:'↺ Réinitialiser'},
+  vol_eurobido:{ca:'€ per bidó',es:'€ por bidón',fr:'€ par bidon'},
+  vol_kgbido:{ca:'Kg per bidó',es:'Kg por bidón',fr:'Kg par bidon'},
+  vol_resum:{ca:'Resum per tipus',es:'Resumen por tipo',fr:'Résumé par type'},
+  vol_saved:{ca:'✓ Desat',es:'✓ Guardado',fr:'✓ Enregistré'},
+  vol_help:{ca:'Tots els valors són editables per projectar escenaris. Es desa automàticament al dispositiu.',es:'Todos los valores son editables para proyectar escenarios. Se guarda automáticamente en el dispositivo.',fr:'Toutes les valeurs sont modifiables pour projeter des scénarios. Sauvegarde automatique sur l\u2019appareil.'},
+  vt_hotels:{ca:'Hotels',es:'Hoteles',fr:'Hôtels'},
+  vt_restaurants:{ca:'Restaurants',es:'Restaurantes',fr:'Restaurants'},
+  vt_camping:{ca:'Camping',es:'Camping',fr:'Camping'},
+  vt_grans:{ca:'Grans Restaurants',es:'Grandes Restaurantes',fr:'Grands Restaurants'},
+  vt_rostisseria:{ca:'Rostisseria',es:'Rosticería',fr:'Rôtisserie'},
+  vt_altres:{ca:'Altres',es:'Otros',fr:'Autres'},
+  vt_total:{ca:'TOTAL',es:'TOTAL',fr:'TOTAL'},
+  vt_tipus:{ca:'Tipus',es:'Tipo',fr:'Type'},
+  vf_n:{ca:'Nº establiments',es:'Nº establecimientos',fr:"Nb d'établissements"},
+  vf_kg:{ca:'Kg / mes',es:'Kg / mes',fr:'Kg / mois'},
+  vc_bidons:{ca:'Bidons',es:'Bidones',fr:'Bidons'},
+  pf_kmpp:{ca:'Km porta a porta Quatra / mes',es:'Km puerta a puerta Quatra / mes',fr:'Km porte-à-porte Quatra / mois'},
+  pf_horespp:{ca:'Hores porta a porta Quatra / mes',es:'Horas puerta a puerta Quatra / mes',fr:'Heures porte-à-porte Quatra / mois'},
+  pf_preubido:{ca:'Preu oli AMB albarà digital (€/bidó)',es:'Precio aceite CON albarán digital (€/bidón)',fr:'Prix huile AVEC bon numérique (€/bidon)'},
+  gp_tarifes:{ca:'Facturació Z-Ero a Quatra',es:'Facturación Z-Ero a Quatra',fr:'Facturation Z-Ero à Quatra'},
+  gp_fixmes:{ca:'Fix (€/mes)',es:'Fijo (€/mes)',fr:'Fixe (€/mois)'},
+  gp_varkg:{ca:'Variable (€/kg)',es:'Variable (€/kg)',fr:'Variable (€/kg)'},
+  gp_cap:{ca:'Valor hora flota alliberada (€/h)',es:'Valor hora flota liberada (€/h)',fr:'Valeur heure flotte libérée (€/h)'},
+  gp_oper:{ca:'Costos operatius',es:'Costes operativos',fr:'Coûts opérationnels'},
+  gp_diesel:{ca:'Preu dièsel (€/L)',es:'Precio diésel (€/L)',fr:'Prix diesel (€/L)'},
+  gp_consum:{ca:'Consum camió Quatra (L/100km)',es:'Consumo camión Quatra (L/100km)',fr:'Consommation camion Quatra (L/100km)'},
+  gp_xofer:{ca:'Cost xofer+SSC (€/h)',es:'Coste chófer+SS (€/h)',fr:'Coût chauffeur+ONSS (€/h)'},
+  gp_desgastkm:{ca:'Desgast vehicle (€/km)',es:'Desgaste vehículo (€/km)',fr:'Usure véhicule (€/km)'},
+  gp_viatge:{ca:'Viatge Maçanet ↔ Calella',es:'Viaje Maçanet ↔ Calella',fr:'Trajet Maçanet ↔ Calella'},
+  gp_kmht:{ca:'Km anar i tornar',es:'Km ida y vuelta',fr:'Km aller-retour'},
+  gp_viatges:{ca:'Viatges / mes',es:'Viajes / mes',fr:'Trajets / mois'},
+  q_title:{ca:'Benefici per a Quatra',es:'Beneficio para Quatra',fr:'Bénéfice pour Quatra'},
+  q_estalvi:{ca:'Estalvi recollida porta a porta evitada',es:'Ahorro recogida puerta a puerta evitada',fr:'Économie collecte porte-à-porte évitée'},
+  q_dieseldesg:{ca:'Dièsel + desgast (stop&go) evitat',es:'Diésel + desgaste (stop&go) evitado',fr:'Diesel + usure (stop&go) évités'},
+  q_hores:{ca:'Hores xofer+SSC evitades',es:'Horas chófer+SS evitadas',fr:'Heures chauffeur+ONSS évitées'},
+  q_oportunitat:{ca:'Oportunitat (capacitat alliberada)',es:'Oportunidad (capacidad liberada)',fr:'Opportunité (capacité libérée)'},
+  q_refact:{ca:'Hores de flota a re-facturar',es:'Horas de flota a re-facturar',fr:'Heures de flotte à refacturer'},
+  q_cost:{ca:'Cost del servei amb Z-Ero',es:'Coste del servicio con Z-Ero',fr:'Coût du service avec Z-Ero'},
+  q_viatge:{ca:'Viatge al hub (dièsel + desgast)',es:'Viaje al hub (diésel + desgaste)',fr:'Trajet au hub (diesel + usure)'},
+  q_factura:{ca:'Facturació Z-Ero (fix + €/kg)',es:'Facturación Z-Ero (fijo + €/kg)',fr:'Facturation Z-Ero (fixe + €/kg)'},
+  q_net:{ca:'Benefici net Quatra (mes)',es:'Beneficio neto Quatra (mes)',fr:'Bénéfice net Quatra (mois)'},
+  q_anual:{ca:'Projecció anual (×12)',es:'Proyección anual (×12)',fr:'Projection annuelle (×12)'},
+  q_estalvicol:{ca:'Estalvi Quatra',es:'Ahorro Quatra',fr:'Économie Quatra'},
+  q_beneficicol:{ca:'Benefici Quatra',es:'Beneficio Quatra',fr:'Bénéfice Quatra'},
+  z_title:{ca:'El meu compte (Z-Ero)',es:'Mi cuenta (Z-Ero)',fr:'Mon compte (Z-Ero)'},
+  z_ingressos:{ca:'Ingressos (facturació a Quatra)',es:'Ingresos (facturación a Quatra)',fr:'Recettes (facturation à Quatra)'},
+  z_costos:{ca:'Cost última milla (elèctric + desgast furgo)',es:'Coste último km (eléctrico + desgaste furgo)',fr:'Coût dernier km (électrique + usure fourgon)'},
+  z_pagament:{ca:'Pagament oli establiments',es:'Pago aceite establecimientos',fr:'Paiement huile établissements'},
+  z_net:{ca:'Guany Z-Ero (mes)',es:'Ganancia Z-Ero (mes)',fr:'Gain Z-Ero (mois)'},
+  z_netcol:{ca:'Net Z-Ero',es:'Neto Z-Ero',fr:'Net Z-Ero'},
+  gp_camio:{ca:'Costos camió Quatra (dièsel)',es:'Costes camión Quatra (diésel)',fr:'Coûts camion Quatra (diesel)'},
+  gp_furgo:{ca:'Furgoneta Z-Ero (elèctrica)',es:'Furgoneta Z-Ero (eléctrica)',fr:'Fourgon Z-Ero (électrique)'},
+  gp_oli:{ca:"Preu de l'oli",es:'Precio del aceite',fr:"Prix de l'huile"},
+  gp_desgastsg:{ca:'Desgast camió stop&go (€/km)',es:'Desgaste camión stop&go (€/km)',fr:'Usure camion stop&go (€/km)'},
+  gp_desgastdir:{ca:'Desgast camió directe (€/km)',es:'Desgaste camión directo (€/km)',fr:'Usure camion direct (€/km)'},
+  gp_elec:{ca:'Cost elèctric furgo (€/km)',es:'Coste eléctrico furgo (€/km)',fr:'Coût électrique fourgon (€/km)'},
+  gp_desgastfurgo:{ca:'Desgast furgo Z-Ero (€/km)',es:'Desgaste furgo Z-Ero (€/km)',fr:'Usure fourgon Z-Ero (€/km)'},
+  gp_preuabans:{ca:'Preu oli SENSE Z-Ero (€/bidó)',es:'Precio aceite SIN Z-Ero (€/bidón)',fr:'Prix huile SANS Z-Ero (€/bidon)'},
+  gp_preudespres:{ca:'Preu oli AMB albarà digital (€/bidó)',es:'Precio aceite CON albarán digital (€/bidón)',fr:'Prix huile AVEC bon numérique (€/bidon)'},
+  pf_kmfurgo:{ca:'Km furgo Z-Ero / mes',es:'Km furgo Z-Ero / mes',fr:'Km fourgon Z-Ero / mois'},
+  pf_preuabans:{ca:'Preu oli SENSE Z-Ero (€/bidó)',es:'Precio aceite SIN Z-Ero (€/bidón)',fr:'Prix huile SANS Z-Ero (€/bidon)'},
+  pf_incid:{ca:'Incidències € / mes',es:'Incidencias € / mes',fr:'Incidents € / mois'},
+  q_albara:{ca:'Albarà digital (rebaixa preu oli)',es:'Albarán digital (rebaja precio aceite)',fr:'Bon numérique (réduction prix huile)'},
+  q_oliestalvi:{ca:"Estalvi en el preu de l'oli",es:'Ahorro en el precio del aceite',fr:"Économie sur le prix de l'huile"},
+  z_incid:{ca:'Incidències',es:'Incidencias',fr:'Incidents'}};
 function T(k){ const e=I18N[k]; return e ? (e[window.LANG]||e.ca) : k; }
 
-/* Diccionari de frases addicionals (etiquetes/botons comuns) per cobrir més UI */
-window.__PH = {
-  'Generar PDF':'Generar PDF',
-  'Buidar Hub':'Vaciar Hub',
-  'Exportar':'Exportar',
-  'Cancel·lar':'Cancelar',
-  'Desar':'Guardar',
-  'Filtres':'Filtros',
-  'Tots els tipus':'Todos los tipos',
-  'Tots els estats':'Todos los estados',
-  'Hotel':'Hotel','Restaurant':'Restaurante','Bar / Cafeteria':'Bar / Cafetería',
-  'Rostisseria':'Rosticería','Escola / Campings':'Escuela / Campings','Altre':'Otro',
-  'Resum diari':'Resumen diario','Resum setmanal':'Resumen semanal',
-  'Informe mensual RED II':'Informe mensual RED II','Informe trimestral':'Informe trimestral',
-  'Informe semestral':'Informe semestral','Informe anual':'Informe anual',
-  'Verificat':'Verificado','Pendent':'Pendiente','Net / Filtrat':'Limpio / Filtrado',
-  'Brut / Residus':'Sucio / Residuos','Degradat':'Degradado',
-  'Correu electrònic':'Correo electrónico','Contrasenya':'Contraseña',
-  'Capacitat Hub Z-Ero · Calella':'Capacidad Hub Z-Ero · Calella',
-  'Manteniment Flota':'Mantenimiento Flota',
-  'Configuració de càlcul d\u2019estalvi':'Configuración de cálculo de ahorro',
-  'Base de dades d\u2019establiments':'Base de datos de establecimientos'
-};
-
+function _skip(node){
+  let el=node.parentElement; if(!el) return true;
+  const tag=el.tagName;
+  if(tag==='SCRIPT'||tag==='STYLE'||tag==='TEXTAREA') return true;
+  if(el.closest('[data-i18n]')) return true;
+  if(el.closest('#sec-volums')) return true;
+  if(el.closest('#vol-quatra-dash')) return true;
+  return false;
+}
+function walkTranslate(root){
+  const PH=window.__PH3||{};
+  const w=document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+  const nodes=[]; let n; while(n=w.nextNode()){ if(!_skip(n)) nodes.push(n); }
+  nodes.forEach(node=>{
+    if(node.__ca===undefined) node.__ca=node.nodeValue;
+    const raw=node.__ca; const t=(raw||'').trim(); if(!t) return;
+    if(window.LANG==='ca'){ node.nodeValue=raw; return; }
+    const e=PH[t];
+    if(e && e[window.LANG]){ const lead=raw.match(/^\s*/)[0], trail=raw.match(/\s*$/)[0]; node.nodeValue=lead+e[window.LANG]+trail; }
+    else { node.nodeValue=raw; }
+  });
+}
 function applyI18n(){
-  // 1) elements amb data-i18n
-  document.querySelectorAll('[data-i18n]').forEach(el=>{
-    const k=el.getAttribute('data-i18n'); if(I18N[k]) el.textContent=T(k);
+  window.__i18nBusy=true;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{ const k=el.getAttribute('data-i18n'); if(I18N[k]) el.textContent=T(k); });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{ const k=el.getAttribute('data-i18n-ph'); if(I18N[k]) el.setAttribute('placeholder',T(k)); });
+  document.querySelectorAll('input[placeholder],textarea[placeholder]').forEach(el=>{
+    if(el.__caPh===undefined) el.__caPh=el.getAttribute('placeholder')||'';
+    const t=(el.__caPh||'').trim(); const e=(window.__PH3||{})[t];
+    el.setAttribute('placeholder', (window.LANG!=='ca'&&e&&e[window.LANG])? e[window.LANG] : el.__caPh);
   });
-  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
-    const k=el.getAttribute('data-i18n-ph'); if(I18N[k]) el.setAttribute('placeholder',T(k));
-  });
-  // 2) frases comunes (només fulles, conserva l'original a data-o)
-  const PH=window.__PH||{};
-  document.querySelectorAll('.lbl,.card-label,.stat-label,.badge,.hub-pill,.info-pill,.table-bar span,option').forEach(el=>{
-    if(el.tagName!=='OPTION' && el.children.length>0) return;
-    if(el.hasAttribute('data-i18n')) return;
-    if(el.dataset.o===undefined) el.dataset.o=el.textContent;
-    const o=(el.dataset.o||'').trim();
-    el.textContent = (window.LANG==='es' && PH[o]) ? PH[o] : el.dataset.o;
-  });
-  // 3) secció volums dinàmica
-  if(document.getElementById('sec-volums')) volumsRender();
+  try{ walkTranslate(document.body); }catch(e){}
+  if(document.getElementById('sec-volums')) { try{ volumsRender(); }catch(e){} }
+  if(document.getElementById('vol-quatra-dash')) { try{ volQuatraDash(); }catch(e){} }
   updateFlags();
+  window.__i18nBusy=false;
 }
-
 function setLang(l){ window.LANG=l; try{localStorage.setItem('zero_lang',l);}catch(e){} applyI18n(); }
-
 function updateFlags(){
-  ['ca','es'].forEach(l=>{
-    const b=document.getElementById('flag-'+l); if(!b) return;
-    const on = window.LANG===l;
-    b.style.opacity = on?'1':'0.4';
-    b.style.outline = on?'2px solid #4ade80':'2px solid transparent';
-    b.style.transform = on?'scale(1.05)':'scale(1)';
-  });
+  ['ca','es','fr'].forEach(l=>{ const b=document.getElementById('flag-'+l); if(!b) return;
+    const on=window.LANG===l; b.style.opacity=on?'1':'0.4'; b.style.outline=on?'2px solid #4ade80':'2px solid transparent'; b.style.transform=on?'scale(1.05)':'scale(1)'; });
+}
+function _initObserver(){
+  try{
+    const obs=new MutationObserver(muts=>{
+      if(window.__i18nBusy || window.LANG==='ca') return;
+      let added=[]; muts.forEach(m=>m.addedNodes && m.addedNodes.forEach(nd=>{ if(nd.nodeType===1||nd.nodeType===3) added.push(nd); }));
+      if(!added.length) return;
+      window.__i18nBusy=true;
+      added.forEach(nd=>{ try{ walkTranslate(nd.nodeType===3?(nd.parentNode||nd):nd); }catch(e){} });
+      window.__i18nBusy=false;
+    });
+    obs.observe(document.body,{childList:true,subtree:true});
+  }catch(e){}
 }
 
-/* ---------- Taula de Volums i Viabilitat ---------- */
+/* ---------- Taula de Volums i Viabilitat (model econòmic) ---------- */
 const VOL_TYPES=[['hotels','vt_hotels'],['restaurants','vt_restaurants'],['camping','vt_camping'],['grans','vt_grans'],['rostisseria','vt_rostisseria'],['altres','vt_altres']];
-const VOL_F=[['n','vf_n'],['kg','vf_kg'],['km','vf_km'],['diesel','vf_diesel'],['hores','vf_hores'],['desgast','vf_desgast'],['incidencies','vf_incid']];
+const VOL_PF=[['n','vf_n'],['kg','vf_kg'],['kmpp','pf_kmpp'],['horespp','pf_horespp'],['kmfurgo','pf_kmfurgo'],['preuabans','pf_preuabans'],['preubido','pf_preubido'],['incidencies','pf_incid']];
 let VOL_CUR='hotels';
 
-function volDefault(){ const o={}; VOL_TYPES.forEach(t=>o[t[0]]={n:0,kg:0,km:0,diesel:0,hores:0,desgast:0,incidencies:0}); return o; }
-let VOL_DATA = volLoad();
-function volLoad(){
-  try{ const r=localStorage.getItem('zero_volums'); if(r){ const d=JSON.parse(r); const b=volDefault(); VOL_TYPES.forEach(t=>{ if(d[t[0]]) Object.assign(b[t[0]],d[t[0]]); }); return b; } }catch(e){}
-  return volDefault();
-}
+/* Paràmetres globals (editables, desats) */
+const VG_DEF={fixMes:0, varKg:0.10, eurHora:35, preuDiesel:1.65, consum:28, desgastSG:0.30, desgastDir:0.20, elecKm:0, desgastFurgo:0.10, kmHub:60, viatgesMes:4, preuBido:15, preuBidoAbans:20, kgBido:58};
+let VOL_G=vgLoad();
+function vgLoad(){ try{ const r=localStorage.getItem('zero_vol_g'); if(r){ return Object.assign({},VG_DEF,JSON.parse(r)); } }catch(e){} return Object.assign({},VG_DEF); }
+function vgPersist(){ try{ localStorage.setItem('zero_vol_g',JSON.stringify(VOL_G)); }catch(e){} }
+function vgSet(k,v){ VOL_G[k]=parseFloat(v)||0; vgPersist(); volRecalcAll(); }
+
+/* Dades per tipus */
+function volDefault(){ const o={}; VOL_TYPES.forEach(t=>o[t[0]]={n:0,kg:0,kmpp:0,horespp:0,kmfurgo:0,preuabans:'',preubido:'',incidencies:0}); return o; }
+let VOL_DATA=volLoad();
+function volLoad(){ try{ const r=localStorage.getItem('zero_volums'); if(r){ const d=JSON.parse(r); const b=volDefault(); VOL_TYPES.forEach(t=>{ if(d[t[0]]) Object.assign(b[t[0]],d[t[0]]); }); return b; } }catch(e){} return volDefault(); }
 function volPersist(){ try{ localStorage.setItem('zero_volums',JSON.stringify(VOL_DATA)); }catch(e){} }
-function volParams(){
-  const kgb=Math.max(0.0001, parseFloat((document.getElementById('vol-kg')||{}).value)||58);
-  const eb=parseFloat((document.getElementById('vol-euro')||{}).value)||15;
-  return {kgb,eb};
-}
-function volComp(d){
-  const {kgb,eb}=volParams();
-  const kg=+d.kg||0;
-  const bidons=kg/kgb;
-  const ingressos=bidons*eb;
-  const costos=(+d.diesel||0)+(+d.hores||0)+(+d.desgast||0)+(+d.incidencies||0);
-  return {bidons,ingressos,costos,net:ingressos-costos};
-}
-function volLocale(){ return window.LANG==='es'?'es-ES':'ca-ES'; }
+function volSet(f,v){ VOL_DATA[VOL_CUR][f]= ((f==='preubido'||f==='preuabans')? v : (parseFloat(v)||0)); volPersist(); volRefreshResults(); }
+
+function volLocale(){ return window.LANG==='es'?'es-ES':(window.LANG==='fr'?'fr-BE':'ca-ES'); }
 function nf(n,dec){ return (Number(n)||0).toLocaleString(volLocale(),{minimumFractionDigits:dec||0,maximumFractionDigits:dec||0}); }
 function eur(n){ return nf(n,2)+' €'; }
 
-function volSubtabs(){
-  const c=document.getElementById('vol-subtabs'); if(!c) return;
-  c.innerHTML = VOL_TYPES.map(t=>`<button class="tab ${VOL_CUR===t[0]?'on':''}" onclick="volTab('${t[0]}')">${T(t[1])}</button>`).join('');
+/* Càlcul per tipus */
+function typeComp(d){
+  const kgb=Math.max(0.0001,VOL_G.kgBido), kg=+d.kg||0;
+  const bidons=kg/kgb;
+  // Quatra evita la recollida porta a porta amb camió dièsel (stop&go) — SENSE cost de xofer (és el mateix)
+  const dieselLocal=((+d.kmpp||0)/100)*VOL_G.consum*VOL_G.preuDiesel;
+  const desgastLocal=(+d.kmpp||0)*VOL_G.desgastSG;          // desgast alt (stop&go)
+  const estalvi=dieselLocal+desgastLocal;                   // estalvi dièsel+desgast (sense xofer)
+  const horesPP=+d.horespp||0;                              // hores porta a porta (per hores alliberades)
+  // Albarà digital: rebaixa del preu de l'oli (estalvi per a Quatra)
+  const preuDespres=(d.preubido!==''&&d.preubido!=null)? (parseFloat(d.preubido)||0) : VOL_G.preuBido;
+  const preuAbans=(d.preuabans!==''&&d.preuabans!=null)? (parseFloat(d.preuabans)||0) : VOL_G.preuBidoAbans;
+  const estalviOli=Math.max(0,preuAbans-preuDespres)*bidons;
+  // Z-Ero fa la última milla amb furgo ELÈCTRICA — SENSE comptar la mà d'obra pròpia
+  const elecWear=((+d.kmfurgo||0)*VOL_G.elecKm)+((+d.kmfurgo||0)*VOL_G.desgastFurgo);
+  const incid=+d.incidencies||0;
+  const costMillaZero=elecWear+incid;
+  const facturaVar=kg*VOL_G.varKg;
+  return {bidons,estalvi,horesPP,estalviOli,elecWear,incid,costMillaZero,facturaVar,preuDespres,preuAbans};
 }
+/* Totals globals */
+function globalComp(){
+  const tot={n:0,kg:0,bidons:0,estalvi:0,horesPP:0,estalviOli:0,elecWear:0,incid:0,costMillaZero:0,facturaVar:0};
+  VOL_TYPES.forEach(t=>{ const d=VOL_DATA[t[0]]; const c=typeComp(d);
+    tot.n+=+d.n||0; tot.kg+=+d.kg||0; tot.bidons+=c.bidons; tot.estalvi+=c.estalvi; tot.horesPP+=c.horesPP; tot.estalviOli+=c.estalviOli; tot.elecWear+=c.elecWear; tot.incid+=c.incid; tot.costMillaZero+=c.costMillaZero; tot.facturaVar+=c.facturaVar; });
+  // Viatge Maçanet<->Calella (Quatra ve a buidar el hub, directe) — SENSE cost de xofer
+  const kmTot=VOL_G.kmHub*VOL_G.viatgesMes;
+  const dieselViatge=(kmTot/100)*VOL_G.consum*VOL_G.preuDiesel;
+  const desgastViatge=kmTot*VOL_G.desgastDir;               // desgast baix (directe)
+  const costViatge=dieselViatge+desgastViatge;
+  const horesViatge=(kmTot/55)+(tot.bidons/23);             // conducció + càrrega hub
+  const horesAlliberades=Math.max(0,tot.horesPP-horesViatge);
+  const oportunitat=horesAlliberades*VOL_G.eurHora;          // hores de flota a re-facturar
+  const facturacioZero=VOL_G.fixMes+tot.facturaVar;
+  const costQuatra=costViatge+facturacioZero;
+  // Benefici Quatra = estalvi(dièsel+desgast) + oportunitat(hores) + estalvi oli(albarà) − cost del servei
+  const beneficiQuatra=tot.estalvi+oportunitat+tot.estalviOli-costQuatra;
+  // Compte Z-Ero (el meu guany): facturació − cost última milla elèctrica (sense oli, sense mà d'obra pròpia)
+  const ingressosZero=facturacioZero;
+  const netZero=ingressosZero-tot.costMillaZero;
+  return Object.assign(tot,{dieselViatge,desgastViatge,horesViatge,horesAlliberades,oportunitat,costViatge,facturacioZero,costQuatra,beneficiQuatra,ingressosZero,netZero,kmTot});
+}
+
+/* ---- Render ---- */
+function volGlobals(){
+  const c=document.getElementById('vol-globals'); if(!c) return;
+  const inp=(k,lbl,step)=>`<div><div class="lbl">${lbl}</div><input class="inp" type="number" step="${step||'any'}" min="0" value="${VOL_G[k]}" oninput="vgSet('${k}',this.value)"></div>`;
+  c.innerHTML=`
+   <div class="card">
+     <div class="vsec-title">${T('gp_tarifes')}</div>
+     <div class="g3">${inp('fixMes',T('gp_fixmes'))}${inp('varKg',T('gp_varkg'),'0.01')}${inp('eurHora',T('gp_cap'))}</div>
+     <div class="vsec-title" style="margin-top:18px;">${T('gp_camio')}</div>
+     <div class="g4">${inp('preuDiesel',T('gp_diesel'),'0.01')}${inp('consum',T('gp_consum'))}${inp('desgastSG',T('gp_desgastsg'),'0.01')}${inp('desgastDir',T('gp_desgastdir'),'0.01')}</div>
+     <div class="vsec-title" style="margin-top:18px;">${T('gp_furgo')}</div>
+     <div class="g2">${inp('elecKm',T('gp_elec'),'0.01')}${inp('desgastFurgo',T('gp_desgastfurgo'),'0.01')}</div>
+     <div class="vsec-title" style="margin-top:18px;">${T('gp_viatge')}</div>
+     <div class="g4">${inp('kmHub',T('gp_kmht'))}${inp('viatgesMes',T('gp_viatges'))}${inp('kgBido',T('vol_kgbido'))}${inp('preuBidoAbans',T('gp_preuabans'),'0.01')}</div>
+     <div class="vsec-title" style="margin-top:18px;">${T('gp_oli')}</div>
+     <div class="g3">${inp('preuBido',T('gp_preudespres'),'0.01')}</div>
+     <div style="font-size:10px;color:#94a3b8;font-weight:700;margin-top:12px;line-height:1.5;">${T('vol_help')}</div>
+   </div>`;
+}
+function volSubtabs(){ const c=document.getElementById('vol-subtabs'); if(!c) return; c.innerHTML=VOL_TYPES.map(t=>`<button class="tab ${VOL_CUR===t[0]?'on':''}" onclick="volTab('${t[0]}')">${T(t[1])}</button>`).join(''); }
 function volTab(k){ VOL_CUR=k; volSubtabs(); volEditor(); }
-
 function volEditor(){
-  const ed=document.getElementById('vol-editor'); if(!ed) return;
-  const d=VOL_DATA[VOL_CUR];
-  const tName = T('vt_'+VOL_CUR.replace('hotels','hotels')) || VOL_CUR;
-  const inputs = VOL_F.map(f=>`
-    <div>
-      <div class="lbl">${T(f[1])}</div>
-      <input class="inp" type="number" min="0" step="any" value="${d[f[0]]||0}"
-        oninput="volSet('${f[0]}',this.value)">
-    </div>`).join('');
-  ed.innerHTML=`
-   <div class="card card-bt-green">
-     <div class="card-h">
-       <div class="card-label">${tName}</div>
-       <span class="hub-pill pill-green">${T('vf_n')}: <strong style="margin-left:5px">${nf(d.n)}</strong></span>
-     </div>
-     <div class="g4" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));">${inputs}</div>
-     <div id="vol-results" style="margin-top:16px;">${volResultsHTML(d)}</div>
-     <div style="font-size:10px;color:#94a3b8;font-weight:700;margin-top:10px;">${T('vol_help')}</div>
-   </div>`;
-}
-function volResultsHTML(d){
-  const c=volComp(d);
-  const cell=(label,val,color)=>`
-    <div class="stat-card" style="padding:14px;">
-      <div class="stat-label">${label}</div>
-      <div style="font-size:22px;font-weight:900;color:${color||'#e2e8f0'};line-height:1;margin-top:6px;">${val}</div>
-    </div>`;
-  return `<div class="g-stats" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));margin-bottom:0;">
-     ${cell(T('vc_bidons'), nf(c.bidons,1))}
-     ${cell(T('vc_ingressos'), eur(c.ingressos), '#4ade80')}
-     ${cell(T('vc_costos'), eur(c.costos), '#fbbf24')}
-     ${cell(T('vc_net'), eur(c.net), c.net>=0?'#16a34a':'#f87171')}
-   </div>`;
-}
-function volSet(f,v){
-  VOL_DATA[VOL_CUR][f]=parseFloat(v)||0;
-  volPersist();
-  // actualitza només resultats + capçalera + taula (no re-pinta inputs -> no perd el focus)
-  const r=document.getElementById('vol-results'); if(r) r.innerHTML=volResultsHTML(VOL_DATA[VOL_CUR]);
-  const pill=document.querySelector('#vol-editor .hub-pill strong'); if(pill) pill.textContent=nf(VOL_DATA[VOL_CUR].n);
-  volTable();
+  const ed=document.getElementById('vol-editor'); if(!ed) return; const d=VOL_DATA[VOL_CUR];
+  const inputs=VOL_PF.map(f=>{
+    if(f[0]==='preubido') return `<div><div class="lbl">${T(f[1])}</div><input class="inp" type="number" step="any" min="0" placeholder="${VOL_G.preuBido}" value="${d.preubido}" oninput="volSet('preubido',this.value)"></div>`;
+    if(f[0]==='preuabans') return `<div><div class="lbl">${T(f[1])}</div><input class="inp" type="number" step="any" min="0" placeholder="${VOL_G.preuBidoAbans}" value="${d.preuabans}" oninput="volSet('preuabans',this.value)"></div>`;
+    return `<div><div class="lbl">${T(f[1])}</div><input class="inp" type="number" step="any" min="0" value="${d[f[0]]||0}" oninput="volSet('${f[0]}',this.value)"></div>`;
+  }).join('');
+  ed.innerHTML=`<div class="card card-bt-green"><div class="card-h"><div class="card-label">${T('vt_'+VOL_CUR)}</div>
+     <span class="hub-pill pill-green">${T('vf_n')}: <strong style="margin-left:5px">${nf(d.n)}</strong></span></div>
+     <div class="g4" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));">${inputs}</div></div>`;
 }
 
-function volTable(){
-  const tb=document.getElementById('vol-table'); if(!tb) return;
-  const cols=[T('vt_tipus'),T('vf_n'),T('vf_kg'),T('vc_bidons'),T('vc_ingressos'),T('vf_diesel'),T('vf_hores'),T('vf_desgast'),T('vf_incid'),T('vc_costos'),T('vc_net')];
+function panelQuatra(g){
+  const line=(l,v,cls)=>`<div class="vline"><span class="vline-label">${l}</span><span class="vline-val ${cls||''}">${v}</span></div>`;
+  const netc=g.beneficiQuatra>=0?'pos':'neg';
+  return `<div class="card card-bt-green">
+    <div class="vsec-title" style="color:#4ade80;">${T('q_title')}</div>
+    <div style="font-size:10px;font-weight:800;color:#34d399;text-transform:uppercase;letter-spacing:1px;margin:4px 0 6px;">${T('q_estalvi')}</div>
+    ${line(T('q_dieseldesg'), '+ '+eur(g.estalvi), 'pos')}
+    <div style="font-size:10px;font-weight:800;color:#86efac;text-transform:uppercase;letter-spacing:1px;margin:12px 0 6px;">${T('q_oportunitat')}</div>
+    ${line(T('q_refact')+' ('+nf(g.horesAlliberades,1)+' h)', '+ '+eur(g.oportunitat), 'pos')}
+    <div style="font-size:10px;font-weight:800;color:#34d399;text-transform:uppercase;letter-spacing:1px;margin:12px 0 6px;">${T('q_albara')}</div>
+    ${line(T('q_oliestalvi'), '+ '+eur(g.estalviOli), 'pos')}
+    <div style="font-size:10px;font-weight:800;color:#fbbf24;text-transform:uppercase;letter-spacing:1px;margin:12px 0 6px;">${T('q_cost')}</div>
+    ${line(T('q_viatge'), '− '+eur(g.costViatge), 'neg')}
+    ${line(T('q_factura'), '− '+eur(g.facturacioZero), 'neg')}
+    <div class="vsubtotal"><span>${T('q_net')}</span><span class="vline-val ${netc}">${eur(g.beneficiQuatra)}</span></div>
+    <div class="vsubtotal" style="border-top:none;padding-top:2px;"><span style="font-size:10px;color:#64748b;">${T('q_anual')}</span><span class="vline-val ${netc}" style="font-size:13px;">${eur(g.beneficiQuatra*12)}</span></div>
+  </div>`;
+}
+function panelZero(g){
+  const line=(l,v,cls)=>`<div class="vline"><span class="vline-label">${l}</span><span class="vline-val ${cls||''}">${v}</span></div>`;
+  const netc=g.netZero>=0?'pos':'neg';
+  return `<div class="card card-bt-amber">
+    <div class="vsec-title" style="color:#fbbf24;">${T('z_title')}</div>
+    ${line(T('z_ingressos'), '+ '+eur(g.ingressosZero), 'pos')}
+    ${line(T('z_costos'), '− '+eur(g.elecWear), 'neg')}
+    ${line(T('z_incid'), '− '+eur(g.incid), 'neg')}
+    <div class="vsubtotal"><span>${T('z_net')}</span><span class="vline-val ${netc}">${eur(g.netZero)}</span></div>
+    <div class="vsubtotal" style="border-top:none;padding-top:2px;"><span style="font-size:10px;color:#64748b;">${T('q_anual')}</span><span class="vline-val ${netc}" style="font-size:13px;">${eur(g.netZero*12)}</span></div>
+  </div>`;
+}
+function volPanels(){
+  const g=globalComp();
+  const pq=document.getElementById('vol-panel-quatra'); if(pq) pq.innerHTML=panelQuatra(g);
+  const pz=document.getElementById('vol-panel-zero'); if(pz) pz.innerHTML=panelZero(g);
+  volTable(g);
+}
+function volTable(g){
+  const tb=document.getElementById('vol-table'); if(!tb) return; g=g||globalComp();
+  const cols=[T('vt_tipus'),T('vf_n'),T('vf_kg'),T('vc_bidons'),T('q_estalvicol'),T('q_beneficicol'),T('z_netcol')];
   let head='<thead><tr>'+cols.map((c,i)=>`<th style="${i>0?'text-align:right;':''}">${c}</th>`).join('')+'</tr></thead>';
-  const tot={n:0,kg:0,bidons:0,ingressos:0,diesel:0,hores:0,desgast:0,incidencies:0,costos:0,net:0};
-  let rows='';
-  VOL_TYPES.forEach(t=>{
-    const d=VOL_DATA[t[0]]; const c=volComp(d);
-    tot.n+=+d.n||0; tot.kg+=+d.kg||0; tot.bidons+=c.bidons; tot.ingressos+=c.ingressos;
-    tot.diesel+=+d.diesel||0; tot.hores+=+d.hores||0; tot.desgast+=+d.desgast||0; tot.incidencies+=+d.incidencies||0;
-    tot.costos+=c.costos; tot.net+=c.net;
-    const netc = c.net>=0?'#16a34a':'#f87171';
-    rows+=`<tr style="cursor:pointer;" onclick="volTab('${t[0]}')">
-      <td><strong>${T(t[1])}</strong></td>
-      <td style="text-align:right;">${nf(d.n)}</td>
-      <td style="text-align:right;">${nf(d.kg)}</td>
-      <td style="text-align:right;">${nf(c.bidons,1)}</td>
-      <td style="text-align:right;color:#4ade80;font-weight:700;">${eur(c.ingressos)}</td>
-      <td style="text-align:right;">${eur(d.diesel)}</td>
-      <td style="text-align:right;">${eur(d.hores)}</td>
-      <td style="text-align:right;">${eur(d.desgast)}</td>
-      <td style="text-align:right;">${eur(d.incidencies)}</td>
-      <td style="text-align:right;color:#fbbf24;">${eur(c.costos)}</td>
-      <td style="text-align:right;font-weight:800;color:${netc};">${eur(c.net)}</td>
-    </tr>`;
+  const totKg=g.kg||0, totH=g.horesPP||0; let rows='';
+  VOL_TYPES.forEach(t=>{ const d=VOL_DATA[t[0]]; const c=typeComp(d);
+    const share=totKg>0?(+d.kg||0)/totKg:0;
+    const oport_t=totH>0? g.oportunitat*((c.horesPP||0)/totH) : 0;   // hores alliberades repartides
+    const costQ_t=g.costViatge*share + (VOL_G.fixMes*share + c.facturaVar);
+    const benefQ_t=c.estalvi+oport_t+c.estalviOli-costQ_t;
+    const netZ_t=(VOL_G.fixMes*share + c.facturaVar)-c.costMillaZero;
+    const bq=benefQ_t>=0?'#16a34a':'#f87171', nz=netZ_t>=0?'#16a34a':'#f87171';
+    rows+=`<tr style="cursor:pointer;" onclick="volTab('${t[0]}')"><td><strong>${T(t[1])}</strong></td>
+      <td style="text-align:right;">${nf(d.n)}</td><td style="text-align:right;">${nf(d.kg)}</td><td style="text-align:right;">${nf(c.bidons,1)}</td>
+      <td style="text-align:right;color:#4ade80;">${eur(c.estalvi)}</td>
+      <td style="text-align:right;font-weight:800;color:${bq};">${eur(benefQ_t)}</td>
+      <td style="text-align:right;font-weight:800;color:${nz};">${eur(netZ_t)}</td></tr>`;
   });
-  const netc = tot.net>=0?'#16a34a':'#f87171';
-  rows+=`<tr style="background:#244632;">
-      <td><strong>${T('vt_total')}</strong></td>
-      <td style="text-align:right;font-weight:800;">${nf(tot.n)}</td>
-      <td style="text-align:right;font-weight:800;">${nf(tot.kg)}</td>
-      <td style="text-align:right;font-weight:800;">${nf(tot.bidons,1)}</td>
-      <td style="text-align:right;font-weight:800;color:#4ade80;">${eur(tot.ingressos)}</td>
-      <td style="text-align:right;font-weight:800;">${eur(tot.diesel)}</td>
-      <td style="text-align:right;font-weight:800;">${eur(tot.hores)}</td>
-      <td style="text-align:right;font-weight:800;">${eur(tot.desgast)}</td>
-      <td style="text-align:right;font-weight:800;">${eur(tot.incidencies)}</td>
-      <td style="text-align:right;font-weight:800;color:#fbbf24;">${eur(tot.costos)}</td>
-      <td style="text-align:right;font-weight:900;color:${netc};">${eur(tot.net)}</td>
-    </tr>`;
+  const bq=g.beneficiQuatra>=0?'#16a34a':'#f87171', nz=g.netZero>=0?'#16a34a':'#f87171';
+  rows+=`<tr style="background:#244632;"><td><strong>${T('vt_total')}</strong></td>
+    <td style="text-align:right;font-weight:800;">${nf(g.n)}</td><td style="text-align:right;font-weight:800;">${nf(g.kg)}</td><td style="text-align:right;font-weight:800;">${nf(g.bidons,1)}</td>
+    <td style="text-align:right;font-weight:800;color:#4ade80;">${eur(g.estalvi)}</td>
+    <td style="text-align:right;font-weight:900;color:${bq};">${eur(g.beneficiQuatra)}</td>
+    <td style="text-align:right;font-weight:900;color:${nz};">${eur(g.netZero)}</td></tr>`;
   tb.innerHTML=head+'<tbody>'+rows+'</tbody>';
-  const nt=document.getElementById('vol-net-total'); if(nt) nt.innerHTML=`${T('vol_nettot')} <strong style="color:${netc};margin-left:4px;">${eur(tot.net)}</strong>`;
+  const ntl=document.getElementById('vol-net-total'); if(ntl) ntl.innerHTML=`${T('q_net')} <strong style="color:${bq};margin-left:4px;">${eur(g.beneficiQuatra)}</strong>`;
+}
+function volRefreshResults(){ volPanels(); }
+function volRecalcAll(){ volEditor(); volPanels(); }
+function volumsRender(){ volGlobals(); volSubtabs(); volEditor(); volPanels(); }
+function volumsRecalc(){ volPanels(); }
+function volumsSave(){ volPersist(); vgPersist(); const b=document.querySelector('[data-volsave]'); if(b){ b.textContent=T('vol_saved'); setTimeout(()=>{ b.textContent=T('vol_save'); },1200); } }
+function volumsReset(){ const msg=window.LANG==='es'?'¿Restablecer todos los valores a cero?':(window.LANG==='fr'?'Réinitialiser toutes les valeurs ?':'Restablir tots els valors?'); const go=()=>{ VOL_DATA=volDefault(); VOL_G=Object.assign({},VG_DEF); volPersist(); vgPersist(); volumsRender(); }; if(typeof zConfirm==='function'){ zConfirm(msg,go); } else if(confirm(msg)){ go(); } }
+
+/* ---- Resum al taulell del Gestor (NOMÉS guany de Quatra) ---- */
+function volQuatraDash(){
+  const c=document.getElementById('vol-quatra-dash'); if(!c) return;
+  const g=globalComp();
+  const bq=g.beneficiQuatra>=0?'#16a34a':'#f87171';
+  c.innerHTML=`<div class="card card-bt-green" style="margin-bottom:16px;">
+    <div class="card-h"><div class="card-label" style="color:#4ade80;">${T('q_title')}</div>
+      <span class="hub-pill pill-green">${T('q_net')}: <strong style="margin-left:5px;color:${bq};">${eur(g.beneficiQuatra)}</strong></span></div>
+    <div class="g-stats" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:0;">
+      <div class="vkpi vpos"><div class="vkpi-label">${T('q_estalvi')}</div><div class="vkpi-val">${eur(g.estalvi)}</div></div>
+      <div class="vkpi vblu"><div class="vkpi-label">${T('q_oportunitat')}</div><div class="vkpi-val">${eur(g.oportunitat)}</div></div>
+      <div class="vkpi vpos"><div class="vkpi-label">${T('q_albara')}</div><div class="vkpi-val">${eur(g.estalviOli)}</div></div>
+      <div class="vkpi ${g.beneficiQuatra>=0?'vpos':'vneg'}"><div class="vkpi-label">${T('q_anual')}</div><div class="vkpi-val">${eur(g.beneficiQuatra*12)}</div></div>
+    </div></div>`;
 }
 
-function volumsRecalc(){ // quan canvien €/bidó o kg/bidó
-  try{ localStorage.setItem('zero_vol_p', JSON.stringify(volParams())); }catch(e){}
-  const r=document.getElementById('vol-results'); const d=VOL_DATA[VOL_CUR];
-  if(r&&d) r.innerHTML=volResultsHTML(d);
-  volTable();
-}
-function volumsRender(){
-  // carrega params desats
-  try{ const p=JSON.parse(localStorage.getItem('zero_vol_p')||'null'); if(p){ const e=document.getElementById('vol-euro'); const k=document.getElementById('vol-kg'); if(e)e.value=p.eb; if(k)k.value=p.kgb; } }catch(e){}
-  volSubtabs(); volEditor(); volTable();
-}
-function volumsSave(){
-  volPersist();
-  try{ localStorage.setItem('zero_vol_p', JSON.stringify(volParams())); }catch(e){}
-  const btn=document.querySelector('[data-volsave]');
-  if(btn){ const o=btn.textContent; btn.textContent=T('vol_saved'); setTimeout(()=>{ btn.textContent=T('vol_save'); },1200); }
-}
-function volumsReset(){
-  const msg = window.LANG==='es' ? '¿Restablecer todos los valores de la tabla de volúmenes a cero?' : 'Restablir tots els valors de la taula de volums a zero?';
-  const go=()=>{ VOL_DATA=volDefault(); volPersist(); volumsRender(); };
-  if(typeof zConfirm==='function'){ zConfirm(msg, go); } else if(confirm(msg)){ go(); }
-}
-
-/* ---------- Inicialització ---------- */
-document.addEventListener('DOMContentLoaded', function(){ try{ applyI18n(); }catch(e){} });
+/* ---------- Init ---------- */
+function _i18nInit(){ try{ applyI18n(); }catch(e){} _initObserver(); }
+document.addEventListener('DOMContentLoaded', _i18nInit);
 window.addEventListener('load', function(){ try{ applyI18n(); }catch(e){} });
 
 </script>
