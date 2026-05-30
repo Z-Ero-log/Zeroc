@@ -394,6 +394,7 @@
       <div style="text-align:right;font-size:10px;color:#475569;margin-top:6px;font-weight:700;">0% completat</div>
     </div>
   </div>
+  <div id="operador-account"></div>
   <!-- Date range picker Operador -->
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;position:relative;">
     <span style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;">Període:</span>
@@ -404,7 +405,7 @@
     </button>
     <span id="op-period-label" style="font-size:10px;font-weight:700;color:#16a34a;background:#dcfce7;padding:3px 10px;border-radius:99px;">Avui</span>
   </div>
-  <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-bottom:16px;">
+  <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:16px;">
     <div class="stat-card bb-green">
       <div class="stat-label">Hores flota alliberades</div>
       <div class="stat-val" style="color:#22c55e;" id="op-hours">—</div>
@@ -513,6 +514,31 @@
       <div class="page-sub" data-i18n="ps_establiments">Hotels · Restaurants · Bars · Indústria alimentària · Campings . Rostisseria</div>
     </div>
     <button class="btn btn-green" onclick="openModal()">+ Afegir establiment</button>
+  </div>
+  <div class="card card-bt-green" style="margin-bottom:16px;">
+    <div class="vsec-title" style="color:#4ade80;font-size:12px;" data-i18n="est_vp_title">El que obté el teu establiment amb Z-Ero</div>
+    <div class="g4" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-top:14px;">
+      <div class="stat-card bb-green" style="margin:0;">
+        <div style="font-size:22px;line-height:1;">📄</div>
+        <div class="stat-label" style="margin-top:8px;" data-i18n="est_vp_cert_t">Certificat legal a cada recollida</div>
+        <div class="stat-note" style="margin-top:6px;line-height:1.5;" data-i18n="est_vp_cert_d">Justificant de gestió de residus amb codi RED II, pes i GPS · vàlid per a inspeccions sanitàries i ambientals</div>
+      </div>
+      <div class="stat-card bb-green" style="margin:0;">
+        <div style="font-size:22px;line-height:1;">💶</div>
+        <div class="stat-label" style="margin-top:8px;" data-i18n="est_vp_pay_t">Cobres per l'oli</div>
+        <div class="stat-note" style="margin-top:6px;line-height:1.5;" data-i18n="est_vp_pay_d">Pagament per bidó · la recollida no et costa res</div>
+      </div>
+      <div class="stat-card bb-green" style="margin:0;">
+        <div style="font-size:22px;line-height:1;">♻️</div>
+        <div class="stat-label" style="margin-top:8px;" data-i18n="est_vp_green_t">Segell verd per al local</div>
+        <div class="stat-note" style="margin-top:6px;line-height:1.5;" data-i18n="est_vp_green_d">El teu oli es recicla 100% en biocombustible amb recollida elèctrica · credencial per ensenyar als clients</div>
+      </div>
+      <div class="stat-card bb-amber" style="margin:0;">
+        <div style="font-size:22px;line-height:1;">📅</div>
+        <div class="stat-label" style="margin-top:8px;" data-i18n="est_vp_easy_t">Zero maldecaps</div>
+        <div class="stat-note" style="margin-top:6px;line-height:1.5;" data-i18n="est_vp_easy_d">Recollida puntual i higiènica a demanda · mai més bidons vessant</div>
+      </div>
+    </div>
   </div>
   <div class="g-stats" style="margin-bottom:16px;">
     <div class="stat-card bb-blue">
@@ -623,6 +649,7 @@
 <!-- ======= TRANSPORTISTA ======= -->
 <section id="sec-transport" class="sec">
   <div class="transport-wrap">
+    <div id="transport-day"></div>
     <div class="t-card">
       <div style="text-align:center;font-size:20px;font-weight:900;text-transform:uppercase;font-style:italic;margin-bottom:6px;color:#0d1a12;letter-spacing:-0.5px;">Nova recollida</div>
       <div style="text-align:center;font-size:11px;color:#94a3b8;font-weight:700;margin-bottom:10px;">Omple els camps i confirma · El pes és obligatori</div>
@@ -750,6 +777,7 @@
 </div>
 <!-- ======= QUATRA IBERIA ======= -->
 <section id="sec-quatra" class="sec">
+  <div id="quatra-value-strip"></div>
   <div id="vol-quatra-dash"></div>
   <div class="top-bar">
     <div>
@@ -1231,7 +1259,7 @@ hubBidonsRestants = d.hubBidonsRestants || 0;
 totalRec  = d.totalRec  != null ? d.totalRec : 0;
 seq       = d.seq       != null ? d.seq : 1;
 }
-updateHub(); recalcDieselDebounced();
+updateHub(); recalcDieselDebounced(); try{ transportistaDay(); }catch(e){}
 });
 db.ref('establiments').on('value', snap => {
 const d = snap.val();
@@ -3013,6 +3041,7 @@ return `<div class="est-row" data-est-id="${id}">
 </div>
 <div style="text-align:right;margin-left:16px;flex-shrink:0;">
 <div style="display:flex;gap:6px;margin-top:8px;">
+<button class="btn btn-green btn-xs" onclick="genCertificat('${id}')" title="Certificat de gestió de residus">📄 Certificat</button>
 <button class="btn btn-ghost btn-xs" onclick="editEst('${id}')">Editar</button>
 <button class="btn btn-red btn-xs" onclick="delEst('${id}')">Eliminar</button>
 </div>
@@ -3149,6 +3178,91 @@ zAlert('Establiment ' + nom + ' desat correctament.', 'ok');
 function editEst(id) { openModal({id,...DB[id]}); }
 function delEst(id) {
 zConfirm('Eliminar ' + DB[id].nom + '?', function() { delete DB[id]; renderEstabliments(); recalcDieselDebounced(); saveEstabliments(); }, 'err');
+}
+
+function genCertificat(id){
+  const e = DB[id];
+  if(!e){ if(typeof zAlert==='function') zAlert('Establiment no trobat','err'); return; }
+  if(typeof window.jspdf==='undefined'&&typeof jspdf==='undefined'){ if(typeof zAlert==='function') zAlert('jsPDF no carregat.','err'); return; }
+  const { jsPDF } = window.jspdf||jspdf;
+  const recs = Object.values(_allRecs).filter(d=>d && !d._esCamio && (d.nom===e.nom || d.id===id));
+  const totalKg = recs.reduce((s,d)=>s+(parseFloat(d.pes)||0),0);
+  const nRec = recs.length;
+  const parse = s=>{ const p=(s||'').split(' ')[0].split('/'); return p.length===3? new Date(+p[2],+p[1]-1,+p[0]) : null; };
+  const ds = recs.map(d=>parse(d.dataHora)).filter(Boolean).sort((a,b)=>a-b);
+  const fd = d=> d? d.toLocaleDateString('ca-ES') : '—';
+  const periode = ds.length ? (fd(ds[0])+' - '+fd(ds[ds.length-1])) : '—';
+  const today = new Date().toLocaleDateString('ca-ES');
+  const NAVY=[13,26,18], GREEN=[22,163,74], GRAY=[148,163,184];
+  const doc = new jsPDF({unit:'mm',format:'a4'});
+
+  // Capçalera
+  doc.setFillColor(...NAVY); doc.rect(0,0,210,38,'F');
+  try{ doc.addImage(ZERO_LOGO,'PNG',14,4,31.5,19.0); }catch(err){}
+  doc.setFontSize(7.5); doc.setFont('helvetica','normal'); doc.setTextColor(74,222,128);
+  doc.text('COL·LABORADOR AUTORITZAT · RED II',14,28);
+  doc.setTextColor(100,116,139); doc.text('Hub Calella · 08370 · '+today,14,34);
+  try{ doc.addImage(QUATRA_LOGO,'PNG',120,11,42,16); }catch(err){}
+  try{ doc.addImage(ISCC_LOGO,'PNG',168,4,38,30); }catch(err){}
+
+  // Títol
+  doc.setFontSize(15); doc.setFont('helvetica','bold'); doc.setTextColor(...NAVY);
+  doc.text('CERTIFICAT DE GESTIÓ DE RESIDUS',14,50);
+  doc.setFontSize(10); doc.setFont('helvetica','normal'); doc.setTextColor(...GREEN);
+  doc.text("Oli vegetal usat (UCO) · Codi LER 20 01 25",14,57);
+
+  // Bloc establiment
+  let y=66;
+  doc.setDrawColor(...GREEN); doc.setLineWidth(0.4); doc.roundedRect(14,y,182,28,2,2,'S');
+  doc.setFontSize(8); doc.setTextColor(...GRAY); doc.setFont('helvetica','bold');
+  doc.text('ESTABLIMENT PRODUCTOR DEL RESIDU',18,y+6);
+  doc.setFontSize(13); doc.setTextColor(...NAVY); doc.text(String(e.nom||'—'),18,y+14);
+  doc.setFontSize(8.5); doc.setFont('helvetica','normal'); doc.setTextColor(80,80,80);
+  doc.text('Codi: '+id+'     Tipus: '+(e.tipus||'—'),18,y+20);
+  doc.text('Adreça: '+(e.adreca||'—'),18,y+25);
+  y+=36;
+
+  // Declaració
+  doc.setFontSize(9); doc.setTextColor(40,40,40); doc.setFont('helvetica','normal');
+  const stmt="Es certifica que l'establiment indicat ha lliurat el residu d'oli vegetal usat detallat a continuació a un gestor autoritzat (Quatra Iberia S.L.), recollit pel col·laborador Z-Ero CO2 Milla Verda S.L. amb vehicle 100% elèctric i traçabilitat GPS. La gestió compleix la normativa de residus vigent i s'integra a la cadena de custòdia ISCC / RED II per a la valorització del residu en biocombustible.";
+  const lines = doc.splitTextToSize(stmt,182); doc.text(lines,14,y); y += lines.length*4.6 + 4;
+
+  // KPIs resum
+  doc.setFillColor(240,253,244); doc.roundedRect(14,y,182,17,2,2,'F');
+  doc.setFontSize(8); doc.setTextColor(...GRAY); doc.setFont('helvetica','bold');
+  doc.text('TOTAL RECOLLIT',20,y+6); doc.text('Nº RECOLLIDES',88,y+6); doc.text('PERÍODE',145,y+6);
+  doc.setFontSize(13); doc.setTextColor(...GREEN);
+  doc.text(totalKg.toLocaleString('ca-ES')+' kg',20,y+13);
+  doc.text(String(nRec),88,y+13);
+  doc.setFontSize(9); doc.setTextColor(...NAVY); doc.setFont('helvetica','normal'); doc.text(periode,145,y+12);
+  y+=25;
+
+  // Taula de recollides
+  doc.setFillColor(...NAVY); doc.rect(14,y,182,7,'F');
+  doc.setFontSize(8); doc.setTextColor(255,255,255); doc.setFont('helvetica','bold');
+  doc.text('DATA',17,y+5); doc.text('REF. RED II',47,y+5); doc.text('PES (kg)',112,y+5); doc.text('SEGELL GPS',145,y+5);
+  y+=7;
+  doc.setFont('helvetica','normal');
+  recs.sort((a,b)=>(a.dataHora||'').localeCompare(b.dataHora||''));
+  recs.forEach((d,i)=>{
+    if(y>272){ doc.addPage(); y=20; }
+    if(i%2){ doc.setFillColor(247,250,249); doc.rect(14,y,182,6,'F'); }
+    doc.setTextColor(40,40,40); doc.setFontSize(8);
+    doc.text((d.dataHora||'—').split(' ')[0],17,y+4);
+    doc.text(String(d.ref||'—'),47,y+4);
+    doc.text(String(d.pes||0),112,y+4);
+    doc.text(String(d.precinte||'—'),145,y+4);
+    y+=6;
+  });
+  if(nRec===0){ doc.setTextColor(150,150,150); doc.setFontSize(8); doc.text('Sense recollides registrades per a aquest establiment.',17,y+4); y+=8; }
+
+  // Peu legal
+  let fy=288;
+  doc.setDrawColor(220,220,220); doc.line(14,fy-5,196,fy-5);
+  doc.setFontSize(7); doc.setTextColor(120,120,120);
+  doc.text(doc.splitTextToSize('Gestor autoritzat: Quatra Iberia S.L. (Maçanet de la Selva). Recollida: Z-Ero CO2 Milla Verda S.L. - Hub Calella 08370. Codi LER 20 01 25 - RED II - cadena de custòdia ISCC. Document emès electrònicament el '+today+'.',182),14,fy);
+
+  doc.save('Certificat_UCO_'+id+'_'+today.replace(/\//g,'-')+'.pdf');
 }
 
 async function genPDF(who) {
@@ -3958,7 +4072,36 @@ const I18N = {
   ctx_venda:{ca:"Venda de l'UCO (a Repsol, etc.)",es:'Venta del UCO (a Repsol, etc.)',fr:"Vente de l'UCO (à Repsol, etc.)"},
   ctx_compra:{ca:'Compra als establiments',es:'Compra a los establecimientos',fr:'Achat aux établissements'},
   ctx_marge:{ca:"Marge brut de Quatra sobre l'UCO",es:'Margen bruto de Quatra sobre el UCO',fr:"Marge brute de Quatra sur l'UCO"},
-  ctx_nota:{ca:"Aquest marge el té igualment, amb o sense Z-Ero. Z-Ero aporta la prima 0 emissions, l'albarà digital i l'estalvi logístic.",es:'Este margen lo tiene igualmente, con o sin Z-Ero. Z-Ero aporta la prima 0 emisiones, el albarán digital y el ahorro logístico.',fr:"Cette marge existe de toute façon, avec ou sans Z-Ero. Z-Ero apporte la prime 0 émission, le bon numérique et l'économie logistique."}
+  ctx_nota:{ca:"Aquest marge el té igualment, amb o sense Z-Ero. Z-Ero aporta la prima 0 emissions, l'albarà digital i l'estalvi logístic.",es:'Este margen lo tiene igualmente, con o sin Z-Ero. Z-Ero aporta la prima 0 emisiones, el albarán digital y el ahorro logístico.',fr:"Cette marge existe de toute façon, avec ou sans Z-Ero. Z-Ero apporte la prime 0 émission, le bon numérique et l'économie logistique."},
+  q_vs_title:{ca:'Per què Z-Ero és el teu millor proveïdor de recollida',es:'Por qué Z-Ero es tu mejor proveedor de recogida',fr:'Pourquoi Z-Ero est votre meilleur collecteur'},
+  q_vs_trace_t:{ca:'Traçabilitat sense frau',es:'Trazabilidad sin fraude',fr:'Traçabilité sans fraude'},
+  q_vs_trace_d:{ca:'Cada bidó amb albarà digital, GPS i codi RED II · alimenta la cadena ISCC de Quatra sense trencar-la',es:'Cada bidón con albarán digital, GPS y código RED II · alimenta la cadena ISCC de Quatra sin romperla',fr:'Chaque bidon avec bon numérique, GPS et code RED II · alimente la chaîne ISCC de Quatra sans la rompre'},
+  q_vs_co2_t:{ca:'Recollida 0 emissions',es:'Recogida 0 emisiones',fr:'Collecte 0 émission'},
+  q_vs_co2_d:{ca:'Furgoneta 100% elèctrica',es:'Furgoneta 100% eléctrica',fr:'Fourgon 100% électrique'},
+  q_vs_supply_t:{ca:'Subministrament garantit',es:'Suministro garantizado',fr:'Approvisionnement garanti'},
+  q_vs_supply_d:{ca:'última milla resolta',es:'última milla resuelta',fr:'dernier km résolu'},
+  q_vs_marge:{ca:"Marge brut sobre l'UCO (Quatra)",es:'Margen bruto sobre el UCO (Quatra)',fr:"Marge brute sur l'UCO (Quatra)"},
+  q_vs_avantatge:{ca:'Avantatge net amb Z-Ero',es:'Ventaja neta con Z-Ero',fr:'Avantage net avec Z-Ero'},
+  op_acc_title:{ca:'El meu compte Z-Ero',es:'Mi cuenta Z-Ero',fr:'Mon compte Z-Ero'},
+  op_acc_sub:{ca:'Projecció mensual · Taula de Volums',es:'Proyección mensual · Tabla de Volúmenes',fr:'Projection mensuelle · Tableau des Volumes'},
+  est_vp_title:{ca:'El que obté el teu establiment amb Z-Ero',es:'Lo que obtiene tu establecimiento con Z-Ero',fr:'Ce que votre établissement obtient avec Z-Ero'},
+  est_vp_cert_t:{ca:'Certificat legal a cada recollida',es:'Certificado legal en cada recogida',fr:'Certificat légal à chaque collecte'},
+  est_vp_cert_d:{ca:'Justificant de gestió de residus amb codi RED II, pes i GPS · vàlid per a inspeccions sanitàries i ambientals',es:'Justificante de gestión de residuos con código RED II, peso y GPS · válido para inspecciones sanitarias y ambientales',fr:'Justificatif de gestion des déchets avec code RED II, poids et GPS · valable pour les inspections sanitaires et environnementales'},
+  est_vp_pay_t:{ca:"Cobres per l'oli",es:'Cobras por el aceite',fr:"Payé pour l'huile"},
+  est_vp_pay_d:{ca:'Pagament per bidó · la recollida no et costa res',es:'Pago por bidón · la recogida no te cuesta nada',fr:'Paiement par bidon · la collecte ne vous coûte rien'},
+  est_vp_green_t:{ca:'Segell verd per al local',es:'Sello verde para el local',fr:"Label vert pour l'établissement"},
+  est_vp_green_d:{ca:'El teu oli es recicla 100% en biocombustible amb recollida elèctrica · credencial per ensenyar als clients',es:'Tu aceite se recicla 100% en biocombustible con recogida eléctrica · credencial para mostrar a tus clientes',fr:'Votre huile est recyclée à 100% en biocarburant avec collecte électrique · argument à montrer à vos clients'},
+  est_vp_easy_t:{ca:'Zero maldecaps',es:'Cero complicaciones',fr:'Zéro tracas'},
+  est_vp_easy_d:{ca:'Recollida puntual i higiènica a demanda · mai més bidons vessant',es:'Recogida puntual e higiénica a demanda · nunca más bidones rebosando',fr:'Collecte ponctuelle et hygiénique à la demande · plus jamais de bidons qui débordent'},
+  tr_day_title:{ca:'La meva furgo avui',es:'Mi furgoneta hoy',fr:"Mon fourgon aujourd'hui"},
+  tr_van:{ca:'Furgo elèctrica',es:'Furgo eléctrica',fr:'Fourgon électrique'},
+  tr_bidons:{ca:'bidons/viatge',es:'bidones/viaje',fr:'bidons/trajet'},
+  tr_today_rec:{ca:'Recollides avui',es:'Recogidas hoy',fr:"Collectes aujourd'hui"},
+  tr_today_bar:{ca:'Barrils plens avui',es:'Bidones llenos hoy',fr:"Bidons pleins aujourd'hui"},
+  tr_today_kg:{ca:'Kg estimats avui',es:'Kg estimados hoy',fr:"Kg estimés aujourd'hui"},
+  tr_trips:{ca:'Viatges al hub',es:'Viajes al hub',fr:'Trajets au hub'},
+  tr_load:{ca:'Càrrega del viatge (estimada)',es:'Carga del viaje (estimada)',fr:'Charge du trajet (estimée)'},
+  tr_full:{ca:'Furgo plena · porta-la al hub a buidar',es:'Furgoneta llena · llévala al hub a vaciar',fr:'Fourgon plein · videz-le au hub'}
 };
 function T(k){ const e=I18N[k]; return e ? (e[window.LANG]||e.ca) : k; }
 
@@ -3996,6 +4139,9 @@ function applyI18n(){
   try{ walkTranslate(document.body); }catch(e){}
   if(document.getElementById('sec-volums')) { try{ volumsRender(); }catch(e){} }
   if(document.getElementById('vol-quatra-dash')) { try{ volQuatraDash(); }catch(e){} }
+  if(document.getElementById('quatra-value-strip')) { try{ quatraValueStrip(); }catch(e){} }
+  if(document.getElementById('operador-account')) { try{ operadorAccount(); }catch(e){} }
+  if(document.getElementById('transport-day')) { try{ transportistaDay(); }catch(e){} }
   updateFlags();
   window.__i18nBusy=false;
 }
@@ -4067,9 +4213,9 @@ function typeComp(d){
 }
 /* Totals globals */
 function globalComp(){
-  const tot={n:0,kg:0,bidons:0,estalvi:0,horesPP:0,estalviOli:0,elecWear:0,incid:0,costMillaZero:0,facturaVar:0,prima:0,vendaUco:0,compraUco:0};
+  const tot={n:0,kg:0,bidons:0,kmpp:0,estalvi:0,horesPP:0,estalviOli:0,elecWear:0,incid:0,costMillaZero:0,facturaVar:0,prima:0,vendaUco:0,compraUco:0};
   VOL_TYPES.forEach(t=>{ const d=VOL_DATA[t[0]]; const c=typeComp(d);
-    tot.n+=+d.n||0; tot.kg+=+d.kg||0; tot.bidons+=c.bidons; tot.estalvi+=c.estalvi; tot.horesPP+=c.horesPP; tot.estalviOli+=c.estalviOli; tot.elecWear+=c.elecWear; tot.incid+=c.incid; tot.costMillaZero+=c.costMillaZero; tot.facturaVar+=c.facturaVar; tot.prima+=c.prima; tot.vendaUco+=c.vendaUco; tot.compraUco+=c.compraUco; });
+    tot.n+=+d.n||0; tot.kg+=+d.kg||0; tot.bidons+=c.bidons; tot.estalvi+=c.estalvi; tot.horesPP+=c.horesPP; tot.estalviOli+=c.estalviOli; tot.elecWear+=c.elecWear; tot.incid+=c.incid; tot.costMillaZero+=c.costMillaZero; tot.facturaVar+=c.facturaVar; tot.prima+=c.prima; tot.vendaUco+=c.vendaUco; tot.compraUco+=c.compraUco; tot.kmpp+=+d.kmpp||0; });
   // Viatge Maçanet<->Calella (Quatra ve a buidar el hub, directe) — SENSE cost de xofer
   const kmTot=VOL_G.kmHub*VOL_G.viatgesMes;
   const dieselViatge=(kmTot/100)*VOL_G.consum*VOL_G.preuDiesel;
@@ -4084,10 +4230,11 @@ function globalComp(){
   // Benefici Quatra = estalvi(dièsel+desgast) + oportunitat(hores) + estalvi oli(albarà) − cost del servei
   const beneficiQuatra=tot.estalvi+oportunitat+tot.estalviOli+tot.prima-costQuatra;
   const margeBrutUco=(tot.vendaUco+tot.prima)-tot.compraUco;   // context (no se suma al benefici diferencial)
+  const litresEvit=(tot.kmpp/100)*VOL_G.consum; const co2Evit=litresEvit*2.64;   // CO2 dièsel porta a porta evitat
   // Compte Z-Ero (el meu guany): facturació − cost última milla elèctrica (sense oli, sense mà d'obra pròpia)
   const ingressosZero=facturacioZero;
   const netZero=ingressosZero-tot.costMillaZero;
-  return Object.assign(tot,{dieselViatge,desgastViatge,horesViatge,horesAuto,horesAlliberades,oportunitat,costViatge,facturacioZero,costQuatra,beneficiQuatra,margeBrutUco,ingressosZero,netZero,kmTot});
+  return Object.assign(tot,{dieselViatge,desgastViatge,horesViatge,horesAuto,horesAlliberades,oportunitat,costViatge,facturacioZero,costQuatra,beneficiQuatra,margeBrutUco,litresEvit,co2Evit,ingressosZero,netZero,kmTot});
 }
 
 /* ---- Render ---- */
@@ -4226,6 +4373,95 @@ function volQuatraDash(){
 }
 
 /* ---------- Init ---------- */
+function quatraValueStrip(){
+  const c=document.getElementById('quatra-value-strip'); if(!c) return;
+  const g=globalComp();
+  const bq=g.beneficiQuatra>=0?'#22c55e':'#f87171';
+  c.innerHTML=`<div class="card card-bt-green" style="margin-bottom:16px;">
+    <div class="vsec-title" style="color:#4ade80;font-size:12px;">${T('q_vs_title')}</div>
+    <div class="g3" style="margin-top:14px;">
+      <div class="stat-card bb-green" style="margin:0;">
+        <div style="font-size:22px;line-height:1;">🔒</div>
+        <div class="stat-label" style="margin-top:8px;">${T('q_vs_trace_t')}</div>
+        <div class="stat-val" style="font-size:28px;color:#22c55e;">100%</div>
+        <div class="stat-note">${T('q_vs_trace_d')}</div>
+      </div>
+      <div class="stat-card bb-green" style="margin:0;">
+        <div style="font-size:22px;line-height:1;">♻️</div>
+        <div class="stat-label" style="margin-top:8px;">${T('q_vs_co2_t')}</div>
+        <div class="stat-val" style="font-size:28px;color:#22c55e;">${nf(g.co2Evit)} <span style="font-size:13px;color:#475569;font-weight:600;">kg CO₂/mes</span></div>
+        <div class="stat-note">${T('q_vs_co2_d')} · +${eur(g.prima)}/mes</div>
+      </div>
+      <div class="stat-card bb-blue" style="margin:0;">
+        <div style="font-size:22px;line-height:1;">📦</div>
+        <div class="stat-label" style="margin-top:8px;">${T('q_vs_supply_t')}</div>
+        <div class="stat-val" style="font-size:28px;color:#e2e8f0;">${nf(g.kg)} <span style="font-size:13px;color:#475569;font-weight:600;">kg/mes</span></div>
+        <div class="stat-note">${nf(g.bidons,0)} bidons · ${T('q_vs_supply_d')}</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:32px;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid #335043;">
+      <div><div class="stat-label">${T('q_vs_marge')}</div><div style="font-size:26px;font-weight:900;color:#22c55e;margin-top:4px;">${eur(g.margeBrutUco)}<span style="font-size:12px;color:#475569;font-weight:600;"> /mes</span></div></div>
+      <div><div class="stat-label">${T('q_vs_avantatge')}</div><div style="font-size:26px;font-weight:900;color:${bq};margin-top:4px;">${eur(g.beneficiQuatra)}<span style="font-size:12px;color:#475569;font-weight:600;"> /mes</span></div></div>
+    </div>
+  </div>`;
+}
+function operadorAccount(){
+  const c=document.getElementById('operador-account'); if(!c) return;
+  const g=globalComp();
+  const nz=g.netZero>=0?'#22c55e':'#f87171';
+  c.innerHTML=`<div class="card card-bt-amber" style="margin-bottom:16px;">
+    <div class="card-h"><span class="card-label" style="color:#fbbf24;">${T('op_acc_title')}</span>
+      <span class="hub-pill pill-yellow">${T('op_acc_sub')}</span></div>
+    <div class="g4" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));">
+      <div class="stat-card" style="margin:0;border-bottom:4px solid #16a34a;">
+        <div class="stat-label">${T('z_ingressos')}</div>
+        <div class="stat-val" style="font-size:24px;color:#22c55e;">${eur(g.ingressosZero)}</div></div>
+      <div class="stat-card" style="margin:0;border-bottom:4px solid #f97316;">
+        <div class="stat-label">${T('z_costos')}</div>
+        <div class="stat-val" style="font-size:24px;color:#f97316;">${eur(g.elecWear)}</div></div>
+      <div class="stat-card" style="margin:0;border-bottom:4px solid #f97316;">
+        <div class="stat-label">${T('z_incid')}</div>
+        <div class="stat-val" style="font-size:24px;color:#f97316;">${eur(g.incid)}</div></div>
+      <div class="stat-card" style="margin:0;border-bottom:4px solid ${nz};background:#0d1a12;">
+        <div class="stat-label" style="color:#4ade80;">${T('z_net')}</div>
+        <div class="stat-val" style="font-size:24px;color:${nz};">${eur(g.netZero)}</div>
+        <div class="stat-note" style="color:#475569;">${T('q_anual')}: ${eur(g.netZero*12)}</div></div>
+    </div>
+  </div>`;
+}
+function transportistaDay(){
+  const c=document.getElementById('transport-day'); if(!c) return;
+  const recsAll=(typeof _allRecs!=='undefined'&&_allRecs)?_allRecs:{};
+  const t=new Date();
+  const parse=s=>{const p=(s||'').split(' ')[0].split('/'); return p.length===3?new Date(+p[2],+p[1]-1,+p[0]):null;};
+  const sameDay=d=>d&&d.getDate()===t.getDate()&&d.getMonth()===t.getMonth()&&d.getFullYear()===t.getFullYear();
+  const recs=Object.values(recsAll).filter(d=>d&&!d._esCamio&&sameDay(parse(d.dataHora)));
+  const nRec=recs.length;
+  const barrils=recs.reduce((s,d)=>s+(parseInt(d.plens)||0),0);
+  const kgBido=(typeof VOL_G!=='undefined'&&VOL_G&&VOL_G.kgBido)?VOL_G.kgBido:58;
+  const kg=recs.reduce((s,d)=>s+((parseFloat(d.pes)>0)?parseFloat(d.pes):(parseInt(d.plens)||0)*kgBido),0);
+  const CAP=6;
+  const trips=barrils>0?Math.ceil(barrils/CAP):0;
+  const load=barrils>0?(barrils-(trips-1)*CAP):0;
+  const pct=Math.min((load/CAP)*100,100);
+  const full=load>=CAP&&barrils>0;
+  const barColor=full?'#f97316':'#22c55e';
+  const kpi=(lbl,val,col)=>`<div style="flex:1;min-width:84px;"><div class="stat-label" style="margin-bottom:4px;">${lbl}</div><div style="font-size:24px;font-weight:900;color:${col};">${val}</div></div>`;
+  c.innerHTML=`<div class="card card-bt-amber" style="margin-bottom:18px;">
+    <div class="card-h"><span class="card-label" style="color:#d97706;">${T('tr_day_title')}</span>
+      <span class="hub-pill ${full?'pill-yellow':'pill-green'}">${T('tr_van')}: ${CAP} ${T('tr_bidons')}</span></div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px;">
+      ${kpi(T('tr_today_rec'),nRec,'#e2e8f0')}
+      ${kpi(T('tr_today_bar'),barrils,'#22c55e')}
+      ${kpi(T('tr_today_kg'),Math.round(kg)+' kg','#e2e8f0')}
+      ${kpi(T('tr_trips'),trips,'#d97706')}
+    </div>
+    <div class="lbl" style="margin-bottom:0;">${T('tr_load')} · ${load}/${CAP}</div>
+    <div class="prog-lg" style="height:22px;"><div class="prog-lg-inner" style="width:${pct}%;background:${barColor};"><span>${load}/${CAP}</span></div></div>
+    ${full?`<div style="margin-top:10px;background:#fff7ed;border:1px solid #f97316;border-radius:10px;padding:8px 12px;font-size:11px;color:#c2410c;font-weight:800;text-align:center;">⚠ ${T('tr_full')}</div>`:''}
+  </div>`;
+}
+
 function _i18nInit(){ try{ applyI18n(); }catch(e){} _initObserver(); }
 document.addEventListener('DOMContentLoaded', _i18nInit);
 window.addEventListener('load', function(){ try{ applyI18n(); }catch(e){} });
