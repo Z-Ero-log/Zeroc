@@ -118,6 +118,9 @@
 .vline-val.neg{color:#f87171;}
 .vsubtotal{display:flex;justify-content:space-between;font-size:12px;font-weight:700;padding:8px 0 0;margin-top:6px;border-top:1px solid #335043;}
 .vsec-title{font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #335043;}
+#vol-panels-grid{align-items:stretch}
+#vol-panels-grid>div{display:flex}
+#vol-panels-grid>div>.card{width:100%;margin-bottom:0;display:flex;flex-direction:column}
 .vkpi{background:#0d1a12;border-radius:12px;padding:14px 16px;border:1px solid #335043;}
 .vkpi-label{font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;line-height:1.3;}
 .vkpi-val{font-size:20px;font-weight:900;color:#e2e8f0;}
@@ -943,7 +946,7 @@
   </div>
   <div id="vol-globals"></div>
   <div id="vol-editor"></div>
-  <div class="g2" id="vol-panels-grid" style="margin-top:16px;align-items:start;">
+  <div class="g2" id="vol-panels-grid" style="margin-top:16px;align-items:stretch;">
     <div id="vol-panel-quatra"></div>
     <div id="vol-panel-zero"></div>
   </div>
@@ -4118,7 +4121,7 @@ function panelQuatra(g){
 function panelZero(g){
   const line=(l,v,cls)=>`<div class="vline"><span class="vline-label">${l}</span><span class="vline-val ${cls||''}">${v}</span></div>`;
   const netc=g.netZero>=0?'pos':'neg';
-  return `<div class="card card-bt-amber">
+  return `<div class="card card-bt-amber" style="justify-content:center;">
     <div class="vsec-title" style="color:#fbbf24;">${T('z_title')}</div>
     ${line(T('z_ingressos'), '+ '+eur(g.ingressosZero), 'pos')}
     ${line(T('z_costos'), '− '+eur(g.elecWear), 'neg')}
@@ -4163,7 +4166,7 @@ function quatraChartCard(g){
   const kmCotxe=g.co2Evit*12/0.12; // ~120 g CO2/km cotxe mitjà (indicatiu)
   const cotxetxt = window.LANG==='es'?('≈ '+nf(kmCotxe,0)+' km con un coche medio al año'):(window.LANG==='fr'?('≈ '+nf(kmCotxe,0)+' km avec une voiture moyenne par an'):('≈ '+nf(kmCotxe,0)+' km amb un cotxe mitjà a l\'any'));
   const legend=segs.filter(s=>s.v>0).map(s=>`<div class="vline"><span class="vline-label"><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${s.c};margin-right:7px;vertical-align:middle;"></span>${s.l}</span><span class="vline-val pos">${eur(s.v)} · ${nf(s.v/total*100,0)}%</span></div>`).join('');
-  return `<div class="card card-bt-green">
+  return `<div class="card card-bt-green" style="justify-content:center;">
     <div class="vsec-title" style="color:#4ade80;">${ttl}</div>
     <div style="position:relative;margin:6px 0 12px;">
       ${donutSVG(segs)}
