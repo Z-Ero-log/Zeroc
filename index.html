@@ -4127,13 +4127,75 @@ function panelZero(g){
     <div class="vsubtotal" style="border-top:none;padding-top:2px;"><span style="font-size:10px;color:#64748b;">${T('q_anual')}</span><span class="vline-val ${netc}" style="font-size:13px;">${eur(g.netZero*12)}</span></div>
   </div>`;
 }
+function donutSVG(segs){
+  const r=58,cx=80,cy=80,sw=24,C=2*Math.PI*r;
+  const total=segs.reduce((a,s)=>a+Math.max(0,s.v),0);
+  if(total<=0) return '';
+  let acc=0;
+  const arcs=segs.filter(s=>s.v>0).map(s=>{
+    const len=(s.v/total)*C;
+    const el=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${s.c}" stroke-width="${sw}" stroke-linecap="butt" stroke-dasharray="${len.toFixed(2)} ${(C-len).toFixed(2)}" stroke-dashoffset="${(-acc).toFixed(2)}" transform="rotate(-90 ${cx} ${cy})"/>`;
+    acc+=len; return el;
+  }).join('');
+  return `<svg viewBox="0 0 160 160" width="100%" style="max-width:220px;display:block;margin:0 auto;">
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#1f2d24" stroke-width="${sw}"/>
+    ${arcs}
+  </svg>`;
+}
+function quatraChartCard(g){
+  const ttl = window.LANG==='es'?'De dónde viene tu ventaja':(window.LANG==='fr'?"D'où vient votre avantage":"D'on surt el teu avantatge");
+  const segs=[
+    {l:T('q_dieseldesg'), v:Math.max(0,g.estalvi),     c:'#16a34a'},
+    {l:T('q_refact'),     v:Math.max(0,g.oportunitat), c:'#4ade80'},
+    {l:T('q_oliestalvi'), v:Math.max(0,g.estalviOli),  c:'#fbbf24'},
+    {l:T('q_prima'),      v:Math.max(0,g.prima),       c:'#22d3ee'}
+  ];
+  const total=segs.reduce((a,s)=>a+s.v,0);
+  const netc=g.beneficiQuatra>=0?'pos':'neg';
+  if(total<=0){
+    const empty = window.LANG==='es'?'Sin datos suficientes para el gráfico':(window.LANG==='fr'?'Données insuffisantes pour le graphique':'Encara no hi ha dades per al gràfic');
+    return `<div class="card card-bt-green"><div class="vsec-title" style="color:#4ade80;">${ttl}</div><div style="font-size:11px;color:#94a3b8;font-weight:700;padding:28px 4px;text-align:center;">${empty}</div></div>`;
+  }
+  const mes = window.LANG==='es'?'mes':(window.LANG==='fr'?'mois':'mes');
+  const any = window.LANG==='es'?'año':(window.LANG==='fr'?'an':'any');
+  const co2lbl = window.LANG==='es'?'CO₂ evitado':(window.LANG==='fr'?'CO₂ évité':'CO₂ evitat');
+  const dslbl  = window.LANG==='es'?'Diésel no quemado':(window.LANG==='fr'?'Diesel non brûlé':'Dièsel no cremat');
+  const kmCotxe=g.co2Evit*12/0.12; // ~120 g CO2/km cotxe mitjà (indicatiu)
+  const cotxetxt = window.LANG==='es'?('≈ '+nf(kmCotxe,0)+' km con un coche medio al año'):(window.LANG==='fr'?('≈ '+nf(kmCotxe,0)+' km avec une voiture moyenne par an'):('≈ '+nf(kmCotxe,0)+' km amb un cotxe mitjà a l\'any'));
+  const legend=segs.filter(s=>s.v>0).map(s=>`<div class="vline"><span class="vline-label"><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${s.c};margin-right:7px;vertical-align:middle;"></span>${s.l}</span><span class="vline-val pos">${eur(s.v)} · ${nf(s.v/total*100,0)}%</span></div>`).join('');
+  return `<div class="card card-bt-green">
+    <div class="vsec-title" style="color:#4ade80;">${ttl}</div>
+    <div style="position:relative;margin:6px 0 12px;">
+      ${donutSVG(segs)}
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;width:120px;">
+        <div style="font-size:9px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;line-height:1.2;">${T('q_vs_avantatge')}</div>
+        <div style="font-size:19px;font-weight:900;" class="vline-val ${netc}">${eur(g.beneficiQuatra)}</div>
+        <div style="font-size:9px;color:#64748b;font-weight:700;">/ ${mes}</div>
+      </div>
+    </div>
+    ${legend}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;padding-top:12px;border-top:1px dashed #475569;">
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:10px;text-align:center;">
+        <div style="font-size:9px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;">${co2lbl}</div>
+        <div style="font-size:16px;font-weight:900;color:#4ade80;">${nf(g.co2Evit,0)} kg<span style="font-size:9px;color:#64748b;font-weight:700;">/${mes}</span></div>
+        <div style="font-size:9px;color:#64748b;font-weight:700;">${nf(g.co2Evit*12,0)} kg/${any}</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:10px;text-align:center;">
+        <div style="font-size:9px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;">${dslbl}</div>
+        <div style="font-size:16px;font-weight:900;color:#fbbf24;">${nf(g.litresEvit,0)} L<span style="font-size:9px;color:#64748b;font-weight:700;">/${mes}</span></div>
+        <div style="font-size:9px;color:#64748b;font-weight:700;">${nf(g.litresEvit*12,0)} L/${any}</div>
+      </div>
+    </div>
+    <div style="text-align:center;font-size:10px;font-weight:700;color:#86efac;margin-top:10px;">🚗 ${cotxetxt}</div>
+  </div>`;
+}
 function volPanels(){
   const g=globalComp();
   const isGestor=(typeof currentRol!=='undefined' && currentRol==='gestor');
   const pq=document.getElementById('vol-panel-quatra'); if(pq) pq.innerHTML=panelQuatra(g);
   const pz=document.getElementById('vol-panel-zero');
-  if(pz){ if(isGestor){ pz.style.display='none'; pz.innerHTML=''; } else { pz.style.display=''; pz.innerHTML=panelZero(g); } }
-  const grid=document.getElementById('vol-panels-grid'); if(grid) grid.style.gridTemplateColumns=isGestor?'1fr':'';
+  if(pz){ pz.style.display=''; pz.innerHTML=isGestor?quatraChartCard(g):panelZero(g); }
+  const grid=document.getElementById('vol-panels-grid'); if(grid) grid.style.gridTemplateColumns='';
   volTable(g);
 }
 function volTable(g){
