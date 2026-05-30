@@ -219,7 +219,44 @@
 </div>
 
 <!-- ===== APP (s'amaga fins login) ===== -->
+<div id="pickup-screen" style="display:none;position:fixed;inset:0;z-index:9998;background:#0a140d;align-items:center;justify-content:center;flex-direction:column;overflow-y:auto;padding:24px;">
+  <div style="background:#1b3325;border:1px solid #335043;border-radius:24px;padding:32px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.4);">
+    <img id="pickup-logo" alt="Z-Ero CO₂ · Milla Verda S.L." style="height:30px;width:auto;display:block;">
+    <div style="font-size:20px;font-weight:900;color:#e2e8f0;margin-top:14px;">Sol·licitar recollida</div>
+    <div style="font-size:11px;color:#94a3b8;font-weight:700;margin-bottom:20px;">Avisa'ns que tens bidons plens i passarem a recollir-los.</div>
+    <div id="pickup-form">
+      <div style="margin-bottom:14px;"><div class="lbl">Nom de l'establiment</div><input class="inp" id="pickup-nom" placeholder="Ex: Restaurant La Marina"></div>
+      <div style="margin-bottom:14px;"><div class="lbl">Quants bidons plens tens?</div><input class="inp" id="pickup-bidons" type="number" min="1" step="1" placeholder="Ex: 3" style="font-size:20px;font-weight:900;color:#16a34a;"></div>
+      <div style="margin-bottom:14px;"><div class="lbl">Estat de l'oli (opcional)</div><select class="inp" id="pickup-estat"><option value="">—</option><option value="net">Net / Filtrat</option><option value="brut">Brut / Amb residus</option><option value="nose">No ho sé</option></select></div>
+      <div style="margin-bottom:14px;"><div class="lbl">Nota (opcional)</div><input class="inp" id="pickup-nota" placeholder="Horari, on són els bidons..."></div>
+      <div id="pickup-error" style="display:none;background:#fee2e2;border:1px solid #fca5a5;color:#991b1b;border-radius:10px;padding:10px 12px;font-size:11px;font-weight:700;margin-bottom:12px;"></div>
+      <button class="btn btn-green btn-full" id="pickup-send" onclick="sendPickupRequest()">📦 Enviar sol·licitud</button>
+    </div>
+    <div id="pickup-ok" style="display:none;text-align:center;padding:16px 4px;">
+      <div style="font-size:40px;">✅</div>
+      <div style="font-size:16px;font-weight:900;color:#22c55e;margin-top:8px;">Sol·licitud enviada!</div>
+      <div style="font-size:12px;color:#94a3b8;font-weight:700;margin-top:6px;line-height:1.5;">Gràcies. Hem rebut el teu avís i passarem a recollir els bidons. Ja pots tancar aquesta finestra.</div>
+    </div>
+    <div style="text-align:center;margin-top:18px;font-size:9px;color:#475569;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Logística Z-Ero CO₂ · Milla Verda S.L.</div>
+  </div>
+</div>
+
 <div id="app-root" style="display:none;">
+<div id="qr-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(13,26,18,0.7);z-index:400;align-items:center;justify-content:center;padding:20px;" onclick="if(event.target===this)closeQrModal()">
+  <div style="background:#1b3325;border:1px solid #335043;border-radius:20px;padding:28px;width:100%;max-width:380px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.4);">
+    <div style="font-size:15px;font-weight:900;color:#e2e8f0;">QR de sol·licitud de recollida</div>
+    <div id="qr-est-nom" style="font-size:12px;color:#4ade80;font-weight:700;margin:4px 0 16px;"></div>
+    <div style="background:white;border-radius:14px;padding:12px;display:inline-block;"><img id="qr-img" alt="QR" style="width:220px;height:220px;display:block;"></div>
+    <div style="font-size:10px;color:#94a3b8;font-weight:700;margin:14px 0 6px;">Enllaç directe</div>
+    <input id="qr-link" class="inp" readonly style="font-size:10px;text-align:center;">
+    <div style="display:flex;gap:8px;margin-top:12px;">
+      <button class="btn btn-green" style="flex:1;" onclick="copyQrLink()" id="qr-copy-btn">📋 Copiar</button>
+      <button class="btn btn-dark" style="flex:1;" onclick="printPickupQR()">🖨 Imprimir</button>
+      <button class="btn btn-ghost" onclick="closeQrModal()">Tancar</button>
+    </div>
+    <div style="font-size:9px;color:#64748b;font-weight:700;margin-top:12px;line-height:1.5;">Imprimeix-lo i enganxa'l a la cuina de l'establiment. En escanejar-lo podran avisar-te que tenen bidons plens.</div>
+  </div>
+</div>
 <!-- ===== SISTEMA TOAST ===== -->
 <div id="z-toast-container"></div>
 <script>
@@ -358,6 +395,12 @@
       <button class="btn btn-ghost btn-xs" onclick="resetSessio()" title="Reiniciar dades locals" style="font-size:10px;">🔄 Nova sessió</button>
       <button class="btn btn-xs" onclick="resetPresentacio()" title="Esborra totes les recollides i posa el hub a 0 per a la presentació" style="font-size:10px;background:#7c3aed;color:white;">🎯 Reset Presentació</button>
     </div>
+  </div>
+  <div class="card" id="op-pickups" style="margin-bottom:16px;border-top:3px solid #16a34a;">
+    <div class="card-h" style="margin-bottom:8px;">
+      <div class="card-label" style="color:#4ade80;">📦 Sol·licituds de recollida <span id="op-pickups-count" style="background:#16a34a;color:white;border-radius:99px;padding:2px 8px;font-size:10px;margin-left:6px;display:none;">0</span></div>
+    </div>
+    <div id="op-pickups-list"><div style="font-size:11px;color:#94a3b8;font-weight:700;padding:8px 0;">Cap sol·licitud pendent.</div></div>
   </div>
   <div class="g-hub">
     <div class="card">
@@ -1149,6 +1192,120 @@ initData();
   initKmZero(); // Calcula distància fixa Z-Ero via OSRM en background
 }
 
+// ── SOL·LICITUDS DE RECOLLIDA (establiment -> operador, via Firebase) ──────────
+function _escPick(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function _pickupParams(){ try{ return new URLSearchParams(window.location.search); }catch(e){ return new URLSearchParams(''); } }
+function showPickupScreen(){
+  const p=_pickupParams();
+  const nomEl=document.getElementById('pickup-nom');
+  const nm=p.get('nom'); if(nm && nomEl){ nomEl.value=nm; }
+  const lg=document.getElementById('pickup-logo'); if(lg){ try{ lg.src=ZERO_LOGO; }catch(e){} }
+  const ls=document.getElementById('login-screen'); if(ls) ls.style.display='none';
+  const ps=document.getElementById('pickup-screen'); if(ps) ps.style.display='flex';
+}
+function sendPickupRequest(){
+  const nom=(document.getElementById('pickup-nom').value||'').trim();
+  const bidons=parseInt(document.getElementById('pickup-bidons').value,10);
+  const estat=document.getElementById('pickup-estat').value;
+  const nota=(document.getElementById('pickup-nota').value||'').trim();
+  const err=document.getElementById('pickup-error');
+  const show=(m)=>{ err.innerHTML=m; err.style.display='block'; };
+  err.style.display='none';
+  if(!nom){ show('⚠️ Escriu el nom de l\'establiment.'); return; }
+  if(!bidons || bidons<1){ show('⚠️ Indica quants bidons plens tens (mínim 1).'); return; }
+  const btn=document.getElementById('pickup-send'); if(btn){ btn.disabled=true; btn.textContent='Enviant...'; }
+  const p=_pickupParams();
+  const payload={ nom:nom, est:(p.get('est')||null), bidons:bidons, estatOli:(estat||null), nota:(nota||null), ts:Date.now(), estat:'pendent', origen:'establiment' };
+  const fail=(m)=>{ if(btn){ btn.disabled=false; btn.textContent='📦 Enviar sol·licitud'; } show(m); };
+  try{
+    if(!(typeof db!=='undefined' && db)) return fail('❌ No hi ha connexió amb el servidor. Torna-ho a provar.');
+    db.ref('pickup_requests').push(payload)
+      .then(()=>{ document.getElementById('pickup-form').style.display='none'; document.getElementById('pickup-ok').style.display='block'; })
+      .catch(e=>fail('❌ No s\'ha pogut enviar: '+(e&&e.message||'error')+'. Torna-ho a provar.'));
+  }catch(e){ fail('❌ No hi ha connexió amb el servidor. Torna-ho a provar.'); }
+}
+function renderPickups(data){
+  const list=document.getElementById('op-pickups-list'); const cnt=document.getElementById('op-pickups-count');
+  if(!list) return;
+  const entries=data?Object.keys(data).map(k=>Object.assign({_k:k},data[k])):[];
+  const pend=entries.filter(e=>(e.estat||'pendent')==='pendent').sort((a,b)=>(b.ts||0)-(a.ts||0));
+  if(cnt){ if(pend.length){ cnt.style.display='inline-block'; cnt.textContent=pend.length; } else { cnt.style.display='none'; } }
+  if(!pend.length){ list.innerHTML='<div style="font-size:11px;color:#94a3b8;font-weight:700;padding:8px 0;">Cap sol·licitud pendent.</div>'; return; }
+  list.innerHTML=pend.map(e=>{
+    const d=new Date(e.ts||Date.now()); const hora=d.toLocaleString('ca-ES',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    const oli=e.estatOli==='net'?'net':(e.estatOli==='brut'?'brut':(e.estatOli==='nose'?'?':''));
+    return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-top:1px solid #244632;">
+      <div style="min-width:0;">
+        <div style="font-weight:800;color:#e2e8f0;font-size:13px;">${_escPick(e.nom)||'—'} <span style="color:#22c55e;">· ${parseInt(e.bidons,10)||0} bidons</span></div>
+        <div style="font-size:10px;color:#94a3b8;font-weight:600;margin-top:2px;">${hora}${oli?(' · oli: '+oli):''}${e.nota?(' · '+_escPick(e.nota)):''}</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0;">
+        <button class="btn btn-green btn-xs" onclick="setPickupStatus('${e._k}','feta')" title="Marcar com a recollida">✓ Feta</button>
+        <button class="btn btn-ghost btn-xs" onclick="setPickupStatus('${e._k}','descartada')" title="Descartar">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function setPickupStatus(key,estat){
+  if(typeof db!=='undefined' && db){ db.ref('pickup_requests/'+key+'/estat').set(estat).catch(()=>{}); }
+}
+function pickupLinkFor(id){
+  const e=(typeof DB!=='undefined'&&DB[id])?DB[id]:{};
+  return location.origin+location.pathname+'?recollida=1&est='+encodeURIComponent(id)+'&nom='+encodeURIComponent(e.nom||'');
+}
+function openPickupQR(id){
+  const e=(typeof DB!=='undefined'&&DB[id])?DB[id]:{};
+  const link=pickupLinkFor(id);
+  const nomEl=document.getElementById('qr-est-nom'); if(nomEl) nomEl.textContent=e.nom||id;
+  const linkEl=document.getElementById('qr-link'); if(linkEl) linkEl.value=link;
+  const img=document.getElementById('qr-img'); if(img) img.src='https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=0&data='+encodeURIComponent(link);
+  const ov=document.getElementById('qr-modal-overlay'); if(ov) ov.style.display='flex';
+}
+function closeQrModal(){ const ov=document.getElementById('qr-modal-overlay'); if(ov) ov.style.display='none'; }
+function printPickupQR(){
+  const link=(document.getElementById('qr-link')||{}).value||'';
+  const nom=(document.getElementById('qr-est-nom')||{}).textContent||'';
+  const qr='https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=0&data='+encodeURIComponent(link);
+  const logo=(typeof ZERO_LOGO!=='undefined')?ZERO_LOGO:'';
+  const esc=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const w=window.open('','_blank','width=360,height=620');
+  if(!w){ alert('Permet les finestres emergents per poder imprimir.'); return; }
+  w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>QR '+esc(nom)+'</title>'
+    +'<style>@page{size:55mm 88mm;margin:0;}'
+    +'*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;}'
+    +'html,body{width:55mm;height:88mm;}'
+    +'.card{width:55mm;height:88mm;padding:4mm 3mm;display:flex;flex-direction:column;align-items:center;text-align:center;border:0.4mm solid #16a34a;}'
+    +'.logo{height:7mm;margin-bottom:1.5mm;}'
+    +'.t1{font-size:3.4mm;font-weight:800;color:#0d1a12;line-height:1.15;}'
+    +'.nom{font-size:3mm;font-weight:700;color:#16a34a;margin:1mm 0 2mm;}'
+    +'.qr{width:38mm;height:38mm;}'
+    +'.t2{font-size:2.6mm;font-weight:700;color:#0d1a12;margin-top:2mm;line-height:1.25;}'
+    +'.foot{font-size:2mm;font-weight:700;color:#64748b;margin-top:auto;letter-spacing:0.3px;}'
+    +'</style></head><body><div class="card">'
+    +(logo?'<img class="logo" src="'+logo+'">':'')
+    +'<div class="t1">Tens bidons d\'oli plens?</div>'
+    +'<div class="nom">'+esc(nom)+'</div>'
+    +'<img class="qr" src="'+qr+'">'
+    +'<div class="t2">Escaneja i avisa\'ns<br>i passem a recollir-los</div>'
+    +'<div class="foot">Z-Ero CO\u2082 \u00b7 Milla Verda S.L.</div>'
+    +'</div></body></html>');
+  w.document.close();
+  const doPrint=()=>{ try{ w.focus(); w.print(); }catch(e){} };
+  const img=w.document.querySelector('.qr');
+  if(img){ if(img.complete) setTimeout(doPrint,300); else { img.onload=()=>setTimeout(doPrint,200); img.onerror=()=>setTimeout(doPrint,200); } }
+  else setTimeout(doPrint,400);
+}
+function copyQrLink(){
+  const linkEl=document.getElementById('qr-link'); if(!linkEl) return;
+  const btn=document.getElementById('qr-copy-btn');
+  const done=()=>{ if(btn){ const t=btn.textContent; btn.textContent='✓ Copiat'; setTimeout(()=>{btn.textContent=t;},1200);} };
+  try{
+    if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(linkEl.value).then(done).catch(()=>{ linkEl.select(); document.execCommand('copy'); done(); }); }
+    else { linkEl.select(); document.execCommand('copy'); done(); }
+  }catch(e){ try{ linkEl.select(); document.execCommand('copy'); done(); }catch(_){} }
+}
+window.addEventListener('DOMContentLoaded', ()=>{ try{ if(_pickupParams().has('recollida')){ showPickupScreen(); } }catch(e){} });
+
 // ── EXPORTACIÓ BACKUP JSON ────────────────────────────────────────────────────
 async function exportBackup() {
   const btn = document.querySelector('[onclick="exportBackup()"]');
@@ -1243,6 +1400,7 @@ db.ref('hub').off();
 db.ref('establiments').off();
 db.ref('recollides').off();
 db.ref('camio').off();
+db.ref('pickup_requests').off();
 }
 }
 function initData() {
@@ -1276,6 +1434,7 @@ db.ref('camio').on('value', snap => {
 const d = snap.val();
 if (d) { renderCamioHistorial(d); showCamioAlertOp(d); }
 });
+db.ref('pickup_requests').on('value', snap => { try{ renderPickups(snap.val()); }catch(e){} });
 } else {
 try {
 const saved = localStorage.getItem('zeroc_db');
@@ -2814,6 +2973,7 @@ return `<div class="est-row" data-est-id="${id}">
 <div style="text-align:right;margin-left:16px;flex-shrink:0;">
 <div style="display:flex;gap:6px;margin-top:8px;">
 <button class="btn btn-green btn-xs" onclick="genCertificat('${id}')" title="Certificat de gestió de residus">📄 Certificat</button>
+<button class="btn btn-xs" style="background:#0ea5e9;color:white;" onclick="openPickupQR('${id}')" title="Enllaç i QR de sol·licitud de recollida">📷 QR recollida</button>
 <button class="btn btn-ghost btn-xs" onclick="editEst('${id}')">Editar</button>
 <button class="btn btn-red btn-xs" onclick="delEst('${id}')">Eliminar</button>
 </div>
@@ -4090,6 +4250,11 @@ function panelQuatra(g){
   const line=(l,v,cls)=>`<div class="vline"><span class="vline-label">${l}</span><span class="vline-val ${cls||''}">${v}</span></div>`;
   const netc=g.beneficiQuatra>=0?'pos':'neg';
   const totc=g.totalQuatra>=0?'pos':'neg';
+  const isGestor=(typeof currentRol!=='undefined' && currentRol==='gestor');
+  const benefSenseHores=g.beneficiQuatra-g.oportunitat;
+  const prudTitle = window.LANG==='es'?'Escenario prudente (interno)':(window.LANG==='fr'?'Scénario prudent (interne)':'Escenari prudent (intern)');
+  const prudLbl   = window.LANG==='es'?'Beneficio Quatra sin horas de flota':(window.LANG==='fr'?'Bénéfice Quatra sans heures de flotte':'Benefici Quatra sense hores de flota');
+  const prudNote  = window.LANG==='es'?'Suelo del caso si Quatra no reaprovecha las horas liberadas. Solo visible para ti.':(window.LANG==='fr'?'Plancher du cas si Quatra ne réutilise pas les heures libérées. Visible uniquement pour toi.':'Sòl del cas si Quatra no reaprofita les hores alliberades. Només visible per a tu.');
   return `<div class="card card-bt-green">
     <div class="vsec-title" style="color:#4ade80;">${T('q_title')}</div>
     <div style="font-size:10px;font-weight:800;color:#34d399;text-transform:uppercase;letter-spacing:1px;margin:4px 0 6px;">${T('q_estalvi')}</div>
@@ -4106,6 +4271,11 @@ function panelQuatra(g){
     ${line(T('q_factura'), '− '+eur(g.facturacioZero), 'neg')}
     <div class="vsubtotal"><span>${T('q_net')}</span><span class="vline-val ${netc}">${eur(g.beneficiQuatra)}</span></div>
     <div style="font-size:9px;color:#64748b;margin:2px 0 0;line-height:1.4;">${T('q_net_note')}</div>
+    ${isGestor?'':`<div style="margin-top:12px;padding:12px;border:1px dashed #f59e0b;border-radius:12px;background:rgba(245,158,11,0.06);">
+      <div style="font-size:10px;font-weight:800;color:#fbbf24;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">⚠ ${prudTitle}</div>
+      <div class="vline"><span class="vline-label">${prudLbl}</span><span class="vline-val ${benefSenseHores>=0?'pos':'neg'}">${eur(benefSenseHores)}</span></div>
+      <div style="font-size:9px;color:#94a3b8;margin-top:6px;line-height:1.4;">${prudNote}</div>
+    </div>`}
     <div style="margin-top:14px;padding-top:12px;border-top:1px dashed #475569;">
       <div style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">${T('ctx_title')}</div>
       ${line(T('ctx_venda'), '+ '+eur(g.vendaUco), 'pos')}
@@ -4121,6 +4291,11 @@ function panelQuatra(g){
 function panelZero(g){
   const line=(l,v,cls)=>`<div class="vline"><span class="vline-label">${l}</span><span class="vline-val ${cls||''}">${v}</span></div>`;
   const netc=g.netZero>=0?'pos':'neg';
+  const CONS_ELEC=0.06;
+  const elecWearReal=(g.kmRuta||0)*(CONS_ELEC+(VOL_G.desgastFurgo||0));
+  const netReal=g.ingressosZero-(g.incid+elecWearReal);
+  const zPrudLbl = window.LANG==='es'?'Neto con recarga real (≈0,06 €/km)':(window.LANG==='fr'?'Net avec recharge réelle (≈0,06 €/km)':'Net amb recàrrega real (≈0,06 €/km)');
+  const zPrudNote= window.LANG==='es'?'Tu margen real contando la electricidad de la furgo (la app la tiene a 0).':(window.LANG==='fr'?"Ta marge réelle en comptant l'électricité du fourgon (l'app la met à 0).":'El teu marge real comptant l\'electricitat de la furgo (l\'app la té a 0).');
   return `<div class="card card-bt-amber" style="justify-content:center;">
     <div class="vsec-title" style="color:#fbbf24;">${T('z_title')}</div>
     ${line(T('z_ingressos'), '+ '+eur(g.ingressosZero), 'pos')}
@@ -4128,6 +4303,10 @@ function panelZero(g){
     ${line(T('z_incid'), '− '+eur(g.incid), 'neg')}
     <div class="vsubtotal"><span>${T('z_net')}</span><span class="vline-val ${netc}">${eur(g.netZero)}</span></div>
     <div class="vsubtotal" style="border-top:none;padding-top:2px;"><span style="font-size:10px;color:#64748b;">${T('q_anual')}</span><span class="vline-val ${netc}" style="font-size:13px;">${eur(g.netZero*12)}</span></div>
+    <div style="margin-top:12px;padding:10px 12px;border:1px dashed #f59e0b;border-radius:12px;background:rgba(245,158,11,0.06);">
+      <div class="vline" style="margin:0;"><span class="vline-label">${zPrudLbl}</span><span class="vline-val ${netReal>=0?'pos':'neg'}">${eur(netReal)}</span></div>
+      <div style="font-size:9px;color:#94a3b8;margin-top:4px;line-height:1.4;">${zPrudNote}</div>
+    </div>
   </div>`;
 }
 function donutSVG(segs){
