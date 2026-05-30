@@ -4077,11 +4077,14 @@ const I18N = {
   lbl_manual:{ca:'declarat Quatra',es:'declarado Quatra',fr:'déclaré Quatra'},
   q_bottomup:{ca:'Estimació bottom-up',es:'Estimación bottom-up',fr:'Estimation bottom-up'},
   gp_temps_title:{ca:'Temps de ruta porta a porta (estalvi Quatra)',es:'Tiempo de ruta puerta a puerta (ahorro Quatra)',fr:'Temps de tournée porte-à-porte (économie Quatra)'},
+  gp_distparades:{ca:'Distància mitjana entre parades (km)',es:'Distancia media entre paradas (km)',fr:'Distance moyenne entre arrêts (km)'},
+  gp_kmderiv:{ca:'Km de ruta derivats',es:'Km de ruta derivados',fr:'Km de tournée dérivés'},
+  gp_parades:{ca:'parades/mes',es:'paradas/mes',fr:'arrêts/mois'},
   gp_velurbana:{ca:'Velocitat urbana stop&go (km/h)',es:'Velocidad urbana stop&go (km/h)',fr:'Vitesse urbaine stop&go (km/h)'},
   gp_minaparcar:{ca:'Min. aparcar / visita',es:'Min. aparcar / visita',fr:'Min. stationner / visite'},
   gp_minfix:{ca:'Min. fixos / visita',es:'Min. fijos / visita',fr:'Min. fixes / visite'},
   gp_minbido:{ca:'Min. càrrega / bidó',es:'Min. carga / bidón',fr:'Min. charge / bidon'},
-  gp_temps_help:{ca:'Hores alliberades = (km entre parades ÷ velocitat) + (aparcar + temps fix) × visites + (min/bidó × bidons). El viatge Maçanet↔Calella NO es resta: Quatra el fa igual.',es:'Horas liberadas = (km entre paradas ÷ velocidad) + (aparcar + tiempo fijo) × visitas + (min/bidón × bidones). El viaje Maçanet↔Calella NO se resta: Quatra lo hace igual.',fr:'Heures libérées = (km entre arrêts ÷ vitesse) + (stationner + temps fixe) × visites + (min/bidon × bidons). Le trajet Maçanet↔Calella n\u2019est PAS soustrait : Quatra le fait de toute façon.'},
+  gp_temps_help:{ca:'Km de ruta = distància mitjana entre parades × (establiments × visites/mes). Hores alliberades = (km ruta ÷ velocitat) + (aparcar + temps fix) × visites + (min/bidó × bidons). El viatge Maçanet↔Calella NO es resta: Quatra el fa igual.',es:'Km de ruta = distancia media entre paradas × (establecimientos × visitas/mes). Horas liberadas = (km ruta ÷ velocidad) + (aparcar + tiempo fijo) × visitas + (min/bidón × bidones). El viaje Maçanet↔Calella NO se resta: Quatra lo hace igual.',fr:'Km de tournée = distance moyenne entre arrêts × (établissements × visites/mois). Heures libérées = (km tournée ÷ vitesse) + (stationner + temps fixe) × visites + (min/bidon × bidons). Le trajet Maçanet↔Calella n\u2019est PAS soustrait : Quatra le fait de toute façon.'},
   gp_venda_title:{ca:"Venda de l'UCO (Quatra → Repsol)",es:'Venta del UCO (Quatra → Repsol)',fr:"Vente de l'UCO (Quatra → Repsol)"},
   gp_preuvenda:{ca:'Preu venda UCO (€/kg)',es:'Precio venta UCO (€/kg)',fr:'Prix vente UCO (€/kg)'},
   gp_prima:{ca:'Prima 0 emissions (€/kg)',es:'Prima 0 emisiones (€/kg)',fr:'Prime 0 émission (€/kg)'},
@@ -4189,18 +4192,18 @@ function _initObserver(){
 
 /* ---------- Taula de Volums i Viabilitat (model econòmic) ---------- */
 const VOL_TYPES=[['hotels','vt_hotels'],['restaurants','vt_restaurants'],['camping','vt_camping'],['grans','vt_grans'],['rostisseria','vt_rostisseria'],['altres','vt_altres']];
-const VOL_PF=[['n','vf_n'],['kg','vf_kg'],['kmpp','pf_kmpp'],['visites','pf_visites'],['kmfurgo','pf_kmfurgo'],['preuabans','pf_preuabans'],['preubido','pf_preubido'],['incidencies','pf_incid']];
+const VOL_PF=[['n','vf_n'],['kg','vf_kg'],['visites','pf_visites'],['kmfurgo','pf_kmfurgo'],['preuabans','pf_preuabans'],['preubido','pf_preubido'],['incidencies','pf_incid']];
 let VOL_CUR='hotels';
 
 /* Paràmetres globals (editables, desats) */
-const VG_DEF={fixMes:0, varKg:0.10, eurHora:35, preuDiesel:1.65, consum:28, desgastSG:0.30, desgastDir:0.20, elecKm:0, desgastFurgo:0.10, kmHub:60, viatgesMes:4, preuBido:15, preuBidoAbans:20, kgBido:58, horesAllMan:0, preuVendaUco:1.00, primaEmissions:0.03, velUrbana:25, minAparcar:5, minFixParada:5, minBidoCD:3};
+const VG_DEF={fixMes:0, varKg:0.10, eurHora:35, preuDiesel:1.65, consum:28, desgastSG:0.30, desgastDir:0.20, elecKm:0, desgastFurgo:0.10, kmHub:60, viatgesMes:4, preuBido:15, preuBidoAbans:20, kgBido:58, horesAllMan:0, preuVendaUco:1.00, primaEmissions:0.03, velUrbana:25, minAparcar:5, minFixParada:5, minBidoCD:3, distParades:0.8};
 let VOL_G=vgLoad();
 function vgLoad(){ try{ const r=localStorage.getItem('zero_vol_g'); if(r){ return Object.assign({},VG_DEF,JSON.parse(r)); } }catch(e){} return Object.assign({},VG_DEF); }
 function vgPersist(){ try{ localStorage.setItem('zero_vol_g',JSON.stringify(VOL_G)); }catch(e){} }
 function vgSet(k,v){ VOL_G[k]=parseFloat(v)||0; vgPersist(); volRecalcAll(); }
 
 /* Dades per tipus */
-function volDefault(){ const o={}; VOL_TYPES.forEach(t=>o[t[0]]={n:0,kg:0,kmpp:0,visites:0,kmfurgo:0,preuabans:'',preubido:'',incidencies:0}); return o; }
+function volDefault(){ const o={}; VOL_TYPES.forEach(t=>o[t[0]]={n:0,kg:0,visites:0,kmfurgo:0,preuabans:'',preubido:'',incidencies:0}); return o; }
 let VOL_DATA=volLoad();
 function volLoad(){ try{ const r=localStorage.getItem('zero_volums'); if(r){ const d=JSON.parse(r); const b=volDefault(); VOL_TYPES.forEach(t=>{ if(d[t[0]]) Object.assign(b[t[0]],d[t[0]]); }); return b; } }catch(e){} return volDefault(); }
 function volPersist(){ try{ localStorage.setItem('zero_volums',JSON.stringify(VOL_DATA)); }catch(e){} }
@@ -4214,18 +4217,12 @@ function eur(n){ return nf(n,2)+' €'; }
 function typeComp(d){
   const kgb=Math.max(0.0001,VOL_G.kgBido), kg=+d.kg||0;
   const bidons=kg/kgb;
-  // Quatra evita la recollida porta a porta amb camió dièsel (stop&go) — SENSE cost de xofer (és el mateix)
-  const dieselLocal=((+d.kmpp||0)/100)*VOL_G.consum*VOL_G.preuDiesel;
-  const desgastLocal=(+d.kmpp||0)*VOL_G.desgastSG;          // desgast alt (stop&go)
-  const estalvi=dieselLocal+desgastLocal;                   // estalvi dièsel+desgast (sense xofer)
-  // HORES ALLIBERADES (bottom-up, físic i verificable) — el que Z-Ero treu de l'operació de Quatra dins de Calella.
-  // NO inclou el trajecte Maçanet<->Calella: aquest l'hauria de fer Quatra igualment, així que es cancel·la sol.
-  // kmpp = NOMÉS km entre parades dins de la ruta de Calella (mai l'apropament des de Maçanet).
+  // HORES ALLIBERADES per tipus — només la part que depèn del tipus (parades i volum de bidons).
+  // La conducció entre parades és propietat de la RUTA sencera i es calcula una sola vegada a globalComp.
   const visitesMes=(+d.visites||0)*(+d.n||0);               // visites/mes per establiment × nº establiments
-  const hConduir=(+d.kmpp||0)/Math.max(0.1,VOL_G.velUrbana);// conduir entre parades (km ÷ vel. urbana stop&go)
   const hParar=visitesMes*((VOL_G.minAparcar||0)+(VOL_G.minFixParada||0))/60; // aparcar + temps fix per visita
   const hCarregar=bidons*(VOL_G.minBidoCD||0)/60;           // càrrega/descàrrega segons volum de bidons
-  const horesPP=hConduir+hParar+hCarregar;                  // hores alliberades del tipus (computades)
+  const horesPP=hParar+hCarregar;                           // hores del tipus (sense conducció, que és global)
   // Albarà digital: rebaixa del preu de l'oli (estalvi per a Quatra)
   const preuDespres=(d.preubido!==''&&d.preubido!=null)? (parseFloat(d.preubido)||0) : VOL_G.preuBido;
   const preuAbans=(d.preuabans!==''&&d.preuabans!=null)? (parseFloat(d.preuabans)||0) : VOL_G.preuBidoAbans;
@@ -4239,21 +4236,28 @@ function typeComp(d){
   const prima=VOL_G.primaEmissions*kg;            // prima 0 emissions (atribuïble a Z-Ero)
   const vendaUco=VOL_G.preuVendaUco*kg;           // venda base (igual amb o sense Z-Ero)
   const compraUco=bidons*preuDespres;             // compra als establiments (context)
-  return {bidons,estalvi,horesPP,estalviOli,elecWear,incid,costMillaZero,facturaVar,preuDespres,preuAbans,prima,vendaUco,compraUco};
+  return {bidons,horesPP,visitesMes,estalviOli,elecWear,incid,costMillaZero,facturaVar,preuDespres,preuAbans,prima,vendaUco,compraUco};
 }
 /* Totals globals */
 function globalComp(){
-  const tot={n:0,kg:0,bidons:0,kmpp:0,estalvi:0,horesPP:0,estalviOli:0,elecWear:0,incid:0,costMillaZero:0,facturaVar:0,prima:0,vendaUco:0,compraUco:0};
+  const tot={n:0,kg:0,bidons:0,visitesMes:0,estalvi:0,horesPP:0,estalviOli:0,elecWear:0,incid:0,costMillaZero:0,facturaVar:0,prima:0,vendaUco:0,compraUco:0};
   VOL_TYPES.forEach(t=>{ const d=VOL_DATA[t[0]]; const c=typeComp(d);
-    tot.n+=+d.n||0; tot.kg+=+d.kg||0; tot.bidons+=c.bidons; tot.estalvi+=c.estalvi; tot.horesPP+=c.horesPP; tot.estalviOli+=c.estalviOli; tot.elecWear+=c.elecWear; tot.incid+=c.incid; tot.costMillaZero+=c.costMillaZero; tot.facturaVar+=c.facturaVar; tot.prima+=c.prima; tot.vendaUco+=c.vendaUco; tot.compraUco+=c.compraUco; tot.kmpp+=+d.kmpp||0; });
+    tot.n+=+d.n||0; tot.kg+=+d.kg||0; tot.bidons+=c.bidons; tot.visitesMes+=c.visitesMes; tot.horesPP+=c.horesPP; tot.estalviOli+=c.estalviOli; tot.elecWear+=c.elecWear; tot.incid+=c.incid; tot.costMillaZero+=c.costMillaZero; tot.facturaVar+=c.facturaVar; tot.prima+=c.prima; tot.vendaUco+=c.vendaUco; tot.compraUco+=c.compraUco; });
   // Viatge Maçanet<->Calella (Quatra ve a buidar el hub, directe) — SENSE cost de xofer
   const kmTot=VOL_G.kmHub*VOL_G.viatgesMes;
   const dieselViatge=(kmTot/100)*VOL_G.consum*VOL_G.preuDiesel;
   const desgastViatge=kmTot*VOL_G.desgastDir;               // desgast baix (directe)
   const costViatge=dieselViatge+desgastViatge;
-  // Hores alliberades = suma bottom-up per tipus, SENSE restar el viatge al hub (Quatra el fa igual amb o sense Z-Ero).
+  // RUTA porta a porta dins de Calella — derivada: distància mitjana entre parades × nº de parades del mes.
+  const distParades=+VOL_G.distParades||0;
+  const kmRuta=distParades*tot.visitesMes;                 // km de ruta/mes (s'escala amb establiments i visites)
+  const dieselRuta=(kmRuta/100)*VOL_G.consum*VOL_G.preuDiesel;
+  const desgastRuta=kmRuta*VOL_G.desgastSG;                 // desgast alt (stop&go)
+  tot.estalvi=dieselRuta+desgastRuta;                       // dièsel + desgast evitats a Quatra (sense xofer)
+  const hConduir=kmRuta/Math.max(0.1,VOL_G.velUrbana);      // conduir entre parades (km ruta ÷ vel. urbana)
+  // Hores alliberades = (parades + bidons, per tipus) + (conducció, global), SENSE restar el viatge al hub.
   const horesViatge=(kmTot/55)+(tot.bidons/23);             // referència: temps del viatge directe al hub (no es resta)
-  const horesAuto=tot.horesPP;                              // estimació bottom-up (computada)
+  const horesAuto=tot.horesPP+hConduir;                     // estimació bottom-up (computada)
   // horesAllMan = hores REALS declarades per Quatra (calibració opcional). Si existeixen, manen: són el seu propi número.
   const horesAlliberades=(VOL_G.horesAllMan>0)?VOL_G.horesAllMan:horesAuto;
   const oportunitat=horesAlliberades*VOL_G.eurHora;          // hores de flota a re-facturar
@@ -4264,16 +4268,17 @@ function globalComp(){
   const margeBrutUco=(tot.vendaUco+tot.prima)-tot.compraUco;   // context (no se suma al benefici diferencial)
   const margeBaseUco=tot.vendaUco-tot.compraUco;            // marge base (sense prima; la prima ja és al benefici)
   const totalQuatra=beneficiQuatra+margeBaseUco;            // còmput tancat: benefici diferencial + marge base UCO
-  const litresEvit=(tot.kmpp/100)*VOL_G.consum; const co2Evit=litresEvit*2.64;   // CO2 dièsel porta a porta evitat
+  const litresEvit=(kmRuta/100)*VOL_G.consum; const co2Evit=litresEvit*2.64;   // CO2 dièsel porta a porta evitat
   // Compte Z-Ero (el meu guany): facturació − cost última milla elèctrica (sense oli, sense mà d'obra pròpia)
   const ingressosZero=facturacioZero;
   const netZero=ingressosZero-tot.costMillaZero;
-  return Object.assign(tot,{dieselViatge,desgastViatge,horesViatge,horesAuto,horesAlliberades,oportunitat,costViatge,facturacioZero,costQuatra,beneficiQuatra,margeBrutUco,margeBaseUco,totalQuatra,litresEvit,co2Evit,ingressosZero,netZero,kmTot});
+  return Object.assign(tot,{dieselViatge,desgastViatge,horesViatge,horesAuto,horesAlliberades,oportunitat,costViatge,facturacioZero,costQuatra,beneficiQuatra,margeBrutUco,margeBaseUco,totalQuatra,litresEvit,co2Evit,ingressosZero,netZero,kmTot,kmRuta});
 }
 
 /* ---- Render ---- */
 function volGlobals(){
   const c=document.getElementById('vol-globals'); if(!c) return;
+  const _g=globalComp();
   const inp=(k,lbl,step)=>`<div><div class="lbl">${lbl}</div><input class="inp" type="number" step="${step||'any'}" min="0" value="${VOL_G[k]}" oninput="vgSet('${k}',this.value)"></div>`;
   c.innerHTML=`
    <div class="card">
@@ -4282,7 +4287,9 @@ function volGlobals(){
      <div class="vsec-title" style="margin-top:18px;">${T('gp_camio')}</div>
      <div class="g4">${inp('preuDiesel',T('gp_diesel'),'0.01')}${inp('consum',T('gp_consum'))}${inp('desgastSG',T('gp_desgastsg'),'0.01')}${inp('desgastDir',T('gp_desgastdir'),'0.01')}</div>
      <div class="vsec-title" style="margin-top:18px;">${T('gp_temps_title')}</div>
-     <div class="g4">${inp('velUrbana',T('gp_velurbana'))}${inp('minAparcar',T('gp_minaparcar'))}${inp('minFixParada',T('gp_minfix'))}${inp('minBidoCD',T('gp_minbido'))}</div>
+     <div class="g3">${inp('distParades',T('gp_distparades'),'0.01')}${inp('velUrbana',T('gp_velurbana'))}${inp('minAparcar',T('gp_minaparcar'))}</div>
+     <div class="g2" style="margin-top:10px;">${inp('minFixParada',T('gp_minfix'))}${inp('minBidoCD',T('gp_minbido'))}</div>
+     <div style="font-size:11px;color:#22c55e;font-weight:800;margin-top:8px;">${T('gp_kmderiv')}: ${nf(_g.visitesMes,0)} ${T('gp_parades')} × ${nf(VOL_G.distParades,2)} km = <strong>${nf(_g.kmRuta,1)} km/mes</strong></div>
      <div style="font-size:10px;color:#94a3b8;font-weight:700;margin-top:6px;line-height:1.5;">${T('gp_temps_help')}</div>
      <div class="vsec-title" style="margin-top:18px;">${T('gp_furgo')}</div>
      <div class="g2">${inp('elecKm',T('gp_elec'),'0.01')}${inp('desgastFurgo',T('gp_desgastfurgo'),'0.01')}</div>
@@ -4299,13 +4306,13 @@ function volSubtabs(){ const c=document.getElementById('vol-subtabs'); if(!c) re
 function volTab(k){ VOL_CUR=k; volSubtabs(); volEditor(); }
 function volGrid(){
   const ed=document.getElementById('vol-editor'); if(!ed) return;
-  const cols=[T('vt_tipus'),T('vf_n'),T('vf_kg'),T('pf_kmpp'),T('pf_visites'),T('pf_kmfurgo'),T('pf_preuabans'),T('pf_preubido'),T('pf_incid')];
+  const cols=[T('vt_tipus'),T('vf_n'),T('vf_kg'),T('pf_visites'),T('pf_kmfurgo'),T('pf_preuabans'),T('pf_preubido'),T('pf_incid')];
   const head='<thead><tr>'+cols.map((c,i)=>`<th style="${i>0?'text-align:right;':''}white-space:nowrap;">${c}</th>`).join('')+'</tr></thead>';
   const cell=(t,f,val,ph)=>`<td style="padding:5px 6px;"><input class="inp" style="text-align:right;min-width:62px;padding:6px 8px;" type="number" step="any" min="0" ${ph!=null?`placeholder="${ph}"`:''} value="${val}" oninput="volSetCell('${t}','${f}',this.value)"></td>`;
   let rows='';
   VOL_TYPES.forEach(t=>{ const d=VOL_DATA[t[0]];
     rows+=`<tr><td style="white-space:nowrap;"><strong>${T(t[1])}</strong></td>`
-      +cell(t[0],'n',d.n)+cell(t[0],'kg',d.kg)+cell(t[0],'kmpp',d.kmpp)+cell(t[0],'visites',d.visites)
+      +cell(t[0],'n',d.n)+cell(t[0],'kg',d.kg)+cell(t[0],'visites',d.visites)
       +cell(t[0],'kmfurgo',d.kmfurgo)+cell(t[0],'preuabans',d.preuabans,VOL_G.preuBidoAbans)
       +cell(t[0],'preubido',d.preubido,VOL_G.preuBido)+cell(t[0],'incidencies',d.incidencies)+'</tr>';
   });
@@ -4372,13 +4379,14 @@ function volTable(g){
     const share=totKg>0?(+d.kg||0)/totKg:0;
     const wH=totH>0?((c.horesPP||0)/totH):(totKg>0?(+d.kg||0)/totKg:(1/VOL_TYPES.length));
     const oport_t=g.oportunitat*wH;   // hores alliberades repartides (per hores; si manual o sense hores, per kg)
+    const estalvi_t=g.estalvi*share;  // estalvi de ruta (global) atribuït per pes
     const costQ_t=g.costViatge*share + (VOL_G.fixMes*share + c.facturaVar);
-    const benefQ_t=c.estalvi+oport_t+c.estalviOli+c.prima-costQ_t;
+    const benefQ_t=estalvi_t+oport_t+c.estalviOli+c.prima-costQ_t;
     const netZ_t=(VOL_G.fixMes*share + c.facturaVar)-c.costMillaZero;
     const bq=benefQ_t>=0?'#16a34a':'#f87171', nz=netZ_t>=0?'#16a34a':'#f87171';
     rows+=`<tr><td><strong>${T(t[1])}</strong></td>
       <td style="text-align:right;">${nf(d.n)}</td><td style="text-align:right;">${nf(d.kg)}</td><td style="text-align:right;">${nf(c.bidons,1)}</td>
-      <td style="text-align:right;color:#4ade80;">${eur(c.estalvi)}</td>
+      <td style="text-align:right;color:#4ade80;">${eur(estalvi_t)}</td>
       <td style="text-align:right;font-weight:800;color:${bq};">${eur(benefQ_t)}</td>
       <td style="text-align:right;font-weight:800;color:${nz};">${eur(netZ_t)}</td></tr>`;
   });
