@@ -936,7 +936,7 @@
       <div class="page-title" data-i18n="vol_title">Taula de Volums i Viabilitat</div>
       <div class="page-sub" data-i18n="vol_sub">Càlcul editable: estalvi i cost per a Quatra · compte propi Z-Ero</div>
     </div>
-    <div class="top-actions">
+    <div class="top-actions" id="vol-top-actions">
       <button class="btn btn-green" data-volsave onclick="volumsSave()" data-i18n="vol_save">💾 Desar</button>
       <button class="btn btn-ghost" onclick="volumsReset()" data-i18n="vol_reset">↺ Restablir</button>
     </div>
@@ -4037,6 +4037,8 @@ function globalComp(){
 /* ---- Render ---- */
 function volGlobals(){
   const c=document.getElementById('vol-globals'); if(!c) return;
+  if(typeof currentRol!=='undefined' && currentRol==='gestor'){ c.style.display='none'; c.innerHTML=''; return; }
+  c.style.display='';
   const _g=globalComp();
   const inp=(k,lbl,step)=>`<div><div class="lbl">${lbl}</div><input class="inp" type="number" step="${step||'any'}" min="0" value="${VOL_G[k]}" oninput="vgSet('${k}',this.value)"></div>`;
   c.innerHTML=`
@@ -4065,6 +4067,8 @@ function volSubtabs(){ const c=document.getElementById('vol-subtabs'); if(!c) re
 function volTab(k){ VOL_CUR=k; volSubtabs(); volEditor(); }
 function volGrid(){
   const ed=document.getElementById('vol-editor'); if(!ed) return;
+  if(typeof currentRol!=='undefined' && currentRol==='gestor'){ ed.style.display='none'; ed.innerHTML=''; return; }
+  ed.style.display='';
   const cols=[T('vt_tipus'),T('vf_n'),T('vf_kg'),T('pf_visites'),T('pf_preuabans'),T('pf_preubido'),T('pf_incid')];
   const head='<thead><tr>'+cols.map((c,i)=>`<th style="${i>0?'text-align:right;':''}white-space:nowrap;">${c}</th>`).join('')+'</tr></thead>';
   const cell=(t,f,val,ph)=>`<td style="padding:5px 6px;"><input class="inp" style="text-align:right;min-width:62px;padding:6px 8px;" type="number" step="any" min="0" ${ph!=null?`placeholder="${ph}"`:''} value="${val}" oninput="volSetCell('${t}','${f}',this.value)"></td>`;
@@ -4165,7 +4169,7 @@ function volTable(g){
 }
 function volRefreshResults(){ volPanels(); }
 function volRecalcAll(){ volGrid(); volPanels(); }
-function volumsRender(){ volGlobals(); volGrid(); volPanels(); }
+function volumsRender(){ const ta=document.getElementById('vol-top-actions'); if(ta) ta.style.display=(typeof currentRol!=='undefined'&&currentRol==='gestor')?'none':''; volGlobals(); volGrid(); volPanels(); }
 function volumsRecalc(){ volPanels(); }
 function volumsSave(){ volPersist(); vgPersist(); const b=document.querySelector('[data-volsave]'); if(b){ b.textContent=T('vol_saved'); setTimeout(()=>{ b.textContent=T('vol_save'); },1200); } }
 function volumsReset(){ const msg=window.LANG==='es'?'¿Restablecer todos los valores a cero?':(window.LANG==='fr'?'Réinitialiser toutes les valeurs ?':'Restablir tots els valors?'); const go=()=>{ VOL_DATA=volDefault(); VOL_G=Object.assign({},VG_DEF); volPersist(); vgPersist(); volumsRender(); }; if(typeof zConfirm==='function'){ zConfirm(msg,go); } else if(confirm(msg)){ go(); } }
