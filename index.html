@@ -436,18 +436,11 @@
     </div>
     <button class="btn btn-ghost btn-xs" onclick="ackCamioAlert()" style="flex-shrink:0;">✓ Rebut</button>
   </div>
-  <!-- CONFIGURACIÓ CÀLCUL D'ESTALVI — ara a l'Operador -->
-  <div class="g2" style="margin-bottom:16px;">
-    <div class="card card-bt-blue">
-      <div class="card-h"><span class="card-label">Configuració de càlcul d'estalvi</span></div>
-      <div class="g2" style="margin-bottom:10px;">
-        <div><div class="lbl">Preu dièsel avui (€/L)</div><input class="inp" type="number" id="diesel-p" value="1.65" step="0.01" oninput="recalcDieselDebounced()"></div>
-        <div><div class="lbl">Consum camió (L/100km)</div><input class="inp" type="number" id="truck-c" value="28" step="1" oninput="recalcDieselDebounced()"></div>
-      </div>
-      <div><div class="lbl">Velocitat mitjana ruta (km/h)</div><input class="inp" type="number" id="avg-v" value="55" step="5" oninput="recalcDieselDebounced()"></div>
-      <div class="info-pill" id="route-pill">Calculant ruta des de Maçanet de la Selva...</div>
-    </div>
-  </div>
+  <!-- Config càlcul estalvi retirada de la vista (els valors viuen a la Taula de Volums). Inputs ocults per compatibilitat amb genPDF/recalcDiesel. -->
+  <input type="hidden" id="diesel-p" value="1.65">
+  <input type="hidden" id="truck-c" value="28">
+  <input type="hidden" id="avg-v" value="55">
+  <span id="route-pill" style="display:none;"></span>
   <!-- Camps ocults per compatibilitat JS (op-total-estalvi, op-estalvi-total-eur) -->
   <span id="op-total-estalvi" style="display:none;"></span>
   <span id="op-estalvi-total-eur" style="display:none;"></span>
@@ -1798,9 +1791,27 @@ if (typeof applyI18n==='function') applyI18n();
 }
 // ── DATE RANGE PICKER ────────────────────────────────────────────────────────
 let _allRecs = {};
-const PAGE_SIZE = 50; // recollides per pàgina
+const PAGE_SIZE = 25; // recollides per pàgina
 let _opPage = 1;
 let _espPage = 1;
+
+// Càrrega automàtica per scroll a les taules de registres (operador i gestor)
+(function(){
+  let _lock=false;
+  window.addEventListener('scroll', function(){
+    if(_lock) return;
+    if((window.innerHeight + window.scrollY) < (document.documentElement.scrollHeight - 450)) return;
+    const total = (typeof _allRecs!=='undefined' && _allRecs) ? Object.keys(_allRecs).length : 0;
+    const opS  = document.getElementById('sec-operador');
+    const espS = document.getElementById('sec-quatra');
+    const opOn  = opS  && opS.classList.contains('on');
+    const espOn = espS && espS.classList.contains('on');
+    let changed=false;
+    if(opOn  && total > _opPage*PAGE_SIZE){ _opPage++;  changed=true; }
+    else if(espOn && total > _espPage*PAGE_SIZE){ _espPage++; changed=true; }
+    if(changed && typeof renderRecollides==='function'){ _lock=true; renderRecollides(_allRecs,false); setTimeout(function(){_lock=false;},120); }
+  }, {passive:true});
+})();
 const _picker = {
   op:  { from: null, to: null, selecting: false, viewYear: new Date().getFullYear(), viewMonth: new Date().getMonth() },
   esp: { from: null, to: null, selecting: false, viewYear: new Date().getFullYear(), viewMonth: new Date().getMonth() }
@@ -4068,11 +4079,11 @@ const I18N = {
   gp_prima:{ca:'Prima 0 emissions (€/kg)',es:'Prima 0 emisiones (€/kg)',fr:'Prime 0 émission (€/kg)'},
   q_primatitle:{ca:'Prima 0 emissions (recollida elèctrica)',es:'Prima 0 emisiones (recogida eléctrica)',fr:'Prime 0 émission (collecte électrique)'},
   q_prima:{ca:'Prima per 0 emissions',es:'Prima por 0 emisiones',fr:'Prime pour 0 émission'},
-  ctx_title:{ca:"Negoci de l'UCO (context · no se suma)",es:'Negocio del UCO (contexto · no se suma)',fr:'Activité UCO (contexte · non additionné)'},
+  ctx_title:{ca:"Negoci de l'UCO (Quatra → Repsol)",es:'Negocio del UCO (Quatra → Repsol)',fr:"Activité UCO (Quatra → Repsol)"},
   ctx_venda:{ca:"Venda de l'UCO (a Repsol, etc.)",es:'Venta del UCO (a Repsol, etc.)',fr:"Vente de l'UCO (à Repsol, etc.)"},
   ctx_compra:{ca:'Compra als establiments',es:'Compra a los establecimientos',fr:'Achat aux établissements'},
   ctx_marge:{ca:"Marge brut de Quatra sobre l'UCO",es:'Margen bruto de Quatra sobre el UCO',fr:"Marge brute de Quatra sur l'UCO"},
-  ctx_nota:{ca:"Aquest marge el té igualment, amb o sense Z-Ero. Z-Ero aporta la prima 0 emissions, l'albarà digital i l'estalvi logístic.",es:'Este margen lo tiene igualmente, con o sin Z-Ero. Z-Ero aporta la prima 0 emisiones, el albarán digital y el ahorro logístico.',fr:"Cette marge existe de toute façon, avec ou sans Z-Ero. Z-Ero apporte la prime 0 émission, le bon numérique et l'économie logistique."},
+  ctx_nota:{ca:"Quatra captura aquest marge perquè té la recollida resolta i sense frau. La prima 0 emissions ja està comptada al benefici de dalt.",es:'Quatra captura este margen porque tiene la recogida resuelta y sin fraude. La prima 0 emisiones ya está contada en el beneficio de arriba.',fr:"Quatra capte cette marge car la collecte est assurée et sans fraude. La prime 0 émission est déjà comptabilisée dans le bénéfice ci-dessus."},
   q_vs_title:{ca:'Per què Z-Ero és el teu millor proveïdor de recollida',es:'Por qué Z-Ero es tu mejor proveedor de recogida',fr:'Pourquoi Z-Ero est votre meilleur collecteur'},
   q_vs_trace_t:{ca:'Traçabilitat sense frau',es:'Trazabilidad sin fraude',fr:'Traçabilité sans fraude'},
   q_vs_trace_d:{ca:'Cada bidó amb albarà digital, GPS i codi RED II · alimenta la cadena ISCC de Quatra sense trencar-la',es:'Cada bidón con albarán digital, GPS y código RED II · alimenta la cadena ISCC de Quatra sin romperla',fr:'Chaque bidon avec bon numérique, GPS et code RED II · alimente la chaîne ISCC de Quatra sans la rompre'},
@@ -4101,7 +4112,11 @@ const I18N = {
   tr_today_kg:{ca:'Kg estimats avui',es:'Kg estimados hoy',fr:"Kg estimés aujourd'hui"},
   tr_trips:{ca:'Viatges al hub',es:'Viajes al hub',fr:'Trajets au hub'},
   tr_load:{ca:'Càrrega del viatge (estimada)',es:'Carga del viaje (estimada)',fr:'Charge du trajet (estimée)'},
-  tr_full:{ca:'Furgo plena · porta-la al hub a buidar',es:'Furgoneta llena · llévala al hub a vaciar',fr:'Fourgon plein · videz-le au hub'}
+  tr_full:{ca:'Furgo plena · porta-la al hub a buidar',es:'Furgoneta llena · llévala al hub a vaciar',fr:'Fourgon plein · videz-le au hub'},
+  q_net_note:{ca:'El benefici diferencial: el que aporta de nou contractar Z-Ero.',es:'El beneficio diferencial: lo que aporta de nuevo contratar Z-Ero.',fr:"Le bénéfice différentiel : ce qu'apporte le fait d'engager Z-Ero."},
+  q_total:{ca:'Total per a Quatra (operació completa)',es:'Total para Quatra (operación completa)',fr:'Total pour Quatra (opération complète)'},
+  q_total_note:{ca:'Còmput tancat: benefici directe del servei Z-Ero + marge del negoci UCO que Z-Ero assegura i protegeix.',es:'Cómputo cerrado: beneficio directo del servicio Z-Ero + margen del negocio UCO que Z-Ero asegura y protege.',fr:"Calcul complet : bénéfice direct du service Z-Ero + marge de l'activité UCO que Z-Ero sécurise et protège."},
+  q_vs_total:{ca:'Total per a Quatra',es:'Total para Quatra',fr:'Total pour Quatra'}
 };
 function T(k){ const e=I18N[k]; return e ? (e[window.LANG]||e.ca) : k; }
 
@@ -4230,11 +4245,13 @@ function globalComp(){
   // Benefici Quatra = estalvi(dièsel+desgast) + oportunitat(hores) + estalvi oli(albarà) − cost del servei
   const beneficiQuatra=tot.estalvi+oportunitat+tot.estalviOli+tot.prima-costQuatra;
   const margeBrutUco=(tot.vendaUco+tot.prima)-tot.compraUco;   // context (no se suma al benefici diferencial)
+  const margeBaseUco=tot.vendaUco-tot.compraUco;            // marge base (sense prima; la prima ja és al benefici)
+  const totalQuatra=beneficiQuatra+margeBaseUco;            // còmput tancat: benefici diferencial + marge base UCO
   const litresEvit=(tot.kmpp/100)*VOL_G.consum; const co2Evit=litresEvit*2.64;   // CO2 dièsel porta a porta evitat
   // Compte Z-Ero (el meu guany): facturació − cost última milla elèctrica (sense oli, sense mà d'obra pròpia)
   const ingressosZero=facturacioZero;
   const netZero=ingressosZero-tot.costMillaZero;
-  return Object.assign(tot,{dieselViatge,desgastViatge,horesViatge,horesAuto,horesAlliberades,oportunitat,costViatge,facturacioZero,costQuatra,beneficiQuatra,margeBrutUco,litresEvit,co2Evit,ingressosZero,netZero,kmTot});
+  return Object.assign(tot,{dieselViatge,desgastViatge,horesViatge,horesAuto,horesAlliberades,oportunitat,costViatge,facturacioZero,costQuatra,beneficiQuatra,margeBrutUco,margeBaseUco,totalQuatra,litresEvit,co2Evit,ingressosZero,netZero,kmTot});
 }
 
 /* ---- Render ---- */
@@ -4279,6 +4296,7 @@ function volSetCell(t,f,v){ VOL_DATA[t][f]= ((f==='preubido'||f==='preuabans')? 
 function panelQuatra(g){
   const line=(l,v,cls)=>`<div class="vline"><span class="vline-label">${l}</span><span class="vline-val ${cls||''}">${v}</span></div>`;
   const netc=g.beneficiQuatra>=0?'pos':'neg';
+  const totc=g.totalQuatra>=0?'pos':'neg';
   return `<div class="card card-bt-green">
     <div class="vsec-title" style="color:#4ade80;">${T('q_title')}</div>
     <div style="font-size:10px;font-weight:800;color:#34d399;text-transform:uppercase;letter-spacing:1px;margin:4px 0 6px;">${T('q_estalvi')}</div>
@@ -4293,14 +4311,17 @@ function panelQuatra(g){
     ${line(T('q_viatge'), '− '+eur(g.costViatge), 'neg')}
     ${line(T('q_factura'), '− '+eur(g.facturacioZero), 'neg')}
     <div class="vsubtotal"><span>${T('q_net')}</span><span class="vline-val ${netc}">${eur(g.beneficiQuatra)}</span></div>
-    <div class="vsubtotal" style="border-top:none;padding-top:2px;"><span style="font-size:10px;color:#64748b;">${T('q_anual')}</span><span class="vline-val ${netc}" style="font-size:13px;">${eur(g.beneficiQuatra*12)}</span></div>
-    <div style="margin-top:16px;padding-top:12px;border-top:1px dashed #475569;">
+    <div style="font-size:9px;color:#64748b;margin:2px 0 0;line-height:1.4;">${T('q_net_note')}</div>
+    <div style="margin-top:14px;padding-top:12px;border-top:1px dashed #475569;">
       <div style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">${T('ctx_title')}</div>
-      ${line(T('ctx_venda'), eur(g.vendaUco+g.prima))}
-      ${line(T('ctx_compra'), '− '+eur(g.compraUco))}
-      ${line(T('ctx_marge'), eur(g.margeBrutUco), g.margeBrutUco>=0?'pos':'neg')}
+      ${line(T('ctx_venda'), '+ '+eur(g.vendaUco), 'pos')}
+      ${line(T('ctx_compra'), '− '+eur(g.compraUco), 'neg')}
+      ${line(T('ctx_marge'), eur(g.margeBaseUco), g.margeBaseUco>=0?'pos':'neg')}
       <div style="font-size:9px;color:#64748b;margin-top:6px;line-height:1.4;">${T('ctx_nota')}</div>
     </div>
+    <div class="vsubtotal" style="border-top:2px solid #16a34a;margin-top:14px;"><span style="color:#4ade80;font-weight:900;">${T('q_total')}</span><span class="vline-val ${totc}" style="font-size:18px;">${eur(g.totalQuatra)}</span></div>
+    <div class="vsubtotal" style="border-top:none;padding-top:2px;"><span style="font-size:10px;color:#64748b;">${T('q_anual')}</span><span class="vline-val ${totc}" style="font-size:13px;">${eur(g.totalQuatra*12)}</span></div>
+    <div style="font-size:9px;color:#64748b;margin-top:6px;line-height:1.4;">${T('q_total_note')}</div>
   </div>`;
 }
 function panelZero(g){
@@ -4399,9 +4420,12 @@ function quatraValueStrip(){
         <div class="stat-note">${nf(g.bidons,0)} bidons · ${T('q_vs_supply_d')}</div>
       </div>
     </div>
-    <div style="display:flex;gap:32px;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid #335043;">
-      <div><div class="stat-label">${T('q_vs_marge')}</div><div style="font-size:26px;font-weight:900;color:#22c55e;margin-top:4px;">${eur(g.margeBrutUco)}<span style="font-size:12px;color:#475569;font-weight:600;"> /mes</span></div></div>
-      <div><div class="stat-label">${T('q_vs_avantatge')}</div><div style="font-size:26px;font-weight:900;color:${bq};margin-top:4px;">${eur(g.beneficiQuatra)}<span style="font-size:12px;color:#475569;font-weight:600;"> /mes</span></div></div>
+    <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-end;margin-top:18px;padding-top:16px;border-top:1px solid #335043;">
+      <div><div class="stat-label">${T('q_vs_avantatge')}</div><div style="font-size:22px;font-weight:900;color:${bq};margin-top:4px;">${eur(g.beneficiQuatra)}<span style="font-size:11px;color:#475569;font-weight:600;"> /mes</span></div></div>
+      <div style="font-size:20px;color:#475569;font-weight:700;padding-bottom:2px;">+</div>
+      <div><div class="stat-label">${T('q_vs_marge')}</div><div style="font-size:22px;font-weight:900;color:#22c55e;margin-top:4px;">${eur(g.margeBaseUco)}<span style="font-size:11px;color:#475569;font-weight:600;"> /mes</span></div></div>
+      <div style="font-size:20px;color:#475569;font-weight:700;padding-bottom:2px;">=</div>
+      <div style="border-left:2px solid #16a34a;padding-left:18px;"><div class="stat-label" style="color:#4ade80;">${T('q_vs_total')}</div><div style="font-size:28px;font-weight:900;color:${bq};margin-top:4px;">${eur(g.totalQuatra)}<span style="font-size:12px;color:#475569;font-weight:600;"> /mes</span></div></div>
     </div>
   </div>`;
 }
