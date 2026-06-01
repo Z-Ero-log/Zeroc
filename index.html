@@ -848,8 +848,6 @@
 </div>
 <!-- ======= QUATRA IBERIA ======= -->
 <section id="sec-quatra" class="sec">
-  <div id="quatra-value-strip"></div>
-  <div id="vol-quatra-dash"></div>
   <div class="top-bar">
     <div>
       <div class="page-title" data-i18n="pt_quatra" style="font-style:italic;">Dashboard gestor autoritzat</div>
@@ -1007,6 +1005,9 @@
       </tbody>
     </table>
   </div>
+  <!-- Resums del gestor (moguts a sota del Registre complet de recollides) -->
+  <div id="quatra-value-strip"></div>
+  <div id="vol-quatra-dash"></div>
 </section>
 
 <!-- ======= TAULA DE VOLUMS I VIABILITAT ======= -->
@@ -2090,7 +2091,7 @@ if (typeof applyI18n==='function') applyI18n();
 }
 // ── DATE RANGE PICKER ────────────────────────────────────────────────────────
 let _allRecs = {};
-const PAGE_SIZE = 25; // recollides per pàgina
+const PAGE_SIZE = 10; // recollides visibles per pàgina (operador i gestor harmonitzats) · la resta es carrega amb "Carregar més"
 let _opPage = 1;
 let _espPage = 1;
 
