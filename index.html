@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Logística Z-Ero CO₂ · Milla Verda S.L. · Hub Calella · ♻ RED II · v48</title>
+  <title>Logística Z-Ero CO₂ · Milla Verda S.L. · Hub Calella · ♻ RED II · v50</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
   <style>
@@ -374,6 +374,7 @@
     <button class="tab" id="tab-establiments" onclick="switchView('establiments')" data-i18n="tab_establiments">Establiments</button>
     <button class="tab transport-tab" id="tab-transport" onclick="switchView('transport')" data-i18n="tab_transport">Transportista</button>
     <button class="tab" id="tab-volums" onclick="switchView('volums')" data-i18n="tab_volums">📊 Taula de Volums</button>
+    <button class="tab" id="tab-pagaments" onclick="switchView('pagaments')" data-i18n="tab_pagaments">💶 Pagaments</button>
   </div>
   <div class="nav-right">
   <div style="display:flex;gap:7px;align-items:center;margin-right:12px;">
@@ -398,7 +399,7 @@
         <button onclick="exportBackup()" title="Descarrega còpia de seguretat JSON" style="background:#166534;color:white;border:none;border-radius:6px;padding:3px 8px;font-size:9px;font-weight:700;cursor:pointer;">💾 Backup</button>
         <button onclick="doLogout()" style="background:#dc2626;color:white;border:none;border-radius:6px;padding:3px 8px;font-size:9px;font-weight:700;cursor:pointer;margin-left:2px;">Sortir</button>
       </div>
-      <div id="v-badge" style="background:#1b3325;border:1px solid #335043;border-radius:6px;padding:3px 8px;font-size:8px;font-weight:800;color:#475569;letter-spacing:0.5px;flex-shrink:0;">v48</div> <!-- BUG10 FIX: versio sincronitzada -->
+      <div id="v-badge" style="background:#1b3325;border:1px solid #335043;border-radius:6px;padding:3px 8px;font-size:8px;font-weight:800;color:#475569;letter-spacing:0.5px;flex-shrink:0;">v50</div> <!-- BUG10 FIX: versio sincronitzada -->
       <div id="offline-badge" onclick="_flushOfflineQueue()" title="Clic per reintantar sincronització" style="display:none;background:#f59e0b;color:white;border-radius:8px;padding:5px 10px;font-size:9px;font-weight:800;cursor:pointer;align-items:center;white-space:nowrap;max-width:200px;">⚠ Offline</div>
       <div class="quatra-logo-panel" style="background:white;border-radius:8px;padding:2px 4px;display:flex;align-items:center;justify-content:center;height:46px;flex-shrink:0;width:120px;">
         <img src="data:image/png;base64,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"
@@ -678,6 +679,7 @@
         <div><div class="lbl">Telèfon</div><input class="inp" type="tel" id="m-tel" placeholder="937 XX XX XX"></div>
         <div><div class="lbl">Correu electrònic</div><input class="inp" type="email" id="m-email" placeholder="info@hotel.com"></div>
         <div><div class="lbl">Volum mensual estimat (Kg)</div><input class="inp" type="number" id="m-volum" placeholder="0"></div>
+        <div><div class="lbl">Preu pagat a l'establiment (€/kg)</div><input class="inp" type="number" step="0.01" id="m-preukg" placeholder="Ex: 0,26"></div>
       </div>
       <div style="margin-bottom:14px;background:#f0fdf4;border:1.5px solid #86efac;border-radius:12px;padding:12px 16px;">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
@@ -1022,6 +1024,7 @@
       <button class="btn btn-ghost" onclick="volumsReset()" data-i18n="vol_reset">↺ Restablir</button>
     </div>
   </div>
+  <div id="vol-publish-bar"></div>
   <div id="vol-globals"></div>
   <div id="vol-editor"></div>
   <div class="g2" id="vol-panels-grid" style="margin-top:16px;align-items:stretch;">
@@ -1034,7 +1037,39 @@
   </div>
 </section>
 
-<div id="hub-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(13,26,18,0.65);z-index:300;align-items:center;justify-content:center;" onclick="if(event.target===this)closeHubModal()">
+<!-- ======= PAGAMENTS ALS ESTABLIMENTS (gestor) ======= -->
+<section id="sec-pagaments" class="sec">
+  <div class="top-bar">
+    <div>
+      <div class="page-title" data-i18n="pg_title" style="font-style:italic;">Pagaments als establiments</div>
+      <div class="page-sub" data-i18n="pg_sub">Quatra Iberia · compra d'oli per kg · registre real</div>
+    </div>
+  </div>
+  <div id="pg-totals" class="g-stats" style="margin-bottom:16px;"></div>
+  <div class="card" style="margin-bottom:16px;">
+    <div class="table-bar"><span data-i18n="pg_table">Balanç per establiment</span></div>
+    <div style="overflow-x:auto;"><table id="pg-table"></table></div>
+  </div>
+</section>
+
+<!-- Modal registrar pagament -->
+<div id="pg-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(13,26,18,0.65);z-index:300;align-items:center;justify-content:center;" onclick="if(event.target===this)pgCloseModal()">
+  <div style="background:#13241a;border:1px solid #335043;border-radius:20px;padding:24px;width:92%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,0.4);">
+    <div style="font-size:16px;font-weight:900;color:#4ade80;margin-bottom:4px;">💶 Registrar pagament</div>
+    <div id="pg-modal-est" style="font-size:12px;color:#94a3b8;font-weight:700;margin-bottom:14px;"></div>
+    <input type="hidden" id="pg-modal-estid">
+    <div class="lbl">Import pagat (€)</div>
+    <input class="inp" type="number" step="0.01" id="pg-modal-import" placeholder="0,00" style="margin-bottom:12px;">
+    <div class="lbl">Data</div>
+    <input class="inp" type="date" id="pg-modal-data" style="margin-bottom:12px;">
+    <div class="lbl">Nota (opcional)</div>
+    <input class="inp" type="text" id="pg-modal-nota" placeholder="Ex: transferència maig" style="margin-bottom:16px;">
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-ghost" style="flex:1;" onclick="pgCloseModal()">Cancel·lar</button>
+      <button class="btn btn-green" style="flex:1;" onclick="pgSavePayment()">💾 Desar pagament</button>
+    </div>
+  </div>
+</div>
   <div style="background:white;border-radius:20px;padding:28px;width:90%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
     <div style="font-size:16px;font-weight:900;color:#0d1a12;margin-bottom:6px;">⚙ Editar Hub</div>
     <div style="font-size:11px;color:#94a3b8;font-weight:700;margin-bottom:20px;">Ajusta la capacitat i els litres actuals del hub</div>
@@ -1102,7 +1137,7 @@ appId:             "1:1027500466158:web:ae5298fbcf6fa9635b38ff"
 };
 const USER_ROLES = {
 "zerocarbonlogistic@gmail.com": { rol: "operador",     nom: "Z-Ero CO₂ · Logística Milla Verda, S.L. · Operador & Transportista", tabs: ["operador","establiments","transport","volums"] },
-"quatra.iberia@quatra.com":      { rol: "gestor",        nom: "Quatra Iberia",                    tabs: ["quatra","establiments","volums"] }
+"quatra.iberia@quatra.com":      { rol: "gestor",        nom: "Quatra Iberia",                    tabs: ["quatra","establiments","volums","pagaments"] }
 };
 const EMAILJS_PUBLIC_KEY  = '-FHqxMOs0uW0675ql';
 const EMAILJS_SERVICE_ID  = 'service_5uf68zq';
@@ -1574,12 +1609,15 @@ if (d) { renderCamioHistorial(d); showCamioAlertOp(d); }
 db.ref('pickup_requests').on('value', snap => { try{ renderPickups(snap.val()); }catch(e){} });
 db.ref('vol_config').on('value', snap => {
   const _vc = snap.val();
+  if(_vc && _vc.ts){ _volPublishedTs = _vc.ts; }   // data oficial publicada al núvol
   // Sembra: si el núvol encara no té configuració i som l'OPERADOR, hi publica l'actual (passa a ser la font de veritat per al gestor)
-  if((!_vc || !_vc.g) && typeof currentRol!=='undefined' && currentRol==='operador'){ try{ volConfigPush(); }catch(e){} }
+  if((!_vc || !_vc.g) && typeof currentRol!=='undefined' && currentRol==='operador'){ try{ volConfigPush(); _volPublishedTs=Date.now(); }catch(e){} }
   try{ if(typeof vgApplyRemote==='function') vgApplyRemote(_vc); }catch(e){}
   _volRemoteReady = true;   // ja tenim (o sabem que no hi ha) config del núvol → el gestor ja pot pintar imports
+  try{ if(currentRol==='operador' && document.getElementById('vol-publish-bar')) volPublishBar(); }catch(e){}
   try{ if(currentRol==='gestor'){ if(document.getElementById('vol-quatra-dash')) volQuatraDash(); if(document.getElementById('quatra-value-strip')) quatraValueStrip(); if(document.getElementById('sec-volums')) volPanels(); } }catch(e){}
 });
+db.ref('pagaments').on('value', snap => { _allPagaments = snap.val()||{}; try{ if(currentRol==='gestor'){ const s=document.getElementById('sec-pagaments'); if(s && s.classList.contains('on')) renderPagaments(); if(document.getElementById('vol-quatra-dash')) volQuatraDash(); } }catch(e){} });
 // Xarxa de seguretat: si el núvol no respon en 5 s, no deixis el gestor penjat amb "Sincronitzant…"
 setTimeout(function(){ if(!_volRemoteReady){ _volRemoteReady=true; try{ if(currentRol==='gestor'){ if(document.getElementById('vol-quatra-dash')) volQuatraDash(); if(document.getElementById('quatra-value-strip')) quatraValueStrip(); if(document.getElementById('sec-volums')) volPanels(); } }catch(e){} } }, 5000);
 } else {
@@ -2096,7 +2134,7 @@ try { const d = JSON.parse(localStorage.getItem('zeroc_camio')||'null'); if(d){d
 }
 }
 function switchView(v) {
-['operador','establiments','transport','quatra','volums'].forEach(s => {
+['operador','establiments','transport','quatra','volums','pagaments'].forEach(s => {
 document.getElementById('sec-' + s).classList.toggle('on', s === v);
 const t = document.getElementById('tab-' + s);
 if (t) t.classList.toggle('on', s === v);
@@ -2104,10 +2142,12 @@ if (t) t.classList.toggle('on', s === v);
 if (v === 'establiments') renderEstabliments();
 if (v === 'quatra') { recalcDieselDebounced(); espPoblaSelectorRefs(); }
 if (v === 'volums' && typeof volumsRender==='function') volumsRender();
+if (v === 'pagaments' && typeof renderPagaments==='function') renderPagaments();
 if (typeof applyI18n==='function') applyI18n();
 }
 // ── DATE RANGE PICKER ────────────────────────────────────────────────────────
 let _allRecs = {};
+let _allPagaments = {};   // registre real de pagaments als establiments (Firebase: node 'pagaments')
 const PAGE_SIZE = 10; // recollides visibles per pàgina (operador i gestor harmonitzats) · la resta es carrega amb "Carregar més"
 let _opPage = 1;
 let _espPage = 1;
@@ -3218,6 +3258,7 @@ function openModal(prefill) {
     document.getElementById('m-tel').value   = prefill.tel   || '';
     document.getElementById('m-email').value = prefill.email || '';
     document.getElementById('m-volum').value = prefill.volum || '';
+    document.getElementById('m-preukg').value = (prefill.preuKg!=null && prefill.preuKg!=='') ? prefill.preuKg : '';
 
     // Mostra l'adreça actual amb classe identificadora per poder-la eliminar
     if (pc && prefill.adreca) {
@@ -3254,7 +3295,7 @@ if (!lat || !lng) {
   zAlert('Introdueix una adreça vàlida per obtenir les coordenades GPS.', 'warn');
   return;
 }
-DB[id]={ nom, tipus:document.getElementById('m-tipus').value, adreca, lat, lng, tel:document.getElementById('m-tel').value, email:document.getElementById('m-email').value, volum:parseInt(document.getElementById('m-volum').value)||0, valid: document.getElementById('m-valid').checked };
+DB[id]={ nom, tipus:document.getElementById('m-tipus').value, adreca, lat, lng, tel:document.getElementById('m-tel').value, email:document.getElementById('m-email').value, volum:parseInt(document.getElementById('m-volum').value)||0, preuKg:parseFloat(document.getElementById('m-preukg').value)||0, valid: document.getElementById('m-valid').checked };
 closeModal(); renderEstabliments(); recalcDieselDebounced(); saveEstabliments();
 if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Desar establiment'; }
 zAlert('Establiment ' + nom + ' desat correctament.', 'ok');
@@ -4108,6 +4149,10 @@ const I18N = {
   tab_transport:{ca:'Transportista',es:'Transportista',fr:'Transporteur'},
   tab_quatra:{ca:'Gestor Quatra',es:'Gestor Quatra',fr:'Gestionnaire Quatra'},
   tab_volums:{ca:'📊 Taula de Volums',es:'📊 Tabla de Volúmenes',fr:'📊 Tableau des volumes'},
+  tab_pagaments:{ca:'💶 Pagaments',es:'💶 Pagos',fr:'💶 Paiements'},
+  pg_title:{ca:'Pagaments als establiments',es:'Pagos a los establecimientos',fr:'Paiements aux établissements'},
+  pg_sub:{ca:"Quatra Iberia · compra d'oli per kg · registre real",es:'Quatra Iberia · compra de aceite por kg · registro real',fr:"Quatra Iberia · achat d'huile au kg · registre réel"},
+  pg_table:{ca:'Balanç per establiment',es:'Balance por establecimiento',fr:'Bilan par établissement'},
   pt_operador:{ca:'Centre Operatiu: Z-Ero CO₂',es:'Centro Operativo: Z-Ero CO₂',fr:'Centre opérationnel : Z-Ero CO₂'},
   ps_operador:{ca:'Hub Calella',es:'Hub Calella',fr:'Hub Calella'},
   pt_establiments:{ca:"Base de dades d'establiments",es:'Base de datos de establecimientos',fr:'Base de données des établissements'},
@@ -4316,6 +4361,7 @@ let VOL_G=vgLoad();
 function vgLoad(){ try{ const r=localStorage.getItem('zero_vol_g'); if(r){ return Object.assign({},VG_DEF,JSON.parse(r)); } }catch(e){} return Object.assign({},VG_DEF); }
 let _volPushedJson='';
 let _volRemoteReady=false;   // el gestor no pinta imports fins tenir (o saber que no hi ha) config del núvol
+let _volPublishedTs=0;       // data de l'última configuració oficial publicada al núvol
 function volConfigPush(){ try{ if(typeof db!=='undefined' && db){ _volPushedJson=JSON.stringify({data:VOL_DATA,g:VOL_G}); db.ref('vol_config').set({data:VOL_DATA,g:VOL_G,ts:Date.now()}).catch(()=>{}); } }catch(e){} }
 // Targeta "Sincronitzant…" mentre el gestor espera la config del núvol (evita el parpelleig inicial)
 function _volSyncCard(){ const t = window.LANG==='es'?'Sincronizando configuración…':(window.LANG==='fr'?'Synchronisation de la configuration…':'Sincronitzant configuració…'); return `<div class="card card-bt-green"><div style="font-size:11px;color:#94a3b8;font-weight:700;padding:28px 4px;text-align:center;">⏳ ${t}</div></div>`; }
@@ -4435,10 +4481,13 @@ function gestorRealComp(){
   // Recollides CONFIRMADES = kg segur al hub (operadorOk) i que no són el camió del gestor
   const recs=(typeof _allRecs!=='undefined'&&_allRecs)?Object.values(_allRecs).filter(d=>d&&!d._esCamio&&d.operadorOk===true):[];
   const byType={}; VOL_TYPES.forEach(t=>byType[t[0]]={kg:0,n:0});
-  let kg=0, nStops=0;
+  let kg=0, nStops=0, compraReal=0;
+  const _fbPerKg=(VOL_G.preuBido||0)/kgBido;   // preu per defecte si l'establiment no té €/kg propi
   recs.forEach(d=>{
     const k=(parseFloat(d.pes)>0)?parseFloat(d.pes):((parseInt(d.plens)||0)*kgBido);
     const est=DBsafe[d.id]||{};
+    const pk=(est.preuKg>0)?est.preuKg:_fbPerKg;
+    compraReal+=k*pk;
     byType[_tipusToVolKey(est.tipus)].kg+=k; kg+=k; nStops++;
   });
   // Establiments enregistrats (realitat de la base de dades) i volum PROJECTAT (suma del volum estimat a fitxes)
@@ -4464,7 +4513,7 @@ function gestorRealComp(){
   const estalviOli=Math.max(0,(VOL_G.preuBidoAbans||0)-(VOL_G.preuBido||0))*bidons;
   const prima=(VOL_G.primaEmissions||0)*kg;
   const vendaUco=(VOL_G.preuVendaUco||0)*kg;
-  const compraUco=bidons*(VOL_G.preuBido||0);
+  const compraUco=compraReal;                 // suma real: kg confirmats × €/kg de cada establiment
   const facturaVar=kg*(VOL_G.varKg||0);
   const kmTot=(VOL_G.kmHub||0)*(VOL_G.viatgesMes||0);
   const dieselViatge=(kmTot/100)*VOL_G.consum*VOL_G.preuDiesel;
@@ -4723,9 +4772,130 @@ function volTable(g){
 }
 function volRefreshResults(){ volPanels(); }
 function volRecalcAll(){ volGrid(); volPanels(); }
-function volumsRender(){ const ta=document.getElementById('vol-top-actions'); if(ta) ta.style.display=(typeof currentRol!=='undefined'&&currentRol==='gestor')?'none':''; volGlobals(); volGrid(); volPanels(); }
+function volumsRender(){ const ta=document.getElementById('vol-top-actions'); if(ta) ta.style.display=(typeof currentRol!=='undefined'&&currentRol==='gestor')?'none':''; volPublishBar(); volGlobals(); volGrid(); volPanels(); }
 function volumsRecalc(){ volPanels(); }
-function volumsSave(){ volPersist(); vgPersist(); const b=document.querySelector('[data-volsave]'); if(b){ b.textContent=T('vol_saved'); setTimeout(()=>{ b.textContent=T('vol_save'); },1200); } }
+function volumsSave(){ volPersist(); vgPersist(); _volPublishedTs=Date.now(); volPublishBar(); const b=document.querySelector('[data-volsave]'); if(b){ b.textContent=T('vol_saved'); setTimeout(()=>{ b.textContent=T('vol_save'); },1200); } }
+// Barra d'estat de publicació (només operador): mostra quina configuració mana al núvol i des de quan
+function volPublishBar(){
+  const c=document.getElementById('vol-publish-bar'); if(!c) return;
+  if(typeof currentRol==='undefined'||currentRol!=='operador'){ c.style.display='none'; c.innerHTML=''; return; }
+  c.style.display='';
+  let txt,color;
+  if(_volPublishedTs>0){
+    const d=new Date(_volPublishedTs);
+    const p=n=>String(n).padStart(2,'0');
+    const dd=p(d.getDate())+'/'+p(d.getMonth()+1)+'/'+d.getFullYear()+' '+p(d.getHours())+':'+p(d.getMinutes());
+    txt='✓ '+(window.LANG==='es'?'Configuración oficial publicada':(window.LANG==='fr'?'Configuration officielle publiée':'Configuració oficial publicada'))+' · '+dd;
+    color='#4ade80';
+  } else {
+    txt='⚠ '+(window.LANG==='es'?'Aún no has publicado ninguna configuración oficial':(window.LANG==='fr'?'Aucune configuration officielle publiée':'Encara no has publicat cap configuració oficial'));
+    color='#fbbf24';
+  }
+  const btn=window.LANG==='es'?'📤 Publicar como oficial':(window.LANG==='fr'?'📤 Publier comme officiel':'📤 Publicar com a oficial');
+  const sub=window.LANG==='es'?'Fija tus tarifas para el gestor en todos los dispositivos':(window.LANG==='fr'?'Fixe vos tarifs pour le gestionnaire sur tous les appareils':'Fixa les teves tarifes per al gestor a tots els dispositius');
+  c.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:#0d1a12;border:1px solid #244632;border-radius:12px;padding:10px 14px;margin-bottom:14px;">
+    <div><div style="font-size:12px;font-weight:800;color:${color};">${txt}</div>
+    <div style="font-size:10px;color:#94a3b8;font-weight:600;margin-top:2px;">${sub}</div></div>
+    <button class="btn btn-green" style="flex-shrink:0;padding:8px 14px;font-size:12px;" onclick="volumsPublish()">${btn}</button>
+  </div>`;
+}
+function volumsPublish(){ volPersist(); vgPersist(); _volPublishedTs=Date.now(); volPublishBar(); const m=window.LANG==='es'?'Configuración publicada como oficial. El gestor la verá en todos los dispositivos.':(window.LANG==='fr'?'Configuration publiée comme officielle. Le gestionnaire la verra sur tous les appareils.':'Configuració publicada com a oficial. El gestor la veurà a tots els dispositius.'); if(typeof zAlert==='function') zAlert(m,'success'); }
+
+/* ===== PAGAMENTS ALS ESTABLIMENTS (gestor) ===== */
+function _pgPerKgFallback(){ const kgB=Math.max(0.0001,VOL_G.kgBido); return (VOL_G.preuBido||0)/kgB; }
+function _pgEstAgg(){
+  const kgByEst={}, paidByEst={};
+  const recs=(typeof _allRecs!=='undefined'&&_allRecs)?Object.values(_allRecs):[];
+  recs.forEach(d=>{ if(!d||d._esCamio||d.operadorOk!==true) return; const k=(parseFloat(d.pes)>0)?parseFloat(d.pes):0; const id=d.id||'—'; kgByEst[id]=(kgByEst[id]||0)+k; });
+  Object.values(_allPagaments||{}).forEach(p=>{ if(!p) return; const id=p.est||'—'; paidByEst[id]=(paidByEst[id]||0)+(parseFloat(p.import)||0); });
+  const fb=_pgPerKgFallback();
+  const ids=new Set([...Object.keys(kgByEst),...Object.keys(paidByEst),...Object.keys((typeof DB!=='undefined'&&DB)?DB:{})]);
+  const rows=[];
+  ids.forEach(id=>{
+    const e=(typeof DB!=='undefined'&&DB&&DB[id])?DB[id]:null;
+    const kg=kgByEst[id]||0, paid=paidByEst[id]||0;
+    if(kg===0 && paid===0 && !e) return;
+    const perKg=(e && e.preuKg>0)?e.preuKg:fb;
+    const owed=kg*perKg, bal=owed-paid;
+    rows.push({id, nom:(e&&e.nom)?e.nom:id, kg, perKg, owed, paid, bal, fallback:!(e&&e.preuKg>0)});
+  });
+  rows.sort((a,b)=>b.bal-a.bal);
+  return rows;
+}
+function _pgSafeId(id){ return String(id).replace(/[^a-zA-Z0-9_-]/g,'_'); }
+function renderPagaments(){
+  if(typeof currentRol==='undefined'||currentRol!=='gestor') return;
+  const rows=_pgEstAgg();
+  let tKg=0,tOwed=0,tPaid=0; rows.forEach(r=>{ tKg+=r.kg; tOwed+=r.owed; tPaid+=r.paid; });
+  const tBal=tOwed-tPaid;
+  const tot=document.getElementById('pg-totals');
+  if(tot){ tot.innerHTML=`
+    <div class="stat-card bb-amber"><div class="stat-label">A pagar (deute acumulat)</div><div class="stat-num" style="color:#fbbf24;">${eur(tOwed)}</div><div class="stat-note">${nf(tKg)} kg confirmats</div></div>
+    <div class="stat-card bb-green"><div class="stat-label">Pagat</div><div class="stat-num" style="color:#4ade80;">${eur(tPaid)}</div><div class="stat-note">${Object.keys(_allPagaments||{}).length} pagaments registrats</div></div>
+    <div class="stat-card ${tBal>0.005?'bb-amber':'bb-green'}"><div class="stat-label">Pendent</div><div class="stat-num" style="color:${tBal>0.005?'#fbbf24':'#4ade80'};">${eur(tBal)}</div><div class="stat-note">deute − pagat</div></div>`;
+  }
+  const tb=document.getElementById('pg-table'); if(!tb) return;
+  const head='<thead><tr><th>Establiment</th><th style="text-align:right;">Kg confirmats</th><th style="text-align:right;">€/kg</th><th style="text-align:right;">A pagar</th><th style="text-align:right;">Pagat</th><th style="text-align:right;">Pendent</th><th></th></tr></thead>';
+  let body='';
+  if(!rows.length){ body=`<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:20px;font-size:12px;">Encara no hi ha dades</td></tr>`; }
+  rows.forEach(r=>{
+    const balc=r.bal>0.005?'#fbbf24':(r.bal<-0.005?'#f87171':'#4ade80');
+    const pk=`${nf(r.perKg,2)} €${r.fallback?' <span style="color:#64748b;font-size:9px;">(def.)</span>':''}`;
+    body+=`<tr>
+      <td><strong>${r.nom}</strong><div style="font-size:9px;color:#64748b;">${r.id}</div></td>
+      <td style="text-align:right;">${nf(r.kg)}</td>
+      <td style="text-align:right;">${pk}</td>
+      <td style="text-align:right;color:#fbbf24;">${eur(r.owed)}</td>
+      <td style="text-align:right;color:#4ade80;">${eur(r.paid)}</td>
+      <td style="text-align:right;font-weight:800;color:${balc};">${eur(r.bal)}</td>
+      <td style="text-align:right;white-space:nowrap;">
+        <button class="btn btn-green" style="padding:5px 10px;font-size:10px;" onclick="pgOpenModal('${r.id.replace(/'/g,'')}')">+ Pagament</button>
+        <button class="btn btn-ghost" style="padding:5px 8px;font-size:10px;" onclick="pgToggleHist('${r.id.replace(/'/g,'')}')">Historial</button>
+      </td></tr>
+      <tr id="pg-hist-${_pgSafeId(r.id)}" style="display:none;"><td colspan="7" style="background:#0d1a12;padding:0;">${_pgHistHtml(r.id)}</td></tr>`;
+  });
+  if(rows.length){ const balc=tBal>0.005?'#fbbf24':'#4ade80'; body+=`<tr style="background:#244632;"><td><strong>TOTAL</strong></td><td style="text-align:right;font-weight:800;">${nf(tKg)}</td><td></td><td style="text-align:right;font-weight:800;color:#fbbf24;">${eur(tOwed)}</td><td style="text-align:right;font-weight:800;color:#4ade80;">${eur(tPaid)}</td><td style="text-align:right;font-weight:900;color:${balc};">${eur(tBal)}</td><td></td></tr>`; }
+  tb.innerHTML=head+'<tbody>'+body+'</tbody>';
+}
+function _pgHistHtml(estId){
+  const list=Object.entries(_allPagaments||{}).filter(([k,p])=>p&&p.est===estId).sort((a,b)=>(b[1].ts||0)-(a[1].ts||0));
+  if(!list.length) return `<div style="font-size:11px;color:#94a3b8;padding:10px;">Sense pagaments registrats</div>`;
+  return `<div style="padding:6px 4px;">`+list.map(([k,p])=>`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 10px;border-bottom:1px solid #1b3325;font-size:11px;">
+    <span style="color:#cbd5e1;">${p.data||''}${p.nota?(' · '+p.nota):''}</span>
+    <span style="display:flex;align-items:center;gap:8px;"><strong style="color:#4ade80;">${eur(parseFloat(p.import)||0)}</strong>
+    <button class="btn btn-ghost" style="padding:3px 7px;font-size:9px;color:#f87171;" onclick="pgDeletePayment('${k}')">✕</button></span></div>`).join('')+`</div>`;
+}
+function pgToggleHist(estId){ const el=document.getElementById('pg-hist-'+_pgSafeId(estId)); if(el) el.style.display=(el.style.display==='none')?'':'none'; }
+function pgOpenModal(estId){
+  const e=(typeof DB!=='undefined'&&DB&&DB[estId])?DB[estId]:null;
+  document.getElementById('pg-modal-estid').value=estId;
+  document.getElementById('pg-modal-est').innerText=(e&&e.nom)?(e.nom+' · '+estId):estId;
+  const r=_pgEstAgg().find(x=>x.id===estId);
+  document.getElementById('pg-modal-import').value=r?Math.max(0,Math.round(r.bal*100)/100):'';
+  const d=new Date(); const p=n=>String(n).padStart(2,'0');
+  document.getElementById('pg-modal-data').value=d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());
+  document.getElementById('pg-modal-nota').value='';
+  document.getElementById('pg-modal-overlay').style.display='flex';
+}
+function pgCloseModal(){ const o=document.getElementById('pg-modal-overlay'); if(o) o.style.display='none'; }
+function pgSavePayment(){
+  const est=document.getElementById('pg-modal-estid').value;
+  const imp=parseFloat(document.getElementById('pg-modal-import').value)||0;
+  const data=document.getElementById('pg-modal-data').value||'';
+  const nota=(document.getElementById('pg-modal-nota').value||'').trim();
+  if(!est){ if(typeof zAlert==='function') zAlert('Establiment no vàlid','err'); return; }
+  if(imp<=0){ if(typeof zAlert==='function') zAlert('Introdueix un import vàlid','warn'); return; }
+  const e=(typeof DB!=='undefined'&&DB&&DB[est])?DB[est]:null;
+  const rec={est, estNom:(e&&e.nom)?e.nom:est, import:imp, data, nota, ts:Date.now()};
+  try{ if(typeof db!=='undefined' && db){ db.ref('pagaments').push(rec).catch(()=>{}); } else { _allPagaments['local_'+Date.now()]=rec; renderPagaments(); } }
+  catch(err){ _allPagaments['local_'+Date.now()]=rec; renderPagaments(); }
+  pgCloseModal();
+  if(typeof zAlert==='function') zAlert('Pagament registrat: '+eur(imp),'success');
+}
+function pgDeletePayment(key){
+  const go=()=>{ try{ if(typeof db!=='undefined' && db){ db.ref('pagaments/'+key).remove().catch(()=>{}); } else { delete _allPagaments[key]; renderPagaments(); } }catch(e){ delete _allPagaments[key]; renderPagaments(); } };
+  if(typeof zConfirm==='function') zConfirm('Eliminar aquest pagament?',go,'err'); else if(confirm('Eliminar aquest pagament?')) go();
+}
 function volumsReset(){ const msg=window.LANG==='es'?'¿Restablecer todos los valores a cero?':(window.LANG==='fr'?'Réinitialiser toutes les valeurs ?':'Restablir tots els valors?'); const go=()=>{ VOL_DATA=volDefault(); VOL_G=Object.assign({},VG_DEF); volPersist(); vgPersist(); volumsRender(); }; if(typeof zConfirm==='function'){ zConfirm(msg,go); } else if(confirm(msg)){ go(); } }
 
 /* ---- Resum al taulell del Gestor (NOMÉS guany de Quatra) ---- */
