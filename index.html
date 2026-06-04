@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Z-Ero CO₂">
-  <title>Logística Z-Ero CO₂ · Milla Verda S.L. · Hub Calella · ♻ RED II · v76</title>
+  <title>Logística Z-Ero CO₂ · Milla Verda S.L. · Hub Calella · ♻ RED II</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
   <style>
@@ -155,16 +155,26 @@
 <div id="login-screen" style="display:flex;position:fixed;inset:0;z-index:9999;background:#0a140d;align-items:center;justify-content:center;flex-direction:column;overflow-y:auto;">
 <div style="width:100%;max-width:480px;padding:24px 24px 32px;" class="login-fadein">
 
-    <div style="display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-bottom:8px;">
-      <button id="flag-login-ca" onclick="setLang('ca')" title="Català" style="border:none;background:none;padding:0;cursor:pointer;border-radius:5px;outline:2px solid transparent;line-height:0;transition:all .15s;">
-        <svg width="26" height="18" viewBox="0 0 9 6" style="border-radius:4px;display:block;box-shadow:0 1px 3px rgba(0,0,0,.45);"><rect width="9" height="6" fill="#FCDD09"/><rect y="0.95" width="9" height="0.55" fill="#DA121A"/><rect y="2.15" width="9" height="0.55" fill="#DA121A"/><rect y="3.35" width="9" height="0.55" fill="#DA121A"/><rect y="4.55" width="9" height="0.55" fill="#DA121A"/></svg>
-      </button>
-      <button id="flag-login-es" onclick="setLang('es')" title="Castellano" style="border:none;background:none;padding:0;cursor:pointer;border-radius:5px;outline:2px solid transparent;line-height:0;transition:all .15s;">
-        <svg width="26" height="18" viewBox="0 0 9 6" style="border-radius:4px;display:block;box-shadow:0 1px 3px rgba(0,0,0,.45);"><rect width="9" height="6" fill="#AA151B"/><rect y="1.5" width="9" height="3" fill="#F1BF00"/></svg>
-      </button>
-      <button id="flag-login-fr" onclick="setLang('fr')" title="Français (Belgique)" style="border:none;background:none;padding:0;cursor:pointer;border-radius:5px;outline:2px solid transparent;line-height:0;transition:all .15s;">
-        <svg width="26" height="18" viewBox="0 0 9 6" style="border-radius:4px;display:block;box-shadow:0 1px 3px rgba(0,0,0,.45);"><rect width="3" height="6" fill="#000000"/><rect x="3" width="3" height="6" fill="#FAE042"/><rect x="6" width="3" height="6" fill="#ED2939"/></svg>
-      </button>
+    <!-- ── Selector d'idioma (desplegable) a l'esquerra + text d'accés ── -->
+    <div style="display:flex;gap:12px;align-items:center;justify-content:flex-start;margin-bottom:8px;">
+      <div class="nav-flagdd" id="login-flagdd">
+        <button type="button" id="flag-login-toggle" class="flag-toggle" onclick="toggleLoginFlagDD(event)" aria-haspopup="true" aria-expanded="false" title="Idioma" aria-label="Idioma">
+          <span id="flag-login-current" style="line-height:0;"></span>
+          <span class="flag-caret">▾</span>
+        </button>
+        <div class="flag-menu" id="flag-login-menu" role="menu" style="left:0;right:auto;">
+          <button id="flag-login-opt-ca" role="menuitem" onclick="setLang('ca');closeLoginFlagDD()" title="Català" aria-label="Català">
+            <svg width="24" height="16" viewBox="0 0 9 6"><rect width="9" height="6" fill="#FCDD09"/><rect y="0.95" width="9" height="0.55" fill="#DA121A"/><rect y="2.15" width="9" height="0.55" fill="#DA121A"/><rect y="3.35" width="9" height="0.55" fill="#DA121A"/><rect y="4.55" width="9" height="0.55" fill="#DA121A"/></svg><span>Català</span>
+          </button>
+          <button id="flag-login-opt-es" role="menuitem" onclick="setLang('es');closeLoginFlagDD()" title="Castellano" aria-label="Castellano">
+            <svg width="24" height="16" viewBox="0 0 9 6"><rect width="9" height="6" fill="#AA151B"/><rect y="1.5" width="9" height="3" fill="#F1BF00"/></svg><span>Castellano</span>
+          </button>
+          <button id="flag-login-opt-fr" role="menuitem" onclick="setLang('fr');closeLoginFlagDD()" title="Français (Belgique)" aria-label="Français">
+            <svg width="24" height="16" viewBox="0 0 9 6"><rect x="0" width="3" height="6" fill="#000000"/><rect x="3" width="3" height="6" fill="#FAE042"/><rect x="6" width="3" height="6" fill="#ED2939"/></svg><span>Français</span>
+          </button>
+        </div>
+      </div>
+      <span style="font-size:14px;font-weight:800;color:#cbd5e1;letter-spacing:0.3px;">Accés al sistema</span>
     </div>
 
     <!-- ── LOGO QUATRA IBERIA (protagonista) ── -->
@@ -404,7 +414,6 @@
         <button onclick="exportBackup()" title="Descarrega còpia de seguretat JSON" style="background:#166534;color:white;border:none;border-radius:6px;padding:3px 8px;font-size:9px;font-weight:700;cursor:pointer;">💾 Backup</button>
         <button onclick="doLogout()" style="background:#dc2626;color:white;border:none;border-radius:6px;padding:3px 8px;font-size:9px;font-weight:700;cursor:pointer;margin-left:2px;">Sortir</button>
       </div>
-      <div id="v-badge" style="background:#1b3325;border:1px solid #335043;border-radius:6px;padding:3px 8px;font-size:8px;font-weight:800;color:#475569;letter-spacing:0.5px;flex-shrink:0;">v76</div> <!-- BUG10 FIX: versio sincronitzada -->
       <div id="offline-badge" onclick="_flushOfflineQueue()" title="Clic per reintantar sincronització" style="display:none;background:#f59e0b;color:white;border-radius:8px;padding:5px 10px;font-size:9px;font-weight:800;cursor:pointer;align-items:center;white-space:nowrap;max-width:200px;">⚠ Offline</div>
       <div style="display:flex;align-items:center;flex-shrink:0;"><img id="nav-quatra-logo" alt="Quatra Iberia" style="height:32px;width:auto;object-fit:contain;display:block;" onerror="this.parentElement.innerHTML='<span style=&quot;color:#4ade80;font-weight:900;font-size:14px;font-style:italic;&quot;>quatra</span>'"></div>
       <div style="display:flex;align-items:center;flex-shrink:0;">
@@ -864,7 +873,7 @@
       <select class="inp" id="esp-pdf-sel" style="width:auto;font-size:11px;font-weight:700;">
         <option value="diari" data-i18n="rep_diari">Resum diari</option>
         <option value="setmanal" data-i18n="rep_setmanal">Resum setmanal</option>
-        <option selected>Informe mensual RED II</option>
+        <option value="mensual" selected data-i18n="rep_mensual">Informe mensual RED II</option>
         <option value="trimestral" data-i18n="rep_trimestral">Informe trimestral</option>
         <option value="semestral" data-i18n="rep_semestral">Informe semestral</option>
         <option value="anual" data-i18n="rep_anual">Informe anual</option>
@@ -2424,6 +2433,14 @@ const _picker = {
 })();
 const MESOS_CA = ['Gener','Febrer','Març','Abril','Maig','Juny','Juliol','Agost','Setembre','Octubre','Novembre','Desembre'];
 const DIES_CA  = ['Dl','Dt','Dc','Dj','Dv','Ds','Dg'];
+const MESOS_ES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const MESOS_FR = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+const DIES_ES  = ['Lu','Ma','Mi','Ju','Vi','Sá','Do'];
+const DIES_FR  = ['Lu','Ma','Me','Je','Ve','Sa','Di'];
+function MESOS(){ return window.LANG==='es'?MESOS_ES:(window.LANG==='fr'?MESOS_FR:MESOS_CA); }
+function DIES(){ return window.LANG==='es'?DIES_ES:(window.LANG==='fr'?DIES_FR:DIES_CA); }
+/* Traducció directa per al selector de període/dates (es genera dinàmicament) */
+function PKT(ca,es,fr){ return window.LANG==='es'?es:(window.LANG==='fr'?fr:ca); }
 
 function openPicker(who) {
   const existing = document.getElementById('picker-popup-'+who);
@@ -2447,12 +2464,12 @@ function openPicker(who) {
 function buildPickerHTML(who) {
   const p = _picker[who];
   const shortcuts = [
-    {label:'Avui',fn:`quickPick('${who}','avui')`},
-    {label:'Ahir',fn:`quickPick('${who}','ahir')`},
-    {label:'Última setmana',fn:`quickPick('${who}','setmana')`},
-    {label:'Aquest mes',fn:`quickPick('${who}','mes')`},
-    {label:'Any en curs',fn:`quickPick('${who}','any')`},
-    {label:'Tot',fn:`quickPick('${who}','total')`},
+    {label:PKT('Avui','Hoy','Aujourd\'hui'),fn:`quickPick('${who}','avui')`},
+    {label:PKT('Ahir','Ayer','Hier'),fn:`quickPick('${who}','ahir')`},
+    {label:PKT('Última setmana','Última semana','Dernière semaine'),fn:`quickPick('${who}','setmana')`},
+    {label:PKT('Aquest mes','Este mes','Ce mois'),fn:`quickPick('${who}','mes')`},
+    {label:PKT('Any en curs','Año en curso','Année en cours'),fn:`quickPick('${who}','any')`},
+    {label:PKT('Tot','Todo','Tout'),fn:`quickPick('${who}','total')`},
   ];
   const sc = shortcuts.map(s =>
     `<button onclick="${s.fn}" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:5px 10px;font-size:10px;font-weight:700;color:#335043;cursor:pointer;font-family:inherit;white-space:nowrap;" onmouseover="this.style.background='#dcfce7';this.style.borderColor='#16a34a'" onmouseout="this.style.background='#f8fafc';this.style.borderColor='#e2e8f0'">${s.label}</button>`
@@ -2461,35 +2478,35 @@ function buildPickerHTML(who) {
   const m1y = p.viewMonth === 0 ? p.viewYear - 1 : p.viewYear;
   const m2m = p.viewMonth; const m2y = p.viewYear;
   const fromStr = p.from ? fmtDate(p.from) : '—';
-  const toStr   = p.to   ? fmtDate(p.to)   : (p.selecting ? 'Selecciona fi...' : '—');
+  const toStr   = p.to   ? fmtDate(p.to)   : (p.selecting ? PKT('Selecciona fi...','Selecciona fin...','Sélectionnez la fin...') : '—');
   return `<div style="padding:16px 18px 14px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-      <div style="font-size:12px;font-weight:900;color:#0d1a12;">Selecciona el rang de dates</div>
+      <div style="font-size:12px;font-weight:900;color:#0d1a12;">${PKT('Selecciona el rang de dates','Selecciona el rango de fechas','Sélectionnez la plage de dates')}</div>
       <button onclick="document.getElementById('picker-popup-${who}').remove()" style="background:#f1f5f9;border:none;border-radius:8px;width:26px;height:26px;cursor:pointer;font-size:16px;color:#64748b;line-height:1;">×</button>
     </div>
     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">${sc}</div>
     <div style="display:flex;align-items:center;gap:8px;background:#f8fafc;border-radius:12px;padding:10px 14px;margin-bottom:14px;">
       <div style="flex:1;text-align:center;">
-        <div style="font-size:9px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px;">Des de</div>
+        <div style="font-size:9px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px;">${PKT('Des de','Desde','Du')}</div>
         <div style="font-size:13px;font-weight:800;color:#16a34a;">${fromStr}</div>
       </div>
       <div style="color:#94a3b8;font-size:18px;">→</div>
       <div style="flex:1;text-align:center;">
-        <div style="font-size:9px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px;">Fins a</div>
+        <div style="font-size:9px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px;">${PKT('Fins a','Hasta','Au')}</div>
         <div style="font-size:13px;font-weight:800;color:${p.selecting?'#f97316':'#16a34a'};">${toStr}</div>
       </div>
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
       <button onclick="navPicker('${who}',-1)" style="background:#f1f5f9;border:none;border-radius:8px;padding:5px 12px;cursor:pointer;font-size:14px;color:#335043;">‹</button>
-      <span style="font-size:11px;font-weight:800;color:#0d1a12;">${MESOS_CA[m1m]} ${m1y} · ${MESOS_CA[m2m]} ${m2y}</span>
+      <span style="font-size:11px;font-weight:800;color:#0d1a12;">${MESOS()[m1m]} ${m1y} · ${MESOS()[m2m]} ${m2y}</span>
       <button onclick="navPicker('${who}',1)" style="background:#f1f5f9;border:none;border-radius:8px;padding:5px 12px;cursor:pointer;font-size:14px;color:#335043;">›</button>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
       ${buildCalendar(who,m1y,m1m)} ${buildCalendar(who,m2y,m2m)}
     </div>
-    ${p.selecting ? '<div style="text-align:center;font-size:10px;color:#f97316;font-weight:700;margin-bottom:10px;">📅 Ara clica el dia de fi del rang</div>' : ''}
-    <button onclick="applyPicker('${who}')" style="width:100%;padding:11px;background:#16a34a;color:white;border:none;border-radius:12px;font-weight:900;font-size:12px;cursor:pointer;font-family:inherit;">✓ Aplicar rang</button>
-    <div style="text-align:center;font-size:9px;color:#94a3b8;font-weight:600;margin-top:8px;">1r clic = inici · 2n clic = fi del rang</div>
+    ${p.selecting ? '<div style="text-align:center;font-size:10px;color:#f97316;font-weight:700;margin-bottom:10px;">'+PKT('📅 Ara clica el dia de fi del rang','📅 Ahora haz clic en el día final del rango','📅 Cliquez maintenant sur le jour de fin')+'</div>' : ''}
+    <button onclick="applyPicker('${who}')" style="width:100%;padding:11px;background:#16a34a;color:white;border:none;border-radius:12px;font-weight:900;font-size:12px;cursor:pointer;font-family:inherit;">${PKT('✓ Aplicar rang','✓ Aplicar rango','✓ Appliquer la plage')}</button>
+    <div style="text-align:center;font-size:9px;color:#94a3b8;font-weight:600;margin-top:8px;">${PKT('1r clic = inici · 2n clic = fi del rang','1er clic = inicio · 2º clic = fin del rango','1er clic = début · 2e clic = fin de la plage')}</div>
   </div>`;
 }
 
@@ -2498,7 +2515,7 @@ function buildCalendar(who, year, month) {
   const firstDay = (new Date(year, month, 1).getDay() + 6) % 7;
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const today = new Date(); today.setHours(0,0,0,0);
-  let cells = DIES_CA.map(d => `<div style="font-size:9px;font-weight:800;color:#94a3b8;text-align:center;padding:2px 0;">${d}</div>`).join('');
+  let cells = DIES().map(d => `<div style="font-size:9px;font-weight:800;color:#94a3b8;text-align:center;padding:2px 0;">${d}</div>`).join('');
   for (let i = 0; i < firstDay; i++) cells += '<div></div>';
   for (let d = 1; d <= daysInMonth; d++) {
     const date = new Date(year, month, d);
@@ -2513,7 +2530,7 @@ function buildCalendar(who, year, month) {
     if (isToday && !isFrom && !isTo) { extra = 'outline:2px solid #16a34a;outline-offset:-2px;'; fw = '800'; color = inRange ? '#166534' : '#16a34a'; }
     cells += `<div onclick="${isFuture?'':(`pickDay('${who}',${year},${month},${d})`)}" style="text-align:center;padding:4px 1px;border-radius:7px;background:${bg};color:${color};font-size:10px;font-weight:${fw};cursor:${isFuture?'default':'pointer'};${extra}">${d}</div>`;
   }
-  return `<div><div style="font-size:10px;font-weight:800;color:#0d1a12;text-align:center;margin-bottom:6px;">${MESOS_CA[month]} ${year}</div><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;">${cells}</div></div>`;
+  return `<div><div style="font-size:10px;font-weight:800;color:#0d1a12;text-align:center;margin-bottom:6px;">${MESOS()[month]} ${year}</div><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;">${cells}</div></div>`;
 }
 
 function pickDay(who, year, month, day) {
@@ -2557,7 +2574,7 @@ function applyPicker(who) {
   if (!p.from) return;
   if (!p.to) { p.to = new Date(p.from); p.selecting = false; }
   const isTotal = p.from.getFullYear()<=2020 && p.to.getFullYear()>=2099;
-  const label = isTotal ? 'Total acumulat' : sameDay(p.from,p.to) ? fmtDate(p.from) : fmtDate(p.from)+' → '+fmtDate(p.to);
+  const label = isTotal ? PKT('Total acumulat','Total acumulado','Total cumulé') : sameDay(p.from,p.to) ? fmtDate(p.from) : fmtDate(p.from)+' → '+fmtDate(p.to);
   const btnLabel = document.getElementById(who+'-picker-label');
   if (btnLabel) btnLabel.innerText = label;
   const periodLabel = document.getElementById(who+'-period-label');
@@ -4717,14 +4734,20 @@ var FLAG_SVG={
 function toggleFlagDD(ev){ if(ev) ev.stopPropagation(); var dd=document.getElementById('nav-flagdd'); if(!dd) return; var open=dd.classList.toggle('open'); var t=document.getElementById('flag-toggle'); if(t) t.setAttribute('aria-expanded', open?'true':'false'); }
 function closeFlagDD(){ var dd=document.getElementById('nav-flagdd'); if(dd){ dd.classList.remove('open'); var t=document.getElementById('flag-toggle'); if(t) t.setAttribute('aria-expanded','false'); } }
 document.addEventListener('click', function(e){ var dd=document.getElementById('nav-flagdd'); if(dd && dd.classList.contains('open') && !dd.contains(e.target)) closeFlagDD(); });
+function toggleLoginFlagDD(ev){ if(ev) ev.stopPropagation(); var dd=document.getElementById('login-flagdd'); if(!dd) return; var open=dd.classList.toggle('open'); var t=document.getElementById('flag-login-toggle'); if(t) t.setAttribute('aria-expanded', open?'true':'false'); }
+function closeLoginFlagDD(){ var dd=document.getElementById('login-flagdd'); if(dd){ dd.classList.remove('open'); var t=document.getElementById('flag-login-toggle'); if(t) t.setAttribute('aria-expanded','false'); } }
+document.addEventListener('click', function(e){ var dd=document.getElementById('login-flagdd'); if(dd && dd.classList.contains('open') && !dd.contains(e.target)) closeLoginFlagDD(); });
 function updateFlags(){
   var _ls=document.getElementById('lang-select'); if(_ls) _ls.value=window.LANG;
   var _cur=document.getElementById('flag-current'); if(_cur) _cur.innerHTML=FLAG_SVG[window.LANG]||FLAG_SVG.ca;
-  ['ca','es','fr'].forEach(l=>{ ['flag-','flag-login-'].forEach(pre=>{ const b=document.getElementById(pre+l); if(!b) return;
+  var _lcur=document.getElementById('flag-login-current'); if(_lcur) _lcur.innerHTML=FLAG_SVG[window.LANG]||FLAG_SVG.ca;
+  ['ca','es','fr'].forEach(l=>{
     const on=window.LANG===l;
-    if(pre==='flag-'){ b.style.outline=on?'2px solid #4ade80':'2px solid transparent'; b.style.background=on?'#1b3325':'none'; }
-    else { b.style.opacity=on?'1':'0.4'; b.style.outline=on?'2px solid #4ade80':'2px solid transparent'; b.style.transform=on?'scale(1.05)':'scale(1)'; }
-  }); });
+    const navB=document.getElementById('flag-'+l);
+    if(navB){ navB.style.outline=on?'2px solid #4ade80':'2px solid transparent'; navB.style.background=on?'#1b3325':'none'; }
+    const logB=document.getElementById('flag-login-opt-'+l);
+    if(logB){ logB.style.background=on?'#1b3325':'none'; logB.style.outline=on?'2px solid #4ade80':'2px solid transparent'; }
+  });
 }
 function _initObserver(){
   try{
