@@ -1,6 +1,6 @@
 // sw.js — Service Worker · Logística Z-Ero CO₂ · Milla Verda S.L. (PWA offline)
 // Puja aquest fitxer al MATEIX directori que index.html (ex: z-ero-log.github.io/Zeroc/sw.js)
-const CACHE = 'zero-co2-v72';
+const CACHE = 'zero-co2-v73';
 const SHELL = ['./', './index.html'];
 
 self.addEventListener('install', function (e) {
@@ -53,4 +53,3 @@ self.addEventListener('fetch', function (e) {
     })
   );
 });
-
