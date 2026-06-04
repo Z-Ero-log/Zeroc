@@ -862,6 +862,24 @@
   </div>
 </div>
 <!-- ======= QUATRA IBERIA ======= -->
+<style>
+/* ===== Dashboard gestor (Quatra): capçalera compacta + finestres més juntes =====
+   Tot scoped a #sec-quatra perquè la resta de pestanyes no es vegin afectades. */
+#sec-quatra .top-bar{margin-bottom:12px;gap:8px;align-items:center;}
+#sec-quatra .page-title{font-size:18px;}
+#sec-quatra .page-sub{margin-top:2px;}
+#sec-quatra .top-actions{gap:6px;}
+#sec-quatra .top-actions .btn{padding:8px 14px;}
+#sec-quatra .quatra-period{margin-bottom:12px !important;}
+#sec-quatra .g-stats{margin-bottom:12px;gap:12px;}
+#sec-quatra .stat-card{padding:16px;}
+#sec-quatra .stat-label{margin-bottom:8px;}
+#sec-quatra .stat-val{font-size:30px;}
+#sec-quatra .g2{margin-bottom:12px !important;gap:12px;}
+#sec-quatra .card{padding:20px;margin-bottom:12px;}
+#sec-quatra .table-wrap{margin-bottom:12px;}
+#sec-quatra #mass-balance,#sec-quatra #quatra-value-strip,#sec-quatra #vol-quatra-dash{margin-top:0;}
+</style>
 <section id="sec-quatra" class="sec">
   <div class="top-bar">
     <div>
@@ -884,7 +902,7 @@
     </div>
   </div>
   <!-- Date range picker Quatra Iberia -->
-  <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;position:relative;">
+  <div class="quatra-period" style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;position:relative;">
     <span style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;">Període:</span>
     <button id="esp-picker-btn" onclick="openPicker('esp')" style="display:flex;align-items:center;gap:8px;background:#1b3325;border:1.5px solid #335043;border-radius:10px;padding:7px 14px;cursor:pointer;font-family:inherit;transition:border-color 0.2s;" onmouseover="this.style.borderColor='#16a34a'" onmouseout="this.style.borderColor='#335043'">
       <span style="font-size:16px;line-height:1;">📅</span>
