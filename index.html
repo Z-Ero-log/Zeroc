@@ -8,8 +8,63 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Z-Ero CO₂">
-  <title>Logística Z-Ero CO₂ · Milla Verda S.L. · Hub Calella · ♻ RED II · v71</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <title>Logística Z-Ero CO₂ · Milla Verda S.L. · Hub Calella · ♻ RED II · v72</title>
+  <link rel="preconnect"// sw.js — Service Worker · Logística Z-Ero CO₂ · Milla Verda S.L. (PWA offline)
+// Puja aquest fitxer al MATEIX directori que index.html (ex: z-ero-log.github.io/Zeroc/sw.js)
+const CACHE = 'zero-co2-v72';
+const SHELL = ['./', './index.html'];
+
+self.addEventListener('install', function (e) {
+  self.skipWaiting();
+  e.waitUntil(
+    caches.open(CACHE).then(function (c) { return c.addAll(SHELL).catch(function () {}); })
+  );
+});
+
+self.addEventListener('activate', function (e) {
+  e.waitUntil(
+    caches.keys().then(function (keys) {
+      return Promise.all(
+        keys.filter(function (k) { return k !== CACHE; })
+            .map(function (k) { return caches.delete(k); })
+      );
+    }).then(function () { return self.clients.claim(); })
+  );
+});
+
+self.addEventListener('fetch', function (e) {
+  var req = e.request;
+  if (req.method !== 'GET') return;
+
+  // Carregar la pàgina: prova la xarxa primer i, si no hi ha connexió, serveix la còpia en cau
+  if (req.mode === 'navigate') {
+    e.respondWith(
+      fetch(req).then(function (res) {
+        var copy = res.clone();
+        caches.open(CACHE).then(function (c) { c.put('./index.html', copy).catch(function () {}); });
+        return res;
+      }).catch(function () {
+        return caches.match('./index.html').then(function (r) { return r || caches.match('./'); });
+      })
+    );
+    return;
+  }
+
+  // Altres recursos (scripts CDN, etc.): primer la cau, després actualitza en segon pla
+  e.respondWith(
+    caches.match(req).then(function (cached) {
+      var network = fetch(req).then(function (res) {
+        if (res && (res.status === 200 || res.type === 'opaque')) {
+          var copy = res.clone();
+          caches.open(CACHE).then(function (c) { c.put(req, copy).catch(function () {}); });
+        }
+        return res;
+      }).catch(function () { return cached; });
+      return cached || network;
+    })
+  );
+});
+ href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
   <style>
 /* ============================================================
@@ -215,11 +270,10 @@
 
     <!-- ── Powered by Z-Ero (discret) ── -->
     <div style="text-align:center;margin-top:20px;">
-      <div style="display:inline-flex;align-items:center;gap:10px;opacity:0.9;">
-        <div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:1.5px;">Powered by</div>
-        <img id="login-zero-logo" alt="Z-Ero CO₂ · Milla Verda S.L." style="height:48px;width:auto;display:block;border-radius:8px;">
-        <div style="width:1px;height:32px;background:#335043;"></div>
-        <img id="login-iscc-logo" alt="Certificat ISCC" style="height:32px;width:auto;object-fit:contain;display:block;border-radius:8px;">
+      <div style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;">Powered by</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:20px;opacity:0.95;">
+        <img id="login-zero-logo" alt="Z-Ero CO₂ · Milla Verda S.L." style="width:44%;max-width:180px;height:auto;display:block;">
+        <img id="login-iscc-logo" alt="Certificat ISCC" style="height:46px;width:auto;object-fit:contain;display:block;">
       </div>
       <!-- Indicador rols -->
       <div style="display:flex;gap:8px;margin-top:12px;justify-content:center;flex-wrap:wrap;">
@@ -399,9 +453,9 @@
         <button onclick="exportBackup()" title="Descarrega còpia de seguretat JSON" style="background:#166534;color:white;border:none;border-radius:6px;padding:3px 8px;font-size:9px;font-weight:700;cursor:pointer;">💾 Backup</button>
         <button onclick="doLogout()" style="background:#dc2626;color:white;border:none;border-radius:6px;padding:3px 8px;font-size:9px;font-weight:700;cursor:pointer;margin-left:2px;">Sortir</button>
       </div>
-      <div id="v-badge" style="background:#1b3325;border:1px solid #335043;border-radius:6px;padding:3px 8px;font-size:8px;font-weight:800;color:#475569;letter-spacing:0.5px;flex-shrink:0;">v71</div> <!-- BUG10 FIX: versio sincronitzada -->
+      <div id="v-badge" style="background:#1b3325;border:1px solid #335043;border-radius:6px;padding:3px 8px;font-size:8px;font-weight:800;color:#475569;letter-spacing:0.5px;flex-shrink:0;">v72</div> <!-- BUG10 FIX: versio sincronitzada -->
       <div id="offline-badge" onclick="_flushOfflineQueue()" title="Clic per reintantar sincronització" style="display:none;background:#f59e0b;color:white;border-radius:8px;padding:5px 10px;font-size:9px;font-weight:800;cursor:pointer;align-items:center;white-space:nowrap;max-width:200px;">⚠ Offline</div>
-      <div class="quatra-logo-panel" style="display:flex;align-items:center;flex-shrink:0;"><img id="nav-quatra-logo" alt="Quatra Iberia" style="height:32px;width:auto;object-fit:contain;display:block;" onerror="this.parentElement.innerHTML='<span style=&quot;color:#4ade80;font-weight:900;font-size:14px;font-style:italic;&quot;>quatra</span>'"></div>
+      <div style="display:flex;align-items:center;flex-shrink:0;"><img id="nav-quatra-logo" alt="Quatra Iberia" style="height:32px;width:auto;object-fit:contain;display:block;" onerror="this.parentElement.innerHTML='<span style=&quot;color:#4ade80;font-weight:900;font-size:14px;font-style:italic;&quot;>quatra</span>'"></div>
       <div style="display:flex;align-items:center;height:46px;flex-shrink:0;">
         <img id="nav-iscc-logo"
              alt="Certificat ISCC"
@@ -3608,12 +3662,12 @@ function genCertificat(id){
 
   // Capçalera
   doc.setFillColor(...NAVY); doc.rect(0,0,210,38,'F');
-  try{ doc.addImage(ZERO_LOGO,'PNG',14,4,32,18); }catch(err){}
+  try{ doc.addImage(ZERO_LOGO,'PNG',14,4,29,16); }catch(err){}
   doc.setFontSize(7.5); doc.setFont('helvetica','normal'); doc.setTextColor(74,222,128);
-  doc.text(_L("COL·LABORADOR AUTORITZAT · RED II","COLABORADOR AUTORIZADO · RED II","COLLABORATEUR AUTORISÉ · RED II"),14,28);
-  doc.setTextColor(100,116,139); doc.text('Hub Calella · 08370 · '+today,14,34);
-  try{ doc.addImage(QUATRA_LOGO,'PNG',70,9,82,18); }catch(err){}
-  try{ doc.addImage(ISCC_LOGO,'PNG',178,13,24,11); }catch(err){}
+  doc.text(_L("COL·LABORADOR AUTORITZAT · RED II","COLABORADOR AUTORIZADO · RED II","COLLABORATEUR AUTORISÉ · RED II"),14,25);
+  doc.setTextColor(100,116,139); doc.text('Hub Calella · 08370 · '+today,14,31);
+  try{ doc.addImage(QUATRA_LOGO,'PNG',82,7,68,15); }catch(err){}
+  try{ doc.addImage(ISCC_LOGO,'PNG',180,12,22,10); }catch(err){}
 
   // Títol
   doc.setFontSize(15); doc.setFont('helvetica','bold'); doc.setTextColor(...NAVY);
@@ -3759,15 +3813,15 @@ const doc=new jsPDF({unit:'mm',format:'a4'});
 const NAVY=[13,26,18],BLUE=[22,163,74],GREEN=[22,163,74],AMBER=[217,119,6],GRAY=[148,163,184],LGRAY=[241,245,249];
 doc.setFillColor(...NAVY); doc.rect(0,0,210,38,'F');
 // Brand logo Z-Ero (esquerra, chip arrodonit)
-try { doc.addImage(ZERO_LOGO,'PNG',14,5,30.5,17); } catch(e) {}
+try { doc.addImage(ZERO_LOGO,'PNG',14,4,29,16); } catch(e) {}
 doc.setFontSize(7.5);doc.setFont('helvetica','normal');doc.setTextColor(74,222,128);
-doc.text(_L("COL·LABORADOR AUTORITZAT · RED II","COLABORADOR AUTORIZADO · RED II","COLLABORATEUR AUTORISÉ · RED II"),14,28);
-doc.setTextColor(100,116,139);doc.text('Hub Calella · 08370 · '+today,14,34);
+doc.text(_L("COL·LABORADOR AUTORITZAT · RED II","COLABORADOR AUTORIZADO · RED II","COLLABORATEUR AUTORISÉ · RED II"),14,25);
+doc.setTextColor(100,116,139);doc.text('Hub Calella · 08370 · '+today,14,31);
 // ── Logos evenly distributed right side (transparent PNGs · sit directly on header) ──────────
 // Add logos centered in each cell
-try { doc.addImage(QUATRA_LOGO,'PNG',61,10,73,16); } catch(e) {}
-try { doc.addImage(ARC_LOGO,'PNG',149,13,25.5,10); } catch(e) {}
-try { doc.addImage(ISCC_LOGO,'PNG',180,13,22,10); } catch(e) {}
+try { doc.addImage(QUATRA_LOGO,'PNG',80,7,64,14); } catch(e) {}
+try { doc.addImage(ARC_LOGO,'PNG',149,12,25.5,10); } catch(e) {}
+try { doc.addImage(ISCC_LOGO,'PNG',180,12,22,10); } catch(e) {}
 
 doc.setFontSize(16);doc.setFont('helvetica','bold');doc.setTextColor(...NAVY);
 const _ti=(/diari/i.test(tipus)?_L("RESUM DIARI","RESUMEN DIARIO","RÉSUMÉ QUOTIDIEN"):/setmanal/i.test(tipus)?_L("RESUM SETMANAL","RESUMEN SEMANAL","RÉSUMÉ HEBDOMADAIRE"):/mensual/i.test(tipus)?_L("INFORME MENSUAL RED II","INFORME MENSUAL RED II","RAPPORT MENSUEL RED II"):/trimestral/i.test(tipus)?_L("INFORME TRIMESTRAL","INFORME TRIMESTRAL","RAPPORT TRIMESTRIEL"):/semestral/i.test(tipus)?_L("INFORME SEMESTRAL","INFORME SEMESTRAL","RAPPORT SEMESTRIEL"):/anual/i.test(tipus)?_L("INFORME ANUAL","INFORME ANUAL","RAPPORT ANNUEL"):tipus.toUpperCase()); doc.text(_ti,14,50);
