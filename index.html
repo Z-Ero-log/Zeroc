@@ -8,63 +8,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Z-Ero CO₂">
-  <title>Logística Z-Ero CO₂ · Milla Verda S.L. · Hub Calella · ♻ RED II · v72</title>
-  <link rel="preconnect"// sw.js — Service Worker · Logística Z-Ero CO₂ · Milla Verda S.L. (PWA offline)
-// Puja aquest fitxer al MATEIX directori que index.html (ex: z-ero-log.github.io/Zeroc/sw.js)
-const CACHE = 'zero-co2-v72';
-const SHELL = ['./', './index.html'];
-
-self.addEventListener('install', function (e) {
-  self.skipWaiting();
-  e.waitUntil(
-    caches.open(CACHE).then(function (c) { return c.addAll(SHELL).catch(function () {}); })
-  );
-});
-
-self.addEventListener('activate', function (e) {
-  e.waitUntil(
-    caches.keys().then(function (keys) {
-      return Promise.all(
-        keys.filter(function (k) { return k !== CACHE; })
-            .map(function (k) { return caches.delete(k); })
-      );
-    }).then(function () { return self.clients.claim(); })
-  );
-});
-
-self.addEventListener('fetch', function (e) {
-  var req = e.request;
-  if (req.method !== 'GET') return;
-
-  // Carregar la pàgina: prova la xarxa primer i, si no hi ha connexió, serveix la còpia en cau
-  if (req.mode === 'navigate') {
-    e.respondWith(
-      fetch(req).then(function (res) {
-        var copy = res.clone();
-        caches.open(CACHE).then(function (c) { c.put('./index.html', copy).catch(function () {}); });
-        return res;
-      }).catch(function () {
-        return caches.match('./index.html').then(function (r) { return r || caches.match('./'); });
-      })
-    );
-    return;
-  }
-
-  // Altres recursos (scripts CDN, etc.): primer la cau, després actualitza en segon pla
-  e.respondWith(
-    caches.match(req).then(function (cached) {
-      var network = fetch(req).then(function (res) {
-        if (res && (res.status === 200 || res.type === 'opaque')) {
-          var copy = res.clone();
-          caches.open(CACHE).then(function (c) { c.put(req, copy).catch(function () {}); });
-        }
-        return res;
-      }).catch(function () { return cached; });
-      return cached || network;
-    })
-  );
-});
- href="https://fonts.googleapis.com">
+  <title>Logística Z-Ero CO₂ · Milla Verda S.L. · Hub Calella · ♻ RED II · v73</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
   <style>
 /* ============================================================
@@ -420,7 +365,7 @@ self.addEventListener('fetch', function (e) {
 </script>
 <nav class="nav">
   <div class="nav-left">
-    <img id="nav-zero-logo" alt="Z-Ero CO₂" style="height:40px;width:auto;object-fit:contain;display:block;">
+    <img id="nav-zero-logo" alt="Z-Ero CO₂" style="height:60px;width:auto;object-fit:contain;display:block;">
   </div>
   <div class="nav-tabs" id="nav-tabs">
     <button class="tab on" id="tab-operador" onclick="switchView('operador')" data-i18n="tab_operador">Operador Z-Ero</button>
@@ -453,7 +398,7 @@ self.addEventListener('fetch', function (e) {
         <button onclick="exportBackup()" title="Descarrega còpia de seguretat JSON" style="background:#166534;color:white;border:none;border-radius:6px;padding:3px 8px;font-size:9px;font-weight:700;cursor:pointer;">💾 Backup</button>
         <button onclick="doLogout()" style="background:#dc2626;color:white;border:none;border-radius:6px;padding:3px 8px;font-size:9px;font-weight:700;cursor:pointer;margin-left:2px;">Sortir</button>
       </div>
-      <div id="v-badge" style="background:#1b3325;border:1px solid #335043;border-radius:6px;padding:3px 8px;font-size:8px;font-weight:800;color:#475569;letter-spacing:0.5px;flex-shrink:0;">v72</div> <!-- BUG10 FIX: versio sincronitzada -->
+      <div id="v-badge" style="background:#1b3325;border:1px solid #335043;border-radius:6px;padding:3px 8px;font-size:8px;font-weight:800;color:#475569;letter-spacing:0.5px;flex-shrink:0;">v73</div> <!-- BUG10 FIX: versio sincronitzada -->
       <div id="offline-badge" onclick="_flushOfflineQueue()" title="Clic per reintantar sincronització" style="display:none;background:#f59e0b;color:white;border-radius:8px;padding:5px 10px;font-size:9px;font-weight:800;cursor:pointer;align-items:center;white-space:nowrap;max-width:200px;">⚠ Offline</div>
       <div style="display:flex;align-items:center;flex-shrink:0;"><img id="nav-quatra-logo" alt="Quatra Iberia" style="height:32px;width:auto;object-fit:contain;display:block;" onerror="this.parentElement.innerHTML='<span style=&quot;color:#4ade80;font-weight:900;font-size:14px;font-style:italic;&quot;>quatra</span>'"></div>
       <div style="display:flex;align-items:center;height:46px;flex-shrink:0;">
@@ -3666,7 +3611,8 @@ function genCertificat(id){
   doc.setFontSize(7.5); doc.setFont('helvetica','normal'); doc.setTextColor(74,222,128);
   doc.text(_L("COL·LABORADOR AUTORITZAT · RED II","COLABORADOR AUTORIZADO · RED II","COLLABORATEUR AUTORISÉ · RED II"),14,25);
   doc.setTextColor(100,116,139); doc.text('Hub Calella · 08370 · '+today,14,31);
-  try{ doc.addImage(QUATRA_LOGO,'PNG',82,7,68,15); }catch(err){}
+  try{ doc.addImage(QUATRA_LOGO,'PNG',80,7,64,14); }catch(err){}
+  try{ doc.addImage(ARC_LOGO,'PNG',149,12,25.5,10); }catch(err){}
   try{ doc.addImage(ISCC_LOGO,'PNG',180,12,22,10); }catch(err){}
 
   // Títol
