@@ -1961,7 +1961,7 @@ const isTransp = d.id === 'TRANSP' || d.transportistaOk === true;
 const estatBadge = (d.estat||'').startsWith('Net') ? 'bg-green' : (d.estat||'').startsWith('Degradat') ? 'bg-red' : (d.estat||'').startsWith('Pendent') ? 'bg-gray' : 'bg-yellow';
 const estatCurt  = (d.estat||'Net').startsWith('Pendent') ? 'Pendent' : (d.estat||'Net').split(' ')[0];
 const esAvui = (d.dataHora||'').startsWith(todayStr);
-if (esAvui) countAvui++;
+if (esAvui && !d.substituidaPer) countAvui++;
 const rowStyle = esAvui ? (isTransp ? 'background:#fffbeb;' : 'background:#f0fdf4;') : '';
 const fluxBadge = isTransp
 ? '<span class="badge" style="background:#fef3c7;color:#92400e;">📱 Transp.</span>'
@@ -2063,7 +2063,8 @@ _allRecs = Object.assign({}, _allRecs, data);
 try{ renderEstatRecollida(); }catch(e){}
 todayRec = countAvui;
 const el = document.getElementById('op-count');
-if(el) el.innerText = countAvui + ' recollides avui' + (allEntries.length > PAGE_SIZE ? ' · ' + allEntries.length + ' total' : '');
+const _totalReal = allEntries.reduce((n,e)=> n + ((e[1] && !e[1].substituidaPer)?1:0), 0);
+if(el) el.innerText = countAvui + ' recollides avui' + (_totalReal > PAGE_SIZE ? ' · ' + _totalReal + ' total' : '');
 const el2 = document.getElementById('op-today-count');
 if(el2) el2.innerText = countAvui;
 // Botó "Carregar més" operador
